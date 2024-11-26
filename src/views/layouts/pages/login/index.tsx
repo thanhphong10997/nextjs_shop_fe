@@ -43,23 +43,16 @@ import React, { useState } from 'react'
 // Import icons
 import IconifyIcon from 'src/components/Icon'
 
+// Hooks
+import { useAuth } from 'src/hooks/useAuth'
+import { error } from 'console'
+
 type TProps = {}
 type Inputs = {
   email: string
   password: string
 }
-function Copyright() {
-  return (
-    <Typography variant='body2' color='textSecondary' align='center'>
-      {'Copyright © '}
-      <Link color='inherit' href='https://mui.com/'>
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  )
-}
+
 const useStyles = makeStyles((theme: any) => {
   return {
     paper: {
@@ -83,10 +76,11 @@ const useStyles = makeStyles((theme: any) => {
 })
 
 export const LoginPage: NextPage<TProps> = () => {
-  const classes = useStyles()
-
   // theme
   const theme = useTheme()
+
+  // context
+  const { login } = useAuth()
 
   const [showPassword, setShowPassword] = useState(false)
   const [isRemember, setIsRemember] = useState(false)
@@ -103,7 +97,6 @@ export const LoginPage: NextPage<TProps> = () => {
   const {
     control,
     handleSubmit,
-    watch,
     formState: { errors }
   } = useForm<Inputs>({
     defaultValues: {
@@ -114,7 +107,12 @@ export const LoginPage: NextPage<TProps> = () => {
     resolver: yupResolver(schema)
   })
 
-  const onSubmit: SubmitHandler<Inputs> = data => console.log(data)
+  const onSubmit: SubmitHandler<Inputs> = data => {
+    if (!Object.keys(errors)?.length) {
+      login({ ...data, rememberMe: isRemember })
+    }
+    console.log('data', { data, errors })
+  }
 
   return (
     <Box
@@ -168,17 +166,22 @@ export const LoginPage: NextPage<TProps> = () => {
               name='email'
               control={control}
               rules={{ required: true }}
-              render={({ field }) => (
-                <CustomTextField
-                  error={Boolean(errors.email)}
-                  placeholder='Enter email'
-                  variant='outlined'
-                  fullWidth
-                  autoFocus
-                  helperText={errors?.email?.message}
-                  {...field}
-                />
-              )}
+              render={({ field }) => {
+                // Fixing error: Function components cannot be given refs
+                const { ref, ...rests } = field
+
+                return (
+                  <CustomTextField
+                    error={Boolean(errors.email)}
+                    placeholder='Enter email'
+                    variant='outlined'
+                    fullWidth
+                    autoFocus
+                    helperText={errors?.email?.message}
+                    {...rests}
+                  />
+                )
+              }}
             />
           </Box>
 
@@ -187,31 +190,36 @@ export const LoginPage: NextPage<TProps> = () => {
               name='password'
               control={control}
               rules={{ required: true }}
-              render={({ field }) => (
-                <CustomTextField
-                  error={Boolean(errors.password)}
-                  placeholder='Enter password'
-                  variant='outlined'
-                  fullWidth
-                  autoFocus
-                  helperText={errors?.password?.message}
-                  type={showPassword ? 'text' : 'password'}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position='end'>
-                        <IconButton edge='end' onClick={() => setShowPassword(!showPassword)}>
-                          {!showPassword ? (
-                            <IconifyIcon icon='material-symbols-light:visibility-outline' />
-                          ) : (
-                            <IconifyIcon icon='material-symbols-light:visibility-off-rounded' />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    )
-                  }}
-                  {...field}
-                />
-              )}
+              render={({ field }) => {
+                // Fixing error: Function components cannot be given refs
+                const { ref, ...rests } = field
+
+                return (
+                  <CustomTextField
+                    error={Boolean(errors.password)}
+                    placeholder='Enter password'
+                    variant='outlined'
+                    fullWidth
+                    autoFocus
+                    helperText={errors?.password?.message}
+                    type={showPassword ? 'text' : 'password'}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position='end'>
+                          <IconButton edge='end' onClick={() => setShowPassword(!showPassword)}>
+                            {!showPassword ? (
+                              <IconifyIcon icon='material-symbols-light:visibility-outline' />
+                            ) : (
+                              <IconifyIcon icon='material-symbols-light:visibility-off-rounded' />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }}
+                    {...rests}
+                  />
+                )
+              }}
             />
           </Box>
           <FormControlLabel
@@ -225,7 +233,7 @@ export const LoginPage: NextPage<TProps> = () => {
             }
             label='Remember me'
           />
-          <Button type='submit' fullWidth variant='contained' color='primary' className={classes.submit}>
+          <Button type='submit' fullWidth variant='contained' color='primary'>
             Sign In
           </Button>
           <Grid container>

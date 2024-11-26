@@ -70,8 +70,6 @@ const useStyles = makeStyles((theme: any) => {
 })
 
 export const RegisterPage: NextPage<TProps> = () => {
-  const classes = useStyles()
-
   // theme
   const theme = useTheme()
 
@@ -160,17 +158,22 @@ export const RegisterPage: NextPage<TProps> = () => {
               name='email'
               control={control}
               rules={{ required: true }}
-              render={({ field }) => (
-                <CustomTextField
-                  error={Boolean(errors.email)}
-                  placeholder='Enter email'
-                  variant='outlined'
-                  fullWidth
-                  autoFocus
-                  helperText={errors?.email?.message}
-                  {...field}
-                />
-              )}
+              render={({ field }) => {
+                // Fixing error: Function components cannot be given refs
+                const { ref, ...rests } = field
+
+                return (
+                  <CustomTextField
+                    error={Boolean(errors.email)}
+                    placeholder='Enter email'
+                    variant='outlined'
+                    fullWidth
+                    autoFocus
+                    helperText={errors?.email?.message}
+                    {...rests}
+                  />
+                )
+              }}
             />
           </Box>
 
@@ -179,31 +182,36 @@ export const RegisterPage: NextPage<TProps> = () => {
               name='password'
               control={control}
               rules={{ required: true }}
-              render={({ field }) => (
-                <CustomTextField
-                  error={Boolean(errors.password)}
-                  variant='outlined'
-                  placeholder='Enter password'
-                  fullWidth
-                  autoFocus
-                  helperText={errors?.password?.message}
-                  type={showPassword ? 'text' : 'password'}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position='end'>
-                        <IconButton edge='end' onClick={() => setShowPassword(!showPassword)}>
-                          {!showPassword ? (
-                            <IconifyIcon icon='material-symbols-light:visibility-outline' />
-                          ) : (
-                            <IconifyIcon icon='material-symbols-light:visibility-off-rounded' />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    )
-                  }}
-                  {...field}
-                />
-              )}
+              render={({ field }) => {
+                // Fixing error: Function components cannot be given refs
+                const { ref, ...rests } = field
+
+                return (
+                  <CustomTextField
+                    error={Boolean(errors.password)}
+                    variant='outlined'
+                    placeholder='Enter password'
+                    fullWidth
+                    autoFocus
+                    helperText={errors?.password?.message}
+                    type={showPassword ? 'text' : 'password'}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position='end'>
+                          <IconButton edge='end' onClick={() => setShowPassword(!showPassword)}>
+                            {!showPassword ? (
+                              <IconifyIcon icon='material-symbols-light:visibility-outline' />
+                            ) : (
+                              <IconifyIcon icon='material-symbols-light:visibility-off-rounded' />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }}
+                    {...rests}
+                  />
+                )
+              }}
             />
           </Box>
 
@@ -212,34 +220,39 @@ export const RegisterPage: NextPage<TProps> = () => {
               name='confirmPassword'
               control={control}
               rules={{ required: true }}
-              render={({ field }) => (
-                <CustomTextField
-                  error={Boolean(errors.confirmPassword)}
-                  placeholder='Enter confirm password'
-                  variant='outlined'
-                  fullWidth
-                  autoFocus
-                  helperText={errors?.confirmPassword?.message}
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position='end'>
-                        <IconButton edge='end' onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                          {!showConfirmPassword ? (
-                            <IconifyIcon icon='material-symbols-light:visibility-outline' />
-                          ) : (
-                            <IconifyIcon icon='material-symbols-light:visibility-off-rounded' />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    )
-                  }}
-                  {...field}
-                />
-              )}
+              render={({ field }) => {
+                // Fixing error: Function components cannot be given refs
+                const { ref, ...rests } = field
+
+                return (
+                  <CustomTextField
+                    error={Boolean(errors.confirmPassword)}
+                    placeholder='Enter confirm password'
+                    variant='outlined'
+                    fullWidth
+                    autoFocus
+                    helperText={errors?.confirmPassword?.message}
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position='end'>
+                          <IconButton edge='end' onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                            {!showConfirmPassword ? (
+                              <IconifyIcon icon='material-symbols-light:visibility-outline' />
+                            ) : (
+                              <IconifyIcon icon='material-symbols-light:visibility-off-rounded' />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }}
+                    {...rests}
+                  />
+                )
+              }}
             />
           </Box>
-          <Button type='submit' fullWidth variant='contained' color='primary' className={classes.submit}>
+          <Button type='submit' fullWidth variant='contained' color='primary'>
             Register
           </Button>
           <Grid container>
