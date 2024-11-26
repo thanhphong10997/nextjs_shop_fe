@@ -1,5 +1,10 @@
+// Next
 import { NextPage } from 'next'
+
+// React
 import { ReactElement, ReactNode } from 'react'
+
+// views
 import BlankLayout from 'src/views/layouts/BlankLayout'
 import LoginPage from 'src/views/layouts/pages/login'
 
