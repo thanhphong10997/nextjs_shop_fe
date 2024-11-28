@@ -19,6 +19,7 @@ import { Icon } from '@iconify/react/dist/iconify.js'
 type TProps = {
   open: boolean
   toggleDrawer: () => void
+  hideMenu?: boolean
 }
 
 const drawerWidth: number = 240
@@ -45,7 +46,7 @@ const AppBar = styled(MuiAppBar, {
   })
 }))
 
-const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer }) => {
+const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer, hideMenu }) => {
   return (
     <AppBar position='absolute' open={open}>
       <Toolbar
@@ -53,24 +54,26 @@ const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer }) => {
           pr: '24px' // keep right padding when drawer closed
         }}
       >
-        <IconButton
-          edge='start'
-          color='inherit'
-          aria-label='open drawer'
-          onClick={toggleDrawer}
-          sx={{
-            marginRight: '36px',
-            ...(open && { display: 'none' })
-          }}
-        >
-          <Icon icon='mingcute:menu-line' />
-        </IconButton>
+        {!hideMenu && (
+          <IconButton
+            edge='start'
+            color='inherit'
+            aria-label='open drawer'
+            onClick={toggleDrawer}
+            sx={{
+              marginRight: '36px',
+              ...(open && { display: 'none' })
+            }}
+          >
+            <Icon icon='mingcute:menu-line' />
+          </IconButton>
+        )}
         <Typography component='h1' variant='h6' color='inherit' noWrap sx={{ flexGrow: 1 }}>
           Dashboard
         </Typography>
         <IconButton color='inherit'>
           <Badge badgeContent={4} color='secondary'>
-            {/* <Icon icon='mingcute:notification-line' /> */}
+            <Icon icon='basil:notification-outline' />
           </Badge>
         </IconButton>
       </Toolbar>

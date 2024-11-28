@@ -1,14 +1,16 @@
 import * as React from 'react'
 
+// Mui
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
 import MuiDrawer from '@mui/material/Drawer'
 import Toolbar from '@mui/material/Toolbar'
-import List from '@mui/material/List'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 
-import { mainListItems, secondaryListItems } from './ListItems'
+// Next
 import { NextPage } from 'next'
+import { Icon } from '@iconify/react/dist/iconify.js'
+import { ListVerticalLayout } from './ListVerticalLayout'
 
 const drawerWidth: number = 240
 
@@ -52,14 +54,12 @@ const VerticalLayout: NextPage<TProps> = ({ open, toggleDrawer }) => {
           px: [1]
         }}
       >
-        <IconButton onClick={toggleDrawer}>{/* <ChevronLeftIcon /> */}</IconButton>
+        <IconButton onClick={toggleDrawer}>
+          <Icon icon='ic:round-chevron-left' />
+        </IconButton>
       </Toolbar>
       <Divider />
-      <List component='nav'>
-        {mainListItems}
-        <Divider sx={{ my: 1 }} />
-        {secondaryListItems}
-      </List>
+      <ListVerticalLayout drawerIsOpening={open} />
     </Drawer>
   )
 }
