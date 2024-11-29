@@ -100,8 +100,8 @@ export const LoginPage: NextPage<TProps> = () => {
     formState: { errors }
   } = useForm<Inputs>({
     defaultValues: {
-      email: '',
-      password: ''
+      email: 'admin@gmail.com',
+      password: '123456789Kha@'
     },
     mode: 'onBlur',
     resolver: yupResolver(schema)
