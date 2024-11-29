@@ -12,6 +12,7 @@ import Badge from '@mui/material/Badge'
 // Next
 import { NextPage } from 'next'
 import { Icon } from '@iconify/react/dist/iconify.js'
+import AccountMenu from 'src/components/user-dropdown'
 
 // Iconify
 // import { Icon } from '@iconify/react'
@@ -71,11 +72,12 @@ const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer, hideMenu }) =>
         <Typography component='h1' variant='h6' color='inherit' noWrap sx={{ flexGrow: 1 }}>
           Dashboard
         </Typography>
-        <IconButton color='inherit'>
+        {/* <IconButton color='inherit'>
           <Badge badgeContent={4} color='secondary'>
             <Icon icon='basil:notification-outline' />
           </Badge>
-        </IconButton>
+        </IconButton> */}
+        <AccountMenu />
       </Toolbar>
     </AppBar>
   )
