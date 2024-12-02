@@ -1,8 +1,11 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
+import Backend from 'i18next-http-backend'
 
 i18n
+
+  .use(Backend)
 
   // Enable automatic language detection
   .use(LanguageDetector)
@@ -10,7 +13,7 @@ i18n
   // Enables the hook initialization module
   .use(initReactI18next)
   .init({
-    lng: 'en',
+    lng: 'vi',
     backend: {
       /* translation file path */
       loadPath: '/locales/{{lng}}.json'
@@ -28,3 +31,13 @@ i18n
   })
 
 export default i18n
+
+export const LANGUAGE_OPTIONS = [{
+  lang: 'English',
+  value: 'en'
+},
+{
+  lang: 'Tiếng Việt',
+  value: 'vi'
+},
+]

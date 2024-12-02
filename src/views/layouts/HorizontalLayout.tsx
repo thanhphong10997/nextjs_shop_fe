@@ -12,7 +12,9 @@ import Badge from '@mui/material/Badge'
 // Next
 import { NextPage } from 'next'
 import { Icon } from '@iconify/react/dist/iconify.js'
-import AccountMenu from 'src/components/user-dropdown'
+import AccountMenu from 'src/views/components/user-dropdown'
+import ModeToggle from '../components/mode-toggle'
+import LanguageDropdown from '../components/language-dropdown'
 
 // Iconify
 // import { Icon } from '@iconify/react'
@@ -77,6 +79,8 @@ const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer, hideMenu }) =>
             <Icon icon='basil:notification-outline' />
           </Badge>
         </IconButton> */}
+        <LanguageDropdown />
+        <ModeToggle />
         <AccountMenu />
       </Toolbar>
     </AppBar>
