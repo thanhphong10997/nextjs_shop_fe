@@ -3,7 +3,12 @@
 import { ReactNode } from 'react'
 
 // ** Types
-import type { ACLObj } from 'src/configs/acl'
+import { buildAbilityFor, ACLObj, AppAbility } from 'src/configs/acl'
+import BlankLayout from 'src/views/layouts/BlankLayout'
+import NotAuthorized from 'src/pages/401'
+import { useAuth } from 'src/hooks/useAuth'
+import { useRouter } from 'next/router'
+import { AbilityContext } from '../acl/Can'
 
 interface AclGuardProps {
   children: ReactNode
@@ -15,8 +20,35 @@ interface AclGuardProps {
 const AclGuard = (props: AclGuardProps) => {
   // ** Props
   const { aclAbilities, children, guestGuard = false, authGuard = true } = props
-  
-  return <>{children}</>
+  const auth = useAuth()
+  const router = useRouter()
+  const permissionUser = auth?.user?.role.permissions ?? []
+  let ability: AppAbility
+  if (auth.user && !ability) {
+    ability = buildAbilityFor(permissionUser, aclAbilities.subject)
+  }
+
+  // if guest guard or no guard or error pages
+  if (guestGuard || router.route === '/500' || router.route === '/404' || !authGuard) {
+    if (auth.user && ability) {
+      return <AbilityContext.Provider value={ability}>{children}</AbilityContext.Provider>
+    } else {
+      return children
+    }
+  }
+
+  // check the access of current user
+  if (ability && auth.user && ability.can(aclAbilities.action, aclAbilities.subject)) {
+    return <AbilityContext.Provider value={ability}>{children}</AbilityContext.Provider>
+  }
+
+  return (
+    <BlankLayout>
+      <NotAuthorized />
+    </BlankLayout>
+  )
+
+  // return <>{children}</>
 }
 
 export default AclGuard
