@@ -14,8 +14,6 @@ interface TStyledItem extends BoxProps {
 
 export default function LanguageDropdown() {
   const StyledItemLanguage = styled(Box)<TStyledItem>(({ theme, selected }) => {
-    console.log('selected', selected)
-
     return {
       cursor: 'pointer',
       '.MuiTypography-root': {
@@ -40,7 +38,6 @@ export default function LanguageDropdown() {
   const handleChangeLanguage = (lang: string) => {
     i18n.changeLanguage(lang)
   }
-  console.log(i18n.language)
   const open = Boolean(anchorEl)
   const id = open ? 'simple-popover' : undefined
 
