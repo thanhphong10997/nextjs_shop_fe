@@ -21,7 +21,7 @@ const AxiosInterceptor: FC<TAxiosInterceptor> = ({ children }) => {
   const { setUser } = useAuth()
   const { accessToken, refreshToken } = getLocalUserData()
   const handleRedirectLogin = (router: NextRouter, setUser: (data: UserDataType | null) => void) => {
-    if (router.asPath !== '/') {
+    if (router.asPath !== '/' && router.asPath !== '/login') {
       router.replace({
         pathname: '/login',
         query: { returnUrl: router.asPath }

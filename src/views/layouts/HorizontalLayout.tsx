@@ -12,9 +12,13 @@ import Badge from '@mui/material/Badge'
 // Next
 import { NextPage } from 'next'
 import { Icon } from '@iconify/react/dist/iconify.js'
-import AccountMenu from 'src/views/components/user-dropdown'
+import UserDropdown from 'src/views/components/user-dropdown'
 import ModeToggle from '../components/mode-toggle'
 import LanguageDropdown from '../components/language-dropdown'
+import { useAuth } from 'src/hooks/useAuth'
+import { Button } from '@mui/material'
+import { useRouter } from 'next/router'
+import { ROUTE_CONFIG } from 'src/configs/route'
 
 // Iconify
 // import { Icon } from '@iconify/react'
@@ -50,6 +54,9 @@ const AppBar = styled(MuiAppBar, {
 }))
 
 const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer, hideMenu }) => {
+  const auth = useAuth()
+  const router = useRouter()
+
   return (
     <AppBar position='absolute' open={open}>
       <Toolbar
@@ -61,7 +68,6 @@ const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer, hideMenu }) =>
           <IconButton
             edge='start'
             color='inherit'
-            aria-label='open drawer'
             onClick={toggleDrawer}
             sx={{
               marginRight: '36px',
@@ -74,14 +80,15 @@ const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer, hideMenu }) =>
         <Typography component='h1' variant='h6' color='inherit' noWrap sx={{ flexGrow: 1 }}>
           Dashboard
         </Typography>
-        {/* <IconButton color='inherit'>
-          <Badge badgeContent={4} color='secondary'>
-            <Icon icon='basil:notification-outline' />
-          </Badge>
-        </IconButton> */}
         <LanguageDropdown />
         <ModeToggle />
-        <AccountMenu />
+        {auth.user ? (
+          <UserDropdown />
+        ) : (
+          <Button variant='contained' sx={{ width: 'auto' }} onClick={() => router.push(ROUTE_CONFIG.LOGIN)}>
+            Sign In
+          </Button>
+        )}
       </Toolbar>
     </AppBar>
   )
