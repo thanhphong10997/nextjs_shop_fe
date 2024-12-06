@@ -1,3 +1,20 @@
 {
-  "Account": "Account"
+  "Account": "Account",
+  "my_profile": "My Profile",
+  "log_out": "Log out",
+  "Email": "Email",
+  "Role": "Role",
+  "Full_name": "Full Name",
+  "City": "City",
+  "Address": "Address",
+  "Phone_number": "Phone Number",
+  "enter_your_role" : "enter_your_role",
+  "enter_your_email": "enter_your_email",
+  "enter_your_city": "enter_your_city",
+  "enter_your_address": "enter_your_address",
+  "enter_your_phone": "enter_your_phone_number",
+  "enter_your_full_name": "enter_your_full_name",
+  "upload_avatar": "Upload Avatar",
+  "change_avatar": "Change Avatar",
+  "update": "Update"
 }
