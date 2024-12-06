@@ -131,6 +131,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <Grid container>
+        {/* Left side */}
         <Grid
           container
           item
