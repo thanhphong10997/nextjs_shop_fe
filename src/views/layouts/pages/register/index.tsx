@@ -35,10 +35,18 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 
 // Import React
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 // Import icons
 import IconifyIcon from 'src/components/Icon'
+import { useDispatch, useSelector } from 'react-redux'
+import { registerAuthAsync } from 'src/stores/apps/auth/actions'
+import { AppDispatch, RootState } from 'src/stores'
+import toast from 'react-hot-toast'
+import FallbackSpinner from 'src/components/fall-back'
+import { resetInitialState } from 'src/stores/apps/auth'
+import { useRouter } from 'next/router'
+import { ROUTE_CONFIG } from 'src/configs/route'
 
 type TProps = {}
 type Inputs = {
@@ -73,8 +81,16 @@ export const RegisterPage: NextPage<TProps> = () => {
   // theme
   const theme = useTheme()
 
+  const router = useRouter()
+
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+  // redux
+  const dispatch: AppDispatch = useDispatch()
+  const { isLoading, isError, isSuccess, message } = useSelector((state: RootState) => state.auth)
+
+  // react hook form
   const schema = yup
     .object()
     .shape({
@@ -104,207 +120,231 @@ export const RegisterPage: NextPage<TProps> = () => {
     resolver: yupResolver(schema)
   })
 
-  const onSubmit: SubmitHandler<Inputs> = data => console.log(data)
+  const onSubmit: SubmitHandler<Inputs> = data => {
+    const { email, password } = data
+    dispatch(registerAuthAsync({ email, password }))
+    console.log(data)
+  }
+
+  useEffect(() => {
+    if (message) {
+      if (isError) {
+        toast.error(message)
+      } else if (isSuccess) {
+        toast.success(message)
+        router.push(ROUTE_CONFIG.LOGIN)
+      }
+
+      // Reset the state
+      dispatch(resetInitialState())
+    }
+  }, [isError, isSuccess, message])
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        height: '100vh',
-        width: '100vw',
-        backgroundColor: theme.palette.background.paper,
-        padding: '40px'
-      }}
-    >
-      <Box
-        display={{
-          md: 'flex',
-          xs: 'none'
-        }}
-        sx={{
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: '20px',
-          backgroundColor: theme.palette.customColors.bodyBg,
-          height: '100%',
-          minWidth: '50vw'
-        }}
-      >
-        <Image
-          src={theme.palette.mode === 'light' ? RegisterLight : RegisterDark}
-          alt='Register image'
-          style={{
-            width: 'auto',
-            height: '100%'
-          }}
-        />
-      </Box>
+    <>
+      {isLoading && <FallbackSpinner />}
       <Box
         sx={{
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          flex: 1
+          height: '100vh',
+          width: '100vw',
+          backgroundColor: theme.palette.background.paper,
+          padding: '40px'
         }}
       >
-        <Typography component='h1' variant='h5'>
-          Sign in
-        </Typography>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Box sx={{ mt: 2 }}>
-            <Controller
-              name='email'
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => {
-                // Fixing error: Function components cannot be given refs
-                const { ref, ...rests } = field
-
-                return (
-                  <CustomTextField
-                    error={Boolean(errors.email)}
-                    placeholder='Enter email'
-                    variant='outlined'
-                    fullWidth
-                    autoFocus
-                    helperText={errors?.email?.message}
-                    {...rests}
-                  />
-                )
-              }}
-            />
-          </Box>
-
-          <Box sx={{ mt: 2 }}>
-            <Controller
-              name='password'
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => {
-                // Fixing error: Function components cannot be given refs
-                const { ref, ...rests } = field
-
-                return (
-                  <CustomTextField
-                    error={Boolean(errors.password)}
-                    variant='outlined'
-                    placeholder='Enter password'
-                    fullWidth
-                    autoFocus
-                    helperText={errors?.password?.message}
-                    type={showPassword ? 'text' : 'password'}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position='end'>
-                          <IconButton edge='end' onClick={() => setShowPassword(!showPassword)}>
-                            {!showPassword ? (
-                              <IconifyIcon icon='material-symbols-light:visibility-outline' />
-                            ) : (
-                              <IconifyIcon icon='material-symbols-light:visibility-off-rounded' />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      )
-                    }}
-                    {...rests}
-                  />
-                )
-              }}
-            />
-          </Box>
-
-          <Box sx={{ mt: 2 }}>
-            <Controller
-              name='confirmPassword'
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => {
-                // Fixing error: Function components cannot be given refs
-                const { ref, ...rests } = field
-
-                return (
-                  <CustomTextField
-                    error={Boolean(errors.confirmPassword)}
-                    placeholder='Enter confirm password'
-                    variant='outlined'
-                    fullWidth
-                    autoFocus
-                    helperText={errors?.confirmPassword?.message}
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position='end'>
-                          <IconButton edge='end' onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                            {!showConfirmPassword ? (
-                              <IconifyIcon icon='material-symbols-light:visibility-outline' />
-                            ) : (
-                              <IconifyIcon icon='material-symbols-light:visibility-off-rounded' />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      )
-                    }}
-                    {...rests}
-                  />
-                )
-              }}
-            />
-          </Box>
-          <Button type='submit' fullWidth variant='contained' color='primary'>
+        <Box
+          display={{
+            md: 'flex',
+            xs: 'none'
+          }}
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '20px',
+            backgroundColor: theme.palette.customColors.bodyBg,
+            height: '100%',
+            minWidth: '50vw'
+          }}
+        >
+          <Image
+            src={theme.palette.mode === 'light' ? RegisterLight : RegisterDark}
+            alt='Register image'
+            style={{
+              width: 'auto',
+              height: '100%'
+            }}
+          />
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: 1
+          }}
+        >
+          <Typography component='h1' variant='h5'>
             Register
-          </Button>
-          <Grid container>
-            <Grid item>
-              <Link
-                style={{
-                  color: `rgb(${theme.palette.mode === 'light' ? theme.palette.customColors.light : theme.palette.customColors.dark})`
+          </Typography>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <Box sx={{ mt: 2 }}>
+              <Controller
+                name='email'
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => {
+                  // Fixing error: Function components cannot be given refs
+
+                  return (
+                    <CustomTextField
+                      error={Boolean(errors.email)}
+                      placeholder='Enter email'
+                      variant='outlined'
+                      fullWidth
+                      autoFocus
+                      helperText={errors?.email?.message}
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                    />
+                  )
                 }}
-                href='/login'
-              >
-                {'Already have an account? Sign in'}
-              </Link>
+              />
+            </Box>
+
+            <Box sx={{ mt: 2 }}>
+              <Controller
+                name='password'
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => {
+                  // Fixing error: Function components cannot be given refs
+
+                  return (
+                    <CustomTextField
+                      error={Boolean(errors.password)}
+                      variant='outlined'
+                      placeholder='Enter password'
+                      fullWidth
+                      autoFocus
+                      helperText={errors?.password?.message}
+                      type={showPassword ? 'text' : 'password'}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position='end'>
+                            <IconButton edge='end' onClick={() => setShowPassword(!showPassword)}>
+                              {!showPassword ? (
+                                <IconifyIcon icon='material-symbols-light:visibility-outline' />
+                              ) : (
+                                <IconifyIcon icon='material-symbols-light:visibility-off-rounded' />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        )
+                      }}
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                    />
+                  )
+                }}
+              />
+            </Box>
+
+            <Box sx={{ mt: 2 }}>
+              <Controller
+                name='confirmPassword'
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => {
+                  // Fixing error: Function components cannot be given refs
+
+                  return (
+                    <CustomTextField
+                      error={Boolean(errors.confirmPassword)}
+                      placeholder='Enter confirm password'
+                      variant='outlined'
+                      fullWidth
+                      autoFocus
+                      helperText={errors?.confirmPassword?.message}
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position='end'>
+                            <IconButton edge='end' onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                              {!showConfirmPassword ? (
+                                <IconifyIcon icon='material-symbols-light:visibility-outline' />
+                              ) : (
+                                <IconifyIcon icon='material-symbols-light:visibility-off-rounded' />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        )
+                      }}
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                    />
+                  )
+                }}
+              />
+            </Box>
+            <Button type='submit' fullWidth variant='contained' color='primary'>
+              Register
+            </Button>
+            <Grid container>
+              <Grid item>
+                <Link
+                  style={{
+                    color: `rgb(${theme.palette.mode === 'light' ? theme.palette.customColors.light : theme.palette.customColors.dark})`
+                  }}
+                  href='/login'
+                >
+                  {'Already have an account? Sign in'}
+                </Link>
+              </Grid>
             </Grid>
-          </Grid>
-        </form>
-        <Typography sx={{ my: 2 }}>OR</Typography>
-        <Box>
-          <IconButton sx={{ color: theme.palette.error.main }}>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              role='img'
-              fontSize='1.375rem'
-              className='iconify iconify--mdi'
-              width='1em'
-              height='1em'
-              viewBox='0 0 24 24'
-            >
-              <path
-                fill='currentColor'
-                d='M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27c3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10c5.35 0 9.25-3.67 9.25-9.09c0-1.15-.15-1.81-.15-1.81Z'
-              ></path>
-            </svg>
-          </IconButton>
-          <IconButton sx={{ color: '#497ce2' }}>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              role='img'
-              fontSize='1.375rem'
-              className='iconify iconify--mdi'
-              width='1em'
-              height='1em'
-              viewBox='0 0 24 24'
-            >
-              <path
-                fill='currentColor'
-                d='M12 2.04c-5.5 0-10 4.49-10 10.02c0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89c1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02Z'
-              ></path>
-            </svg>
-          </IconButton>
+          </form>
+          <Typography sx={{ my: 2 }}>OR</Typography>
+          <Box>
+            <IconButton sx={{ color: theme.palette.error.main }}>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                role='img'
+                fontSize='1.375rem'
+                className='iconify iconify--mdi'
+                width='1em'
+                height='1em'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  fill='currentColor'
+                  d='M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27c3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10c5.35 0 9.25-3.67 9.25-9.09c0-1.15-.15-1.81-.15-1.81Z'
+                ></path>
+              </svg>
+            </IconButton>
+            <IconButton sx={{ color: '#497ce2' }}>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                role='img'
+                fontSize='1.375rem'
+                className='iconify iconify--mdi'
+                width='1em'
+                height='1em'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  fill='currentColor'
+                  d='M12 2.04c-5.5 0-10 4.49-10 10.02c0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89c1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02Z'
+                ></path>
+              </svg>
+            </IconButton>
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </>
   )
 }
 

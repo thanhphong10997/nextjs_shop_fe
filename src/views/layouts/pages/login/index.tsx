@@ -165,9 +165,8 @@ export const LoginPage: NextPage<TProps> = () => {
               name='email'
               control={control}
               rules={{ required: true }}
-              render={({ field }) => {
+              render={({ field: { onChange, onBlur, value } }) => {
                 // Fixing error: Function components cannot be given refs
-                const { ref, ...rests } = field
 
                 return (
                   <CustomTextField
@@ -177,7 +176,9 @@ export const LoginPage: NextPage<TProps> = () => {
                     fullWidth
                     autoFocus
                     helperText={errors?.email?.message}
-                    {...rests}
+                    value={value}
+                    onBlur={onBlur}
+                    onChange={onChange}
                   />
                 )
               }}
@@ -189,9 +190,8 @@ export const LoginPage: NextPage<TProps> = () => {
               name='password'
               control={control}
               rules={{ required: true }}
-              render={({ field }) => {
+              render={({ field: { onChange, onBlur, value } }) => {
                 // Fixing error: Function components cannot be given refs
-                const { ref, ...rests } = field
 
                 return (
                   <CustomTextField
@@ -215,7 +215,9 @@ export const LoginPage: NextPage<TProps> = () => {
                         </InputAdornment>
                       )
                     }}
-                    {...rests}
+                    value={value}
+                    onBlur={onBlur}
+                    onChange={onChange}
                   />
                 )
               }}
