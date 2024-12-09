@@ -101,9 +101,11 @@ const AuthProvider = ({ children }: Props) => {
   }
 
   const handleLogout = () => {
+    setLoading(true)
     logoutAuth().then(res => {
       setUser(null)
       clearLocalUserData()
+      setLoading(false)
       router.push('/login')
     })
   }
