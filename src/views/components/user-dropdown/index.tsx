@@ -171,10 +171,15 @@ export default function UserDropdown() {
         </Box>
         <Divider />
         <MenuItem onClick={handleNavigateMyProfile}>
-          <Avatar /> {t('my_profile')}
+          <Avatar>
+            <Icon icon='clarity:avatar-line' />
+          </Avatar>
+          {t('my_profile')}
         </MenuItem>
         <MenuItem onClick={logout}>
-          <ListItemIcon>{/* <Logout fontSize='small' /> */}</ListItemIcon>
+          <Avatar sx={{ backgroundColor: 'transparent' }}>
+            <Icon icon='ic:baseline-logout' />
+          </Avatar>
           {t('log_out')}
         </MenuItem>
       </Menu>
