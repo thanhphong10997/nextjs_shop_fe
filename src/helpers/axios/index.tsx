@@ -3,7 +3,14 @@ import axios from 'axios'
 
 // components
 import { BASE_URL, CONFIG_API } from 'src/configs/api'
-import { clearLocalUserData, getLocalUserData, setLocalUserData } from '../storage'
+import {
+  clearLocalUserData,
+  clearTemporaryToken,
+  getLocalUserData,
+  getTemporaryToken,
+  setLocalUserData,
+  setTemporaryToken
+} from '../storage'
 
 // jwt
 import { jwtDecode } from 'jwt-decode'
@@ -31,13 +38,20 @@ const AxiosInterceptor: FC<TAxiosInterceptor> = ({ children }) => {
     }
     setUser(null)
     clearLocalUserData()
+    clearTemporaryToken()
   }
   instanceAxios.interceptors.request.use(async config => {
     const { accessToken, refreshToken } = getLocalUserData()
-    if (accessToken) {
-      const decodedAccessToken: any = jwtDecode(accessToken)
+    const { temporaryToken } = getTemporaryToken()
+    if (accessToken || temporaryToken) {
+      let decodedAccessToken: any = {}
+      if (accessToken) {
+        decodedAccessToken = jwtDecode(accessToken)
+      } else if (temporaryToken) {
+        decodedAccessToken = jwtDecode(temporaryToken)
+      }
       if (decodedAccessToken?.exp > Date.now() / 1000) {
-        config.headers['Authorization'] = `Bearer ${accessToken}`
+        config.headers['Authorization'] = `Bearer ${accessToken ? accessToken : temporaryToken}`
       } else {
         if (refreshToken) {
           const decodedRefreshToken: any = jwtDecode(refreshToken)
@@ -56,7 +70,9 @@ const AxiosInterceptor: FC<TAxiosInterceptor> = ({ children }) => {
               .then(response => {
                 if (response?.data?.data?.access_token) {
                   const newAccessToken = response.data.data.access_token
-                  setLocalUserData(JSON.stringify(user), newAccessToken, refreshToken)
+                  if (accessToken) {
+                    setLocalUserData(JSON.stringify(user), newAccessToken, refreshToken)
+                  }
                   config.headers['Authorization'] = `Bearer ${newAccessToken}`
                 } else {
                   handleRedirectLogin(router, setUser)

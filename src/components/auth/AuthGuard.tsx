@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { ReactNode, ReactElement, useEffect } from 'react'
 import { CONFIG_API } from 'src/configs/api'
 import { ACCESS_TOKEN, USER_DATA } from 'src/configs/auth'
-import { clearLocalUserData } from 'src/helpers/storage'
+import { clearLocalUserData, clearTemporaryToken, getTemporaryToken } from 'src/helpers/storage'
 import { useAuth } from 'src/hooks/useAuth'
 
 interface AuthGuardProps {
@@ -16,15 +16,16 @@ const AuthGuard = (props: AuthGuardProps) => {
   const { children, fallback } = props
   const router = useRouter()
   const authContext = useAuth()
+  const { temporaryToken } = getTemporaryToken()
 
   useEffect(() => {
     // Handle if the first render of the page is not ready yet
     if (!router.isReady) return
-
     if (
       authContext.user === null &&
       !window.localStorage.getItem(USER_DATA) &&
-      !window.localStorage.getItem(ACCESS_TOKEN)
+      !window.localStorage.getItem(ACCESS_TOKEN) &&
+      !temporaryToken
     ) {
       if (router.asPath !== '/' && router.asPath !== '/login') {
         router.replace({ pathname: `/login`, query: { returnUrl: router.asPath } })
@@ -38,7 +39,20 @@ const AuthGuard = (props: AuthGuardProps) => {
     }
   }, [router.route])
 
-  if (authContext.loading || authContext.user === null) return fallback
+  useEffect(() => {
+    const handleUnload = () => {
+      clearTemporaryToken()
+    }
+    window.addEventListener('beforeunload', handleUnload)
+
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload)
+    }
+  }, [])
+
+  if (authContext.loading || authContext.user === null) {
+    return fallback
+  }
 
   return <>{children}</>
 }
