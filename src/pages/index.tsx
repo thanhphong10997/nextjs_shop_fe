@@ -1,9 +1,6 @@
 'use client'
 import Head from 'next/head'
-import Button from '@mui/material/Button'
-import CustomTextField from 'src/components/text-field'
-import { Box } from '@mui/material'
-import { ReactElement } from 'react'
+import { ReactNode } from 'react'
 import { LayoutNotApp } from 'src/views/layouts/LayoutNotApp'
 
 export default function Home() {
@@ -19,7 +16,7 @@ export default function Home() {
   )
 }
 
-Home.getLayout = (page: ReactElement) => <LayoutNotApp>{page}</LayoutNotApp>
+Home.getLayout = (page: ReactNode) => <LayoutNotApp>{page}</LayoutNotApp>
 
 Home.guestGuard = false
 Home.authGuard = false

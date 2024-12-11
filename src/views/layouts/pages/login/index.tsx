@@ -7,7 +7,6 @@ import Image from 'next/image'
 
 // Import components
 import { EMAIL_REG, PASSWORD_REG } from 'src/configs/regex'
-import CustomTextField from 'src/components/text-field'
 
 // Import Images
 import LoginLight from '/public/images/login-light.png'
@@ -21,8 +20,6 @@ import {
   FormControlLabel,
   Grid,
   TextField,
-  Container,
-  CssBaseline,
   Typography,
   InputAdornment,
   IconButton,
@@ -46,6 +43,8 @@ import IconifyIcon from 'src/components/Icon'
 // Hooks
 import { useAuth } from 'src/hooks/useAuth'
 import { error } from 'console'
+import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 type TProps = {}
 type Inputs = {
@@ -79,6 +78,9 @@ export const LoginPage: NextPage<TProps> = () => {
   // theme
   const theme = useTheme()
 
+  // translate
+  const { t } = useTranslation()
+
   // context
   const { login } = useAuth()
 
@@ -97,6 +99,7 @@ export const LoginPage: NextPage<TProps> = () => {
   const {
     control,
     handleSubmit,
+    setError,
     formState: { errors }
   } = useForm<Inputs>({
     defaultValues: {
@@ -109,7 +112,12 @@ export const LoginPage: NextPage<TProps> = () => {
 
   const onSubmit: SubmitHandler<Inputs> = data => {
     if (!Object.keys(errors)?.length) {
-      login({ ...data, rememberMe: isRemember })
+      login({ ...data, rememberMe: isRemember }, err => {
+        if (err?.response?.data?.typeError === 'INVALID') {
+          toast.error(t('the_email_or_password_is_wrong'))
+        }
+        setError('email', { type: 'invalid', message: 'The email or password is wrong' })
+      })
     }
   }
 
@@ -169,12 +177,12 @@ export const LoginPage: NextPage<TProps> = () => {
                 // Fixing error: Function components cannot be given refs
 
                 return (
-                  <CustomTextField
+                  <TextField
                     error={Boolean(errors.email)}
                     placeholder='Enter email'
                     variant='outlined'
-                    fullWidth
                     autoFocus
+                    fullWidth
                     helperText={errors?.email?.message}
                     value={value}
                     onBlur={onBlur}
@@ -194,12 +202,11 @@ export const LoginPage: NextPage<TProps> = () => {
                 // Fixing error: Function components cannot be given refs
 
                 return (
-                  <CustomTextField
+                  <TextField
                     error={Boolean(errors.password)}
                     placeholder='Enter password'
                     variant='outlined'
                     fullWidth
-                    autoFocus
                     helperText={errors?.password?.message}
                     type={showPassword ? 'text' : 'password'}
                     InputProps={{

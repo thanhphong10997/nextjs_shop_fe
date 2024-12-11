@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // React
-import { ReactElement } from 'react'
+import { ReactNode } from 'react'
 
 // views
 import { LayoutNotApp } from 'src/views/layouts/LayoutNotApp'
@@ -16,4 +16,4 @@ export const Profile: NextPage<TProps> = () => {
 
 export default Profile
 
-Profile.getLayout = (page: ReactElement) => <LayoutNotApp>{page}</LayoutNotApp>
+Profile.getLayout = (page: ReactNode) => <LayoutNotApp>{page}</LayoutNotApp>

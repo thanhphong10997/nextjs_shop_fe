@@ -76,6 +76,11 @@ export default function UserDropdown() {
     handleClose()
   }
 
+  const handleNavigateChangePassword = () => {
+    router.push(ROUTE_CONFIG.CHANGE_PASSWORD)
+    handleClose()
+  }
+
   const { user, logout } = useAuth()
 
   return (
@@ -175,6 +180,12 @@ export default function UserDropdown() {
             <Icon icon='clarity:avatar-line' />
           </Avatar>
           {t('my_profile')}
+        </MenuItem>
+        <MenuItem onClick={handleNavigateChangePassword}>
+          <Avatar sx={{ backgroundColor: 'transparent' }}>
+            <Icon icon='mdi:password-outline' />
+          </Avatar>
+          {t('change_password')}
         </MenuItem>
         <MenuItem onClick={logout}>
           <Avatar sx={{ backgroundColor: 'transparent' }}>
