@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // React
-import { ReactElement } from 'react'
+import { ReactNode } from 'react'
 
 // views
 import BlankLayout from 'src/views/layouts/BlankLayout'
@@ -16,5 +16,5 @@ export const Register: NextPage<TProps> = () => {
 
 export default Register
 
-Register.getLayout = (page: ReactElement) => <BlankLayout>{page}</BlankLayout>
+Register.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>
 Register.guestGuard = true

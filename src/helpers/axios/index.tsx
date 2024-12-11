@@ -19,7 +19,7 @@ type TAxiosInterceptor = {
 const AxiosInterceptor: FC<TAxiosInterceptor> = ({ children }) => {
   const router = useRouter()
   const { user, setUser } = useAuth()
-  const { accessToken, refreshToken } = getLocalUserData()
+
   const handleRedirectLogin = (router: NextRouter, setUser: (data: UserDataType | null) => void) => {
     if (router.asPath !== '/' && router.asPath !== '/login') {
       router.replace({
@@ -33,7 +33,7 @@ const AxiosInterceptor: FC<TAxiosInterceptor> = ({ children }) => {
     clearLocalUserData()
   }
   instanceAxios.interceptors.request.use(async config => {
-    console.log('accessToken', accessToken)
+    const { accessToken, refreshToken } = getLocalUserData()
     if (accessToken) {
       const decodedAccessToken: any = jwtDecode(accessToken)
       if (decodedAccessToken?.exp > Date.now() / 1000) {
@@ -63,20 +63,16 @@ const AxiosInterceptor: FC<TAxiosInterceptor> = ({ children }) => {
                 }
               })
               .catch(err => {
-                console.log('pass')
                 handleRedirectLogin(router, setUser)
               })
           } else {
-            console.log('pass1')
             handleRedirectLogin(router, setUser)
           }
         } else {
-          console.log('pass2')
           handleRedirectLogin(router, setUser)
         }
       }
     } else {
-      console.log('pass3')
       handleRedirectLogin(router, setUser)
     }
 

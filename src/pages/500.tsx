@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import { ReactNode } from 'react'
 import BlankLayout from 'src/views/layouts/BlankLayout'
 
 const Error500 = () => {
@@ -11,4 +11,4 @@ const Error500 = () => {
 }
 
 export default Error500
-Error500.getLayout = (page: ReactElement) => <BlankLayout>{page}</BlankLayout>
+Error500.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>

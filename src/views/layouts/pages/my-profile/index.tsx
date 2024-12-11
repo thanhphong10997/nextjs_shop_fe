@@ -5,11 +5,10 @@ import { NextPage } from 'next'
 
 // Import components
 import { EMAIL_REG, PASSWORD_REG } from 'src/configs/regex'
-import CustomTextField from 'src/components/text-field'
 import WrapperFileUpload from 'src/components/wrapper-file-upload'
 
 // Import Mui
-import { Box, Button, Grid, useTheme, Avatar, IconButton } from '@mui/material'
+import { Box, Button, Grid, useTheme, Avatar, IconButton, TextField } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
 // Import react hook form
@@ -41,7 +40,6 @@ import { AppDispatch, RootState } from 'src/stores'
 import toast from 'react-hot-toast'
 import { resetInitialState } from 'src/stores/apps/auth'
 import { updateAuthMeAsync } from 'src/stores/apps/auth/actions'
-import FallbackSpinner from 'src/components/fall-back'
 import Spinner from 'src/components/spinner'
 
 type TProps = {}
@@ -281,7 +279,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
                       // Fixing error: Function components cannot be given refs
 
                       return (
-                        <CustomTextField
+                        <TextField
                           disabled
                           required
                           label={t('Email')}
@@ -308,7 +306,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
                       // Fixing error: Function components cannot be given refs
 
                       return (
-                        <CustomTextField
+                        <TextField
                           disabled
                           required
                           label={t('Role')}
@@ -353,7 +351,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
                       // Fixing error: Function components cannot be given refs
 
                       return (
-                        <CustomTextField
+                        <TextField
                           label={t('Full_name')}
                           placeholder={t('enter_your_full_name')}
                           variant='filled'
@@ -375,7 +373,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
                       // Fixing error: Function components cannot be given refs
 
                       return (
-                        <CustomTextField
+                        <TextField
                           label={t('Address')}
                           placeholder={t('enter_your_address')}
                           variant='filled'
@@ -397,7 +395,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
                       // Fixing error: Function components cannot be given refs
 
                       return (
-                        <CustomTextField
+                        <TextField
                           label={t('City')}
                           placeholder={t('enter_your_city')}
                           variant='filled'
@@ -420,7 +418,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
                       // Fixing error: Function components cannot be given refs
 
                       return (
-                        <CustomTextField
+                        <TextField
                           required
                           label={t('Phone_number')}
                           error={Boolean(errors.phoneNumber)}

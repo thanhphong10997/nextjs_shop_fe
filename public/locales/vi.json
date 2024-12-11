@@ -16,5 +16,16 @@
   "enter_your_full_name": "Nhập họ tên",
   "upload_avatar": "Tải ảnh đại diện",
   "change_avatar": "Thay đổi ảnh đại diện",
-  "update": "Cập nhật"
+  "update": "Cập nhật",
+  "change_password": "Đổi mật khẩu",
+  "the_email_or_password_is_wrong": "Email hoặc password không đúng",
+  "login_success": "Đăng nhập thành công",
+  "Change_password": "Đổi mật khẩu",
+  "Current_password": "Mật khẩu hiện tại",
+  "enter_current_password": "Nhập mật khẩu hiện tại",
+  "New_password": "Mật khẩu mới",
+  "enter_new_password": "Nhập mật khẩu mới",
+  "Confirm_new_password": "Xác nhận mật khẩu mới",
+  "enter_confirm_new_password": "Nhập xác nhận lại mật khẩu mới",
+  "Change": "Thay đổi"
 }

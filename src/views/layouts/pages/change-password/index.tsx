@@ -29,19 +29,21 @@ import React, { useEffect, useState } from 'react'
 // Import icons
 import IconifyIcon from 'src/components/Icon'
 import { useDispatch, useSelector } from 'react-redux'
-import { registerAuthAsync } from 'src/stores/apps/auth/actions'
+import { ChangePasswordMeAsync, registerAuthAsync } from 'src/stores/apps/auth/actions'
 import { AppDispatch, RootState } from 'src/stores'
 import toast from 'react-hot-toast'
 import FallbackSpinner from 'src/components/fall-back'
 import { resetInitialState } from 'src/stores/apps/auth'
 import { useRouter } from 'next/router'
 import { ROUTE_CONFIG } from 'src/configs/route'
+import { useTranslation } from 'react-i18next'
+import { useAuth } from 'src/hooks/useAuth'
 
 type TProps = {}
 type Inputs = {
-  email: string
-  password: string
-  confirmPassword: string
+  currentPassword: string
+  newPassword: string
+  confirmNewPassword: string
 }
 
 const useStyles = makeStyles((theme: any) => {
@@ -66,33 +68,46 @@ const useStyles = makeStyles((theme: any) => {
   }
 })
 
-export const RegisterPage: NextPage<TProps> = () => {
+export const ChangePasswordPage: NextPage<TProps> = () => {
   // theme
   const theme = useTheme()
 
+  // router
   const router = useRouter()
 
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  // auth
+  const { logout } = useAuth()
+
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false)
 
   // redux
   const dispatch: AppDispatch = useDispatch()
-  const { isLoading, isError, isSuccess, message } = useSelector((state: RootState) => state.auth)
+  const { isLoading, isErrorChangePasswordMe, isSuccessChangePasswordMe, messageChangePasswordMe } = useSelector(
+    (state: RootState) => state.auth
+  )
+
+  // translate
+  const { t } = useTranslation()
 
   // react hook form
   const schema = yup
     .object()
     .shape({
-      email: yup.string().required('The field is required').matches(EMAIL_REG, 'Please enter a valid email address!'),
-      password: yup
+      currentPassword: yup
         .string()
         .required('The field is required')
         .matches(PASSWORD_REG, 'Password must be contains at least 8 characters and special characters'),
-      confirmPassword: yup
+      newPassword: yup
+        .string()
+        .required('The field is required')
+        .matches(PASSWORD_REG, 'Password must be contains at least 8 characters and special characters'),
+      confirmNewPassword: yup
         .string()
         .required('You must enter password again')
         .matches(PASSWORD_REG, 'Password must be contains at least 8 characters and special characters')
-        .oneOf([yup.ref('password'), ''], 'The confirm password must be same as password')
+        .oneOf([yup.ref('newPassword'), ''], 'The confirm password must be same as password')
     })
     .required()
   const {
@@ -101,33 +116,36 @@ export const RegisterPage: NextPage<TProps> = () => {
     formState: { errors }
   } = useForm<Inputs>({
     defaultValues: {
-      email: '',
-      password: '',
-      confirmPassword: ''
+      currentPassword: '',
+      newPassword: '',
+      confirmNewPassword: ''
     },
     mode: 'onBlur',
     resolver: yupResolver(schema)
   })
 
   const onSubmit: SubmitHandler<Inputs> = data => {
-    const { email, password } = data
-    dispatch(registerAuthAsync({ email, password }))
-    console.log(data)
+    const { currentPassword, newPassword } = data
+    if (!Object.keys(errors)?.length) {
+      dispatch(ChangePasswordMeAsync({ currentPassword, newPassword }))
+    }
   }
 
   useEffect(() => {
-    if (message) {
-      if (isError) {
-        toast.error(message)
-      } else if (isSuccess) {
-        toast.success(message)
-        router.push(ROUTE_CONFIG.LOGIN)
+    if (messageChangePasswordMe) {
+      if (isErrorChangePasswordMe) {
+        toast.error(messageChangePasswordMe)
+      } else if (isSuccessChangePasswordMe) {
+        toast.success(messageChangePasswordMe)
+        setTimeout(() => {
+          logout()
+        }, 500)
       }
 
       // Reset the state
       dispatch(resetInitialState())
     }
-  }, [isError, isSuccess, message])
+  }, [isErrorChangePasswordMe, isSuccessChangePasswordMe, messageChangePasswordMe])
 
   return (
     <>
@@ -136,9 +154,6 @@ export const RegisterPage: NextPage<TProps> = () => {
         sx={{
           display: 'flex',
           alignItems: 'center',
-          height: '100vh',
-          width: '100vw',
-          backgroundColor: theme.palette.background.paper,
           padding: '40px'
         }}
       >
@@ -160,8 +175,8 @@ export const RegisterPage: NextPage<TProps> = () => {
             src={theme.palette.mode === 'light' ? RegisterLight : RegisterDark}
             alt='Register image'
             style={{
-              width: 'auto',
-              height: '100%'
+              width: '600px',
+              height: 'auto'
             }}
           />
         </Box>
@@ -175,12 +190,12 @@ export const RegisterPage: NextPage<TProps> = () => {
           }}
         >
           <Typography component='h1' variant='h5'>
-            Register
+            {t('Change_password')}
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <Box sx={{ mt: 2 }}>
               <Controller
-                name='email'
+                name='currentPassword'
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { onChange, onBlur, value } }) => {
@@ -188,43 +203,19 @@ export const RegisterPage: NextPage<TProps> = () => {
 
                   return (
                     <TextField
-                      error={Boolean(errors.email)}
-                      placeholder='Enter email'
+                      error={Boolean(errors.currentPassword)}
                       variant='outlined'
+                      label={t('Current_password')}
+                      placeholder={t('enter_current_password')}
                       fullWidth
                       autoFocus
-                      helperText={errors?.email?.message}
-                      value={value}
-                      onBlur={onBlur}
-                      onChange={onChange}
-                    />
-                  )
-                }}
-              />
-            </Box>
-
-            <Box sx={{ mt: 2 }}>
-              <Controller
-                name='password'
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { onChange, onBlur, value } }) => {
-                  // Fixing error: Function components cannot be given refs
-
-                  return (
-                    <TextField
-                      error={Boolean(errors.password)}
-                      variant='outlined'
-                      placeholder='Enter password'
-                      fullWidth
-                      autoFocus
-                      helperText={errors?.password?.message}
-                      type={showPassword ? 'text' : 'password'}
+                      helperText={errors?.currentPassword?.message}
+                      type={showCurrentPassword ? 'text' : 'password'}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position='end'>
-                            <IconButton edge='end' onClick={() => setShowPassword(!showPassword)}>
-                              {!showPassword ? (
+                            <IconButton edge='end' onClick={() => setShowCurrentPassword(!showCurrentPassword)}>
+                              {!showCurrentPassword ? (
                                 <IconifyIcon icon='material-symbols-light:visibility-outline' />
                               ) : (
                                 <IconifyIcon icon='material-symbols-light:visibility-off-rounded' />
@@ -244,7 +235,7 @@ export const RegisterPage: NextPage<TProps> = () => {
 
             <Box sx={{ mt: 2 }}>
               <Controller
-                name='confirmPassword'
+                name='newPassword'
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { onChange, onBlur, value } }) => {
@@ -252,18 +243,59 @@ export const RegisterPage: NextPage<TProps> = () => {
 
                   return (
                     <TextField
-                      error={Boolean(errors.confirmPassword)}
-                      placeholder='Enter confirm password'
+                      error={Boolean(errors.currentPassword)}
+                      label={t('New_password')}
                       variant='outlined'
+                      placeholder={t('enter_new_password')}
                       fullWidth
                       autoFocus
-                      helperText={errors?.confirmPassword?.message}
-                      type={showConfirmPassword ? 'text' : 'password'}
+                      helperText={errors?.newPassword?.message}
+                      type={showNewPassword ? 'text' : 'password'}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position='end'>
-                            <IconButton edge='end' onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                              {!showConfirmPassword ? (
+                            <IconButton edge='end' onClick={() => setShowNewPassword(!showNewPassword)}>
+                              {!showNewPassword ? (
+                                <IconifyIcon icon='material-symbols-light:visibility-outline' />
+                              ) : (
+                                <IconifyIcon icon='material-symbols-light:visibility-off-rounded' />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        )
+                      }}
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                    />
+                  )
+                }}
+              />
+            </Box>
+
+            <Box sx={{ mt: 2 }}>
+              <Controller
+                name='confirmNewPassword'
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => {
+                  // Fixing error: Function components cannot be given refs
+
+                  return (
+                    <TextField
+                      error={Boolean(errors.confirmNewPassword)}
+                      label={t('Confirm_new_password')}
+                      placeholder={t('enter_confirm_new_password')}
+                      variant='outlined'
+                      fullWidth
+                      autoFocus
+                      helperText={errors?.confirmNewPassword?.message}
+                      type={showConfirmNewPassword ? 'text' : 'password'}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position='end'>
+                            <IconButton edge='end' onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}>
+                              {!showConfirmNewPassword ? (
                                 <IconifyIcon icon='material-symbols-light:visibility-outline' />
                               ) : (
                                 <IconifyIcon icon='material-symbols-light:visibility-off-rounded' />
@@ -281,7 +313,7 @@ export const RegisterPage: NextPage<TProps> = () => {
               />
             </Box>
             <Button type='submit' fullWidth variant='contained' color='primary'>
-              Register
+              {t('Change')}
             </Button>
             <Grid container>
               <Grid item>
@@ -337,4 +369,4 @@ export const RegisterPage: NextPage<TProps> = () => {
   )
 }
 
-export default RegisterPage
+export default ChangePasswordPage
