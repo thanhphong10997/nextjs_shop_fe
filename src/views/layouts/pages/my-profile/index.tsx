@@ -8,7 +8,7 @@ import { EMAIL_REG, PASSWORD_REG } from 'src/configs/regex'
 import WrapperFileUpload from 'src/components/wrapper-file-upload'
 
 // Import Mui
-import { Box, Button, Grid, useTheme, Avatar, IconButton, TextField } from '@mui/material'
+import { Box, Button, Grid, useTheme, Avatar, IconButton, TextField, FormHelperText } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
 // Import react hook form
@@ -41,6 +41,8 @@ import toast from 'react-hot-toast'
 import { resetInitialState } from 'src/stores/apps/auth'
 import { updateAuthMeAsync } from 'src/stores/apps/auth/actions'
 import Spinner from 'src/components/spinner'
+import CustomSelect from 'src/components/custom-select'
+import { InputLabel } from '@mui/material'
 
 type TProps = {}
 
@@ -270,60 +272,80 @@ export const MyProfilePage: NextPage<TProps> = () => {
                     </WrapperFileUpload>
                   </Box>
                 </Grid>
-                <Grid item md={6} xs={12}>
-                  <Controller
-                    name='email'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field: { onChange, onBlur, value } }) => {
-                      // Fixing error: Function components cannot be given refs
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    py: 2,
+                    px: 4,
+                    gap: 4
+                  }}
+                >
+                  <Grid item md={6} xs={12}>
+                    <Controller
+                      name='email'
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { onChange, onBlur, value } }) => {
+                        // Fixing error: Function components cannot be given refs
 
-                      return (
-                        <TextField
-                          disabled
-                          required
-                          label={t('Email')}
-                          error={Boolean(errors.email)}
-                          placeholder={t('enter_your_email')}
-                          variant='filled'
-                          fullWidth
-                          autoFocus
-                          helperText={errors?.email?.message}
-                          value={value}
-                          onBlur={onBlur}
-                          onChange={onChange}
-                        />
-                      )
-                    }}
-                  />
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  <Controller
-                    name='role'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field: { onChange, onBlur, value } }) => {
-                      // Fixing error: Function components cannot be given refs
+                        return (
+                          <TextField
+                            disabled
+                            required
+                            label={t('Email')}
+                            error={Boolean(errors.email)}
+                            placeholder={t('enter_your_email')}
+                            variant='filled'
+                            fullWidth
+                            autoFocus
+                            helperText={errors?.email?.message}
+                            value={value}
+                            onBlur={onBlur}
+                            onChange={onChange}
+                          />
+                        )
+                      }}
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <Controller
+                      name='role'
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { onChange, onBlur, value } }) => {
+                        // Fixing error: Function components cannot be given refs
 
-                      return (
-                        <TextField
-                          disabled
-                          required
-                          label={t('Role')}
-                          error={Boolean(errors.role)}
-                          placeholder={t('enter_your_role')}
-                          variant='filled'
-                          fullWidth
-                          autoFocus
-                          helperText={errors?.role?.message}
-                          value={value}
-                          onBlur={onBlur}
-                          onChange={onChange}
-                        />
-                      )
-                    }}
-                  />
-                </Grid>
+                        return (
+                          <>
+                            <CustomSelect
+                              label={t('Role')}
+                              value={value}
+                              onChange={onChange}
+                              onBlur={onBlur}
+                              options={[]}
+                              error={Boolean(errors?.role)}
+                              placeholder={t('enter_your_role')}
+                              fullWidth
+                            />
+                            {errors?.role?.message && (
+                              <FormHelperText
+                                sx={{
+                                  color: theme.palette.error.main,
+                                  position: 'absolute'
+                                }}
+                              >
+                                {errors.role.message}
+                              </FormHelperText>
+                            )}
+                          </>
+                        )
+                      }}
+                    />
+                  </Grid>
+                </Box>
               </Grid>
             </Box>
           </Grid>
@@ -395,16 +417,28 @@ export const MyProfilePage: NextPage<TProps> = () => {
                       // Fixing error: Function components cannot be given refs
 
                       return (
-                        <TextField
-                          label={t('City')}
-                          placeholder={t('enter_your_city')}
-                          variant='filled'
-                          fullWidth
-                          autoFocus
-                          value={value}
-                          onBlur={onBlur}
-                          onChange={onChange}
-                        />
+                        <>
+                          <CustomSelect
+                            label={t('City')}
+                            value={value}
+                            onChange={onChange}
+                            onBlur={onBlur}
+                            options={[]}
+                            error={Boolean(errors?.city)}
+                            placeholder={t('enter_your_city')}
+                            fullWidth
+                          />
+                          {errors?.city?.message && (
+                            <FormHelperText
+                              sx={{
+                                color: theme.palette.error.main,
+                                position: 'absolute'
+                              }}
+                            >
+                              {errors.city.message}
+                            </FormHelperText>
+                          )}
+                        </>
                       )
                     }}
                   />
