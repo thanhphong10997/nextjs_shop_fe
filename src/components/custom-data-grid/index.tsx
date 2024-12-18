@@ -5,9 +5,11 @@ import { styled } from '@mui/material'
 
 const StyledCustomGrid = styled(DataGrid)<DataGridProps>(({ theme }) => {
   return {
-    '& .MuiDataGrid-main': {
-      border: `1px solid ${theme.palette.customColors.borderColor}`,
-      borderRadius: '8px'
+    '&': {
+      border: `1px solid ${theme.palette.customColors.borderColor}`
+    },
+    '.MuiDataGrid-selectedRowCount': {
+      display: 'none'
     }
   }
 })

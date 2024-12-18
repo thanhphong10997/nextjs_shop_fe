@@ -81,6 +81,11 @@ export default function UserDropdown() {
     handleClose()
   }
 
+  const handleManageSystem = () => {
+    router.push(ROUTE_CONFIG.DASHBOARD)
+    handleClose()
+  }
+
   const { user, logout } = useAuth()
 
   return (
@@ -175,6 +180,12 @@ export default function UserDropdown() {
           </Box>
         </Box>
         <Divider />
+        <MenuItem onClick={handleManageSystem}>
+          <Avatar>
+            <Icon icon='carbon:manage-protection' />
+          </Avatar>
+          {t('manage_system')}
+        </MenuItem>
         <MenuItem onClick={handleNavigateMyProfile}>
           <Avatar>
             <Icon icon='clarity:avatar-line' />

@@ -29,13 +29,14 @@ import React, { useEffect, useState } from 'react'
 // Import icons
 import IconifyIcon from 'src/components/Icon'
 import { useDispatch, useSelector } from 'react-redux'
-import { registerAuthAsync } from 'src/stores/apps/auth/actions'
+import { registerAuthAsync } from 'src/stores/auth/actions'
 import { AppDispatch, RootState } from 'src/stores'
 import toast from 'react-hot-toast'
 import FallbackSpinner from 'src/components/fall-back'
-import { resetInitialState } from 'src/stores/apps/auth'
+import { resetInitialState } from 'src/stores/auth'
 import { useRouter } from 'next/router'
 import { ROUTE_CONFIG } from 'src/configs/route'
+import { useTranslation } from 'react-i18next'
 
 type TProps = {}
 type Inputs = {
@@ -70,7 +71,11 @@ export const RegisterPage: NextPage<TProps> = () => {
   // theme
   const theme = useTheme()
 
+  // router
   const router = useRouter()
+
+  // translate
+  const { t } = useTranslation()
 
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -83,10 +88,10 @@ export const RegisterPage: NextPage<TProps> = () => {
   const schema = yup
     .object()
     .shape({
-      email: yup.string().required('The field is required').matches(EMAIL_REG, 'Please enter a valid email address!'),
+      email: yup.string().required(t('required_field')).matches(EMAIL_REG, 'Please enter a valid email address!'),
       password: yup
         .string()
-        .required('The field is required')
+        .required(t('required_field'))
         .matches(PASSWORD_REG, 'Password must be contains at least 8 characters and special characters'),
       confirmPassword: yup
         .string()

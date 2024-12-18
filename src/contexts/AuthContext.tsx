@@ -13,7 +13,7 @@ import authConfig from 'src/configs/auth'
 // ** Types
 import { AuthValuesType, LoginParams, ErrCallbackType, UserDataType } from './types'
 import { loginAuth, logoutAuth } from 'src/services/auth'
-import { CONFIG_API } from 'src/configs/api'
+import { API_ENDPOINT } from 'src/configs/api'
 import { clearLocalUserData, setLocalUserData, setTemporaryToken } from 'src/helpers/storage'
 import instanceAxios from 'src/helpers/axios'
 import toast from 'react-hot-toast'
@@ -54,7 +54,7 @@ const AuthProvider = ({ children }: Props) => {
         await instanceAxios
 
           // .get(authConfig.meEndpoint, {
-          .get(CONFIG_API.AUTH.AUTH_ME)
+          .get(API_ENDPOINT.AUTH.AUTH_ME)
           .then(async response => {
             setLoading(false)
             setUser({ ...response.data.data })

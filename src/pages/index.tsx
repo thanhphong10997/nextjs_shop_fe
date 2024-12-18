@@ -1,4 +1,3 @@
-'use client'
 import Head from 'next/head'
 import { ReactNode } from 'react'
 import { LayoutNotApp } from 'src/views/layouts/LayoutNotApp'

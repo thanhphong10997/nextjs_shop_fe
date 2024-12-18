@@ -16,7 +16,7 @@
   "enter_your_full_name": "enter_your_full_name",
   "upload_avatar": "Upload Avatar",
   "change_avatar": "Change Avatar",
-  "update": "Update",
+  "Update": "Update",
   "change_password": "Change Password",
   "the_email_or_password_is_wrong": "The email or password is wrong",
   "login_success": "Login Success",
@@ -27,5 +27,16 @@
   "enter_new_password": "Enter new password",
   "Confirm_new_password": "Confirm new password",
   "enter_confirm_new_password": "Enter confirm new password",
-  "Change": "Change"
+  "Change": "Change",
+  "manage_system": "Manage system",
+  "is_showing": "Showing",
+  "Name": "Name",
+  "Actions": "Actions",
+  "Create": "Create",
+  "Edit": "Edit",
+  "Delete": "Delete",
+  "required_field": "The field is required",
+  "edit_Role": "Edit Role",
+  "create_role": "Create Role",
+  "create_role_success": "Create Role Success"
 }

@@ -1,11 +1,10 @@
 // Next
 import { NextPage } from 'next'
-import RoleListPage from 'src/views/layouts/pages/system/role/RoleList'
 
 type TProps = {}
 
 export const Index: NextPage<TProps> = () => {
-  return <RoleListPage />
+  return <h1>This is dashboard</h1>
 }
 
 export default Index
