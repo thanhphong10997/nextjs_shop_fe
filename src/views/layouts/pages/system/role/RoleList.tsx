@@ -32,6 +32,7 @@ import Spinner from 'src/components/spinner'
 
 // react toast
 import toast from 'react-hot-toast'
+import ConfirmationDialog from 'src/components/confirmation-dialog'
 
 type TProps = {}
 
@@ -43,6 +44,10 @@ export const RoleListPage: NextPage<TProps> = () => {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTION[0])
   const [openCreateEdit, setOpenCreateEdit] = useState({
+    open: false,
+    id: ''
+  })
+  const [openConfirmationDeleteRole, setOpenConfirmationDeleteRole] = useState({
     open: false,
     id: ''
   })
@@ -78,19 +83,35 @@ export const RoleListPage: NextPage<TProps> = () => {
       headerName: t('Actions'),
       width: 150,
       sortable: false,
-      renderCell: row => {
+      renderCell: params => {
+        const { row } = params
+
         return (
-          <Box>
-            <GridEdit
-              onClick={() => {
-                setOpenCreateEdit({
-                  open: true,
-                  id: String(row.id)
-                })
-              }}
-            />
-            <GridDelete onClick={() => dispatch(deleteRoleAsync(String(row.id)))} />
-          </Box>
+          <>
+            {!row?.permissions?.some((per: string) => {
+              return ['ADMIN.GRANTED', 'BASIC.PUBLIC']?.includes(per)
+            }) && (
+              <Box>
+                <GridEdit
+                  onClick={() => {
+                    setOpenCreateEdit({
+                      open: true,
+                      id: String(params.id)
+                    })
+                  }}
+                />
+                <GridDelete
+                  onClick={() => {
+                    console.log('click')
+                    setOpenConfirmationDeleteRole({
+                      open: true,
+                      id: String(params.id)
+                    })
+                  }}
+                />
+              </Box>
+            )}
+          </>
         )
       }
     }
@@ -115,6 +136,17 @@ export const RoleListPage: NextPage<TProps> = () => {
 
   // Handler
   const handleOnChangePagination = () => {}
+
+  const handleCloseConfirmDeleteRole = () => {
+    setOpenConfirmationDeleteRole({
+      open: false,
+      id: ''
+    })
+  }
+
+  const handleDeleteRole = () => {
+    dispatch(deleteRoleAsync(openConfirmationDeleteRole.id))
+  }
 
   const handleCloseCreateEdit = () => {
     setOpenCreateEdit({
@@ -153,6 +185,7 @@ export const RoleListPage: NextPage<TProps> = () => {
       toast.success(t('delete_role_success'))
       handleGetListRoles()
       dispatch(resetInitialState())
+      handleCloseConfirmDeleteRole()
     } else if (isErrorDelete && messageErrorDelete) {
       toast.error(t(messageErrorDelete))
       dispatch(resetInitialState())
@@ -161,6 +194,14 @@ export const RoleListPage: NextPage<TProps> = () => {
 
   return (
     <>
+      <ConfirmationDialog
+        title={t('title_delete_role')}
+        description={t('confirm_delete_role')}
+        open={openConfirmationDeleteRole.open}
+        handleClose={handleCloseConfirmDeleteRole}
+        handleCancel={handleCloseConfirmDeleteRole}
+        handleConfirm={handleDeleteRole}
+      />
       <CreateEditRole open={openCreateEdit.open} onClose={handleCloseCreateEdit} roleId={openCreateEdit.id} />
       {isLoading && <Spinner />}
       <Box

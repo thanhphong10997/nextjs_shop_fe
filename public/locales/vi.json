@@ -38,6 +38,9 @@
   "required_field": "Vui lòng nhập trường này",
   "edit_Role": "Chỉnh sửa vai trò",
   "create_role": "Tạo vai trò",
-  "create_role_success": "Tạo vai trò thành công"
-
+  "create_role_success": "Tạo vai trò thành công",
+  "title_delete_role": "Xác nhận xóa vai trò",
+  "confirm_delete_role": "Bạn có chắc muốn xóa vai trò này?",
+  "confirm": "Xác nhận",
+  "cancel": "Hủy bỏ"
 }
