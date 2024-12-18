@@ -2,7 +2,7 @@
 // ** React Imports
 import { useRouter } from 'next/router'
 import { ReactNode, ReactElement, useEffect } from 'react'
-import { CONFIG_API } from 'src/configs/api'
+import { API_ENDPOINT } from 'src/configs/api'
 import { ACCESS_TOKEN, USER_DATA } from 'src/configs/auth'
 import { clearLocalUserData, clearTemporaryToken, getTemporaryToken } from 'src/helpers/storage'
 import { useAuth } from 'src/hooks/useAuth'

@@ -29,11 +29,11 @@ import React, { useEffect, useState } from 'react'
 // Import icons
 import IconifyIcon from 'src/components/Icon'
 import { useDispatch, useSelector } from 'react-redux'
-import { ChangePasswordMeAsync, registerAuthAsync } from 'src/stores/apps/auth/actions'
+import { ChangePasswordMeAsync, registerAuthAsync } from 'src/stores/auth/actions'
 import { AppDispatch, RootState } from 'src/stores'
 import toast from 'react-hot-toast'
 import FallbackSpinner from 'src/components/fall-back'
-import { resetInitialState } from 'src/stores/apps/auth'
+import { resetInitialState } from 'src/stores/auth'
 import { useRouter } from 'next/router'
 import { ROUTE_CONFIG } from 'src/configs/route'
 import { useTranslation } from 'react-i18next'
@@ -97,11 +97,11 @@ export const ChangePasswordPage: NextPage<TProps> = () => {
     .shape({
       currentPassword: yup
         .string()
-        .required('The field is required')
+        .required(t('required_field'))
         .matches(PASSWORD_REG, 'Password must be contains at least 8 characters and special characters'),
       newPassword: yup
         .string()
-        .required('The field is required')
+        .required(t('required_field'))
         .matches(PASSWORD_REG, 'Password must be contains at least 8 characters and special characters'),
       confirmNewPassword: yup
         .string()

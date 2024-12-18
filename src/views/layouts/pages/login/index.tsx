@@ -89,10 +89,10 @@ export const LoginPage: NextPage<TProps> = () => {
   const schema = yup
     .object()
     .shape({
-      email: yup.string().required('The field is required').matches(EMAIL_REG, 'Please enter a valid email address!'),
+      email: yup.string().required(t('required_field')).matches(EMAIL_REG, 'Please enter a valid email address!'),
       password: yup
         .string()
-        .required('The field is required')
+        .required(t('required_field'))
         .matches(PASSWORD_REG, 'Password must be contains at least 8 characters and special characters')
     })
     .required()

@@ -38,8 +38,8 @@ import { convertFileToBase64, convertFullName, toFullName } from 'src/utils'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import toast from 'react-hot-toast'
-import { resetInitialState } from 'src/stores/apps/auth'
-import { updateAuthMeAsync } from 'src/stores/apps/auth/actions'
+import { resetInitialState } from 'src/stores/auth'
+import { updateAuthMeAsync } from 'src/stores/auth/actions'
 import Spinner from 'src/components/spinner'
 import CustomSelect from 'src/components/custom-select'
 import { InputLabel } from '@mui/material'
@@ -109,10 +109,10 @@ export const MyProfilePage: NextPage<TProps> = () => {
   }
 
   const schema = yup.object().shape({
-    email: yup.string().required('The field is required').matches(EMAIL_REG, 'Please enter a valid email address!'),
+    email: yup.string().required(t('required_field')).matches(EMAIL_REG, 'Please enter a valid email address!'),
     fullName: yup.string().notRequired(),
-    role: yup.string().required('The field is required'),
-    phoneNumber: yup.string().required('The field is required').min(8, 'The min numbers must from 8'),
+    role: yup.string().required(t('required_field')),
+    phoneNumber: yup.string().required(t('required_field')).min(8, 'The min numbers must from 8'),
     city: yup.string().notRequired(),
     address: yup.string().notRequired()
   })
@@ -201,218 +201,6 @@ export const MyProfilePage: NextPage<TProps> = () => {
 
   return (
     <>
-      <CustomModal open={true} handleClose={() => {}}>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate style={{ backgroundColor: '#fff', width: '50vw' }}>
-          <Grid container>
-            {/* Left side */}
-            <Grid
-              container
-              item
-              md={6}
-              xs={12}
-              sx={{ backgroundColor: theme.palette.background.paper, borderRadius: '15px', py: '20px', px: 4 }}
-            >
-              <Grid item md={12} xs={12}>
-                <Box
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 2
-                  }}
-                >
-                  <Box
-                    sx={{
-                      position: 'relative'
-                    }}
-                  >
-                    {avatar ? (
-                      <>
-                        <IconButton
-                          sx={{
-                            position: 'absolute',
-                            bottom: -12,
-                            right: -12,
-                            zIndex: 2
-                          }}
-                          onClick={() => setAvatar('')}
-                        >
-                          <Icon icon='fluent:delete-32-regular' />
-                        </IconButton>
-                        <Avatar src={avatar} sx={{ width: 100, height: 100 }} />
-                      </>
-                    ) : (
-                      <>
-                        <Avatar sx={{ width: 100, height: 100 }}>
-                          <Icon icon='ph:user-thin' fontSize={50} />
-                        </Avatar>
-                      </>
-                    )}
-                  </Box>
-
-                  <WrapperFileUpload
-                    uploadFunc={handleUploadAvatar}
-                    acceptObjectFile={{
-                      'image/jpeg': ['.jpeg', '.jpg'],
-                      'image/png': ['.png']
-                    }}
-                  >
-                    <Button
-                      variant='outlined'
-                      color='primary'
-                      sx={{ margin: '12px 0', display: 'flex', alignItems: 'center', gap: 1 }}
-                    >
-                      <Icon icon='mdi-light:camera' />
-                      {avatar ? t('change_avatar') : t('upload_avatar')}
-                    </Button>
-                  </WrapperFileUpload>
-                </Box>
-              </Grid>
-            </Grid>
-
-            {/* Right side */}
-            <Grid container item md={12} xs={12}>
-              <Box
-                sx={{
-                  height: '100%',
-                  width: '100%',
-                  backgroundColor: theme.palette.background.paper,
-                  borderRadius: '15px',
-                  py: '20px',
-                  px: 4
-                }}
-                marginLeft={{ md: 5, xs: 0 }}
-                marginTop={{ md: 0, xs: 5 }}
-              >
-                <Grid container spacing={4}>
-                  <Grid item md={6} xs={12}>
-                    <Controller
-                      name='fullName'
-                      control={control}
-                      render={({ field: { onChange, onBlur, value } }) => {
-                        // Fixing error: Function components cannot be given refs
-
-                        return (
-                          <TextField
-                            label={t('Full_name')}
-                            placeholder={t('enter_your_full_name')}
-                            variant='filled'
-                            fullWidth
-                            autoFocus
-                            value={value}
-                            onBlur={onBlur}
-                            onChange={onChange}
-                          />
-                        )
-                      }}
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <Controller
-                      name='address'
-                      control={control}
-                      render={({ field: { onChange, onBlur, value } }) => {
-                        // Fixing error: Function components cannot be given refs
-
-                        return (
-                          <TextField
-                            label={t('Address')}
-                            placeholder={t('enter_your_address')}
-                            variant='filled'
-                            fullWidth
-                            autoFocus
-                            value={value}
-                            onBlur={onBlur}
-                            onChange={onChange}
-                          />
-                        )
-                      }}
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <Controller
-                      name='city'
-                      control={control}
-                      render={({ field: { onChange, onBlur, value } }) => {
-                        // Fixing error: Function components cannot be given refs
-
-                        return (
-                          <>
-                            <CustomSelect
-                              label={t('City')}
-                              value={value}
-                              onChange={onChange}
-                              onBlur={onBlur}
-                              options={[]}
-                              error={Boolean(errors?.city)}
-                              placeholder={t('enter_your_city')}
-                              fullWidth
-                            />
-                            {errors?.city?.message && (
-                              <FormHelperText
-                                sx={{
-                                  color: theme.palette.error.main,
-                                  position: 'absolute'
-                                }}
-                              >
-                                {errors.city.message}
-                              </FormHelperText>
-                            )}
-                          </>
-                        )
-                      }}
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <Controller
-                      name='phoneNumber'
-                      rules={{ required: true }}
-                      control={control}
-                      render={({ field: { onChange, onBlur, value } }) => {
-                        // Fixing error: Function components cannot be given refs
-
-                        return (
-                          <TextField
-                            required
-                            label={t('Phone_number')}
-                            error={Boolean(errors.phoneNumber)}
-                            placeholder={t('enter_your_phone')}
-                            variant='filled'
-                            value={value}
-                            fullWidth
-                            autoFocus
-                            helperText={errors?.phoneNumber?.message}
-                            inputProps={{
-                              inputMode: 'numeric',
-                              pattern: '[0-9]*',
-                              minLength: 8
-                            }}
-                            onBlur={onBlur}
-                            onChange={e => {
-                              // replace all of characters into empty string, only accept numbers
-                              const numberValue = e.target.value.replace(/\D/g, '')
-                              onChange(numberValue)
-                            }}
-                          />
-                        )
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-              </Box>
-            </Grid>
-          </Grid>
-
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', height: '100%' }}>
-            <Button type='submit' variant='contained' color='primary' sx={{ margin: '12px 0' }}>
-              {t('update')}
-            </Button>
-          </Box>
-        </form>
-      </CustomModal>
       {isLoading || (loading && <Spinner />)}
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Grid container>
@@ -698,7 +486,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', height: '100%' }}>
           <Button type='submit' variant='contained' color='primary' sx={{ margin: '12px 0' }}>
-            {t('update')}
+            {t('Update')}
           </Button>
         </Box>
       </form>

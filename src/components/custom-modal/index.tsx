@@ -1,23 +1,21 @@
 // Mui
 import { Box, Modal, ModalProps, styled, Typography } from '@mui/material'
 
-type TCustomModal = ModalProps & {
-  handleClose: () => void
-}
+type TCustomModal = ModalProps & {}
 
 const StyledModal = styled(Modal)<ModalProps>(({ theme }) => {
   return {
-    zIndex: 1300
+    zIndex: 1200
   }
 })
 
 const CustomModal = (props: TCustomModal) => {
-  const { handleClose, open, children } = props
+  const { onClose, open, children } = props
 
   return (
     <StyledModal
       open={open}
-      onClose={handleClose}
+      onClose={onClose}
       aria-labelledby='modal-modal-title'
       aria-describedby='modal-modal-description'
     >

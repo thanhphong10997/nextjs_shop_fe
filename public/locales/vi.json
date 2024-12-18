@@ -27,5 +27,17 @@
   "enter_new_password": "Nhập mật khẩu mới",
   "Confirm_new_password": "Xác nhận mật khẩu mới",
   "enter_confirm_new_password": "Nhập xác nhận lại mật khẩu mới",
-  "Change": "Thay đổi"
+  "Change": "Thay đổi",
+  "manage_system": "Quản trị hệ thống",
+  "is_showing": "Hiển thị",
+    "Name": "Tên",
+  "Actions": "Thao tác",
+  "Create": "Tạo",
+  "Edit": "Sửa",
+  "Delete": "Xóa",
+  "required_field": "Vui lòng nhập trường này",
+  "edit_Role": "Chỉnh sửa vai trò",
+  "create_role": "Tạo vai trò",
+  "create_role_success": "Tạo vai trò thành công"
+
 }

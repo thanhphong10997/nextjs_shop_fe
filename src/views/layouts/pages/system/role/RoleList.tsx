@@ -1,0 +1,217 @@
+// Import Next
+import { NextPage } from 'next'
+
+// Import Mui
+import { Box, Grid, useTheme } from '@mui/material'
+import { DataGrid, GridColDef, GridSortModel, GridValueGetterParams } from '@mui/x-data-grid'
+
+// Import React
+import React, { useEffect, useState } from 'react'
+
+// Import redux
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from 'src/stores'
+import { deleteRoleAsync, getAllRolesAsync } from 'src/stores/role/actions'
+import { resetInitialState } from 'src/stores/role'
+
+// translate
+import { useTranslation } from 'react-i18next'
+
+// config
+import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
+
+// Components
+import GridEdit from 'src/components/grid-edit'
+import GridDelete from 'src/components/grid-delete'
+import CustomPagination from 'src/components/custom-pagination'
+import CustomDataGrid from 'src/components/custom-data-grid'
+import GridCreate from 'src/components/grid-create'
+import InputSearch from 'src/components/input-search'
+import CreateEditRole from './component/CreateEditRole'
+import Spinner from 'src/components/spinner'
+
+// react toast
+import toast from 'react-hot-toast'
+
+type TProps = {}
+
+export const RoleListPage: NextPage<TProps> = () => {
+  // theme
+  const theme = useTheme()
+
+  // state
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTION[0])
+  const [openCreateEdit, setOpenCreateEdit] = useState({
+    open: false,
+    id: ''
+  })
+  const [sortBy, setSortBy] = useState('')
+  const [searchBy, setSearchBy] = useState('')
+
+  // redux
+  const {
+    roles,
+    isSuccessCreateEdit,
+    isErrorCreateEdit,
+    messageErrorCreateEdit,
+    isLoading,
+    isSuccessDelete,
+    isErrorDelete,
+    messageErrorDelete
+  } = useSelector((state: RootState) => state.role)
+
+  // redux
+  const dispatch: AppDispatch = useDispatch()
+
+  // translate
+  const { t } = useTranslation()
+
+  const columns: GridColDef[] = [
+    {
+      field: 'name',
+      headerName: t('Name'),
+      flex: 1
+    },
+    {
+      field: 'action',
+      headerName: t('Actions'),
+      width: 150,
+      sortable: false,
+      renderCell: row => {
+        return (
+          <Box>
+            <GridEdit
+              onClick={() => {
+                setOpenCreateEdit({
+                  open: true,
+                  id: String(row.id)
+                })
+              }}
+            />
+            <GridDelete onClick={() => dispatch(deleteRoleAsync(String(row.id)))} />
+          </Box>
+        )
+      }
+    }
+  ]
+
+  const PaginationComponent = () => {
+    return (
+      <CustomPagination
+        pageSize={pageSize}
+        page={page}
+        rowLength={roles.total}
+        pageSizeOptions={PAGE_SIZE_OPTION}
+        onChangePagination={handleOnChangePagination}
+      />
+    )
+  }
+
+  // fetch API
+  const handleGetListRoles = () => {
+    dispatch(getAllRolesAsync({ params: { limit: -1, page: -1, search: searchBy, order: sortBy } }))
+  }
+
+  // Handler
+  const handleOnChangePagination = () => {}
+
+  const handleCloseCreateEdit = () => {
+    setOpenCreateEdit({
+      open: false,
+      id: ''
+    })
+  }
+
+  const handleSort = (sort: GridSortModel) => {
+    const sortOption = sort[0]
+    setSortBy(`${sortOption.field} ${sortOption.sort}`)
+  }
+
+  useEffect(() => {
+    handleGetListRoles()
+  }, [sortBy, searchBy])
+
+  useEffect(() => {
+    if (isSuccessCreateEdit) {
+      if (openCreateEdit.id) {
+        toast.success(t('update_role_success'))
+      } else {
+        toast.success(t('create_role_success'))
+      }
+      handleGetListRoles()
+      handleCloseCreateEdit()
+      dispatch(resetInitialState())
+    } else if (isErrorCreateEdit && messageErrorCreateEdit) {
+      toast.error(t(messageErrorCreateEdit))
+      dispatch(resetInitialState())
+    }
+  }, [isSuccessCreateEdit, isErrorCreateEdit, messageErrorCreateEdit])
+
+  useEffect(() => {
+    if (isSuccessDelete) {
+      toast.success(t('delete_role_success'))
+      handleGetListRoles()
+      dispatch(resetInitialState())
+    } else if (isErrorDelete && messageErrorDelete) {
+      toast.error(t(messageErrorDelete))
+      dispatch(resetInitialState())
+    }
+  }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
+
+  return (
+    <>
+      <CreateEditRole open={openCreateEdit.open} onClose={handleCloseCreateEdit} roleId={openCreateEdit.id} />
+      {isLoading && <Spinner />}
+      <Box
+        sx={{
+          backgroundColor: theme.palette.background.paper,
+          display: 'flex',
+          alignItems: 'center',
+          padding: '20px',
+          height: '100%'
+        }}
+      >
+        <Grid container sx={{ height: '100%', width: '100%' }}>
+          <Grid item md={5} xs={12}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Box sx={{ width: '200px' }}>
+                <InputSearch value={searchBy} onChange={(value: string) => setSearchBy(value)} />
+              </Box>
+              <GridCreate
+                onClick={() =>
+                  setOpenCreateEdit({
+                    open: true,
+                    id: ''
+                  })
+                }
+              />
+            </Box>
+            <CustomDataGrid
+              rows={roles.data}
+              columns={columns}
+              autoHeight
+              getRowId={row => row._id}
+              pageSizeOptions={[5]}
+              sortingMode='server'
+              onSortModelChange={handleSort}
+              sortingOrder={['desc', 'asc']}
+              disableRowSelectionOnClick
+              disableColumnFilter
+              disableColumnMenu
+              hideFooter
+              slots={{
+                pagination: PaginationComponent
+              }}
+            />
+          </Grid>
+          <Grid item md={7} xs={12}>
+            List permission
+          </Grid>
+        </Grid>
+      </Box>
+    </>
+  )
+}
+
+export default RoleListPage
