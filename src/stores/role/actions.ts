@@ -18,7 +18,6 @@ export const createRoleAsync = createAsyncThunk('role/create', async (data: TPar
 
 export const updateRoleAsync = createAsyncThunk('role/update', async (data: TParamsEditRole) => {
   const response = await updateRole(data)
-  console.log('action res', { response })
 
   return response
 })
