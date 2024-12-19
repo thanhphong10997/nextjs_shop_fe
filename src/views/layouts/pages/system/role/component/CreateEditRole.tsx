@@ -98,7 +98,7 @@ const CreateEditRole = (props: TCreateEditRole) => {
       {loading && <Spinner />}
       <CustomModal open={open} onClose={onClose}>
         <Box
-          sx={{ backgroundColor: theme.palette.background.paper, padding: '20px', borderRadius: '15px' }}
+          sx={{ backgroundColor: theme.palette.customColors.bodyBg, padding: '20px', borderRadius: '15px' }}
           minWidth={{ md: '400px', xs: '80vw' }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'center', position: 'relative', paddingBottom: '20px' }}>
@@ -110,29 +110,38 @@ const CreateEditRole = (props: TCreateEditRole) => {
             </IconButton>
           </Box>
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <Controller
-              name='name'
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { onChange, onBlur, value } }) => {
-                // Fixing error: Function components cannot be given refs
-
-                return (
-                  <TextField
-                    error={Boolean(errors.name)}
-                    variant='outlined'
-                    label={t('Role_name')}
-                    placeholder={t('enter_name')}
-                    fullWidth
-                    autoFocus
-                    helperText={errors?.name?.message}
-                    value={value}
-                    onBlur={onBlur}
-                    onChange={onChange}
-                  />
-                )
+            <Box
+              sx={{
+                backgroundColor: theme.palette.background.paper,
+                width: '100%',
+                padding: '30px 20px',
+                borderRadius: '15px'
               }}
-            />
+            >
+              <Controller
+                name='name'
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => {
+                  // Fixing error: Function components cannot be given refs
+
+                  return (
+                    <TextField
+                      error={Boolean(errors.name)}
+                      variant='outlined'
+                      label={t('Role_name')}
+                      placeholder={t('enter_name')}
+                      fullWidth
+                      autoFocus
+                      helperText={errors?.name?.message}
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                    />
+                  )
+                }}
+              />
+            </Box>
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
               <Button type='submit' variant='contained' color='primary'>

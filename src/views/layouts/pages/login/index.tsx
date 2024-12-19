@@ -89,11 +89,8 @@ export const LoginPage: NextPage<TProps> = () => {
   const schema = yup
     .object()
     .shape({
-      email: yup.string().required(t('required_field')).matches(EMAIL_REG, 'Please enter a valid email address!'),
-      password: yup
-        .string()
-        .required(t('required_field'))
-        .matches(PASSWORD_REG, 'Password must be contains at least 8 characters and special characters')
+      email: yup.string().required(t('required_field')).matches(EMAIL_REG, t('rules_email')),
+      password: yup.string().required(t('required_field')).matches(PASSWORD_REG, t('rules_password'))
     })
     .required()
   const {
@@ -116,7 +113,7 @@ export const LoginPage: NextPage<TProps> = () => {
         if (err?.response?.data?.typeError === 'INVALID') {
           toast.error(t('the_email_or_password_is_wrong'))
         }
-        setError('email', { type: 'invalid', message: 'The email or password is wrong' })
+        setError('email', { type: 'invalid', message: t('the_email_or_password_is_wrong') })
       })
     }
   }
@@ -165,7 +162,7 @@ export const LoginPage: NextPage<TProps> = () => {
         }}
       >
         <Typography component='h1' variant='h5'>
-          Sign in
+          {t('sign_in')}
         </Typography>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <Box sx={{ mt: 2 }} width={{ md: '350px', xs: 'auto' }}>
@@ -179,7 +176,7 @@ export const LoginPage: NextPage<TProps> = () => {
                 return (
                   <TextField
                     error={Boolean(errors.email)}
-                    placeholder='Enter email'
+                    placeholder={t('enter_your_email')}
                     variant='outlined'
                     autoFocus
                     fullWidth
@@ -204,7 +201,7 @@ export const LoginPage: NextPage<TProps> = () => {
                 return (
                   <TextField
                     error={Boolean(errors.password)}
-                    placeholder='Enter password'
+                    placeholder={t('enter_your_password')}
                     variant='outlined'
                     fullWidth
                     helperText={errors?.password?.message}
@@ -239,14 +236,14 @@ export const LoginPage: NextPage<TProps> = () => {
                 onChange={e => setIsRemember(e.target.checked)}
               />
             }
-            label='Remember me'
+            label={t('remember_me')}
           />
           <Button type='submit' fullWidth variant='contained' color='primary'>
-            Sign In
+            {t('sign_in')}
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href='#'>Forgot password?</Link>
+              <Link href='#'>{t('forgot_password')}</Link>
             </Grid>
             <Grid item>
               <Link
@@ -255,12 +252,12 @@ export const LoginPage: NextPage<TProps> = () => {
                 }}
                 href='/register'
               >
-                {"Don't have an account? Sign Up"}
+                {`${t('do_not_have_account')} ${t('register')}`}
               </Link>
             </Grid>
           </Grid>
         </form>
-        <Typography sx={{ my: 2 }}>OR</Typography>
+        <Typography sx={{ my: 2 }}>{t('or')}</Typography>
         <Box>
           <IconButton sx={{ color: theme.palette.error.main }}>
             <svg

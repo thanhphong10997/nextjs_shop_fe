@@ -88,16 +88,13 @@ export const RegisterPage: NextPage<TProps> = () => {
   const schema = yup
     .object()
     .shape({
-      email: yup.string().required(t('required_field')).matches(EMAIL_REG, 'Please enter a valid email address!'),
-      password: yup
-        .string()
-        .required(t('required_field'))
-        .matches(PASSWORD_REG, 'Password must be contains at least 8 characters and special characters'),
+      email: yup.string().required(t('required_field')).matches(EMAIL_REG, t('rules_email')),
+      password: yup.string().required(t('required_field')).matches(PASSWORD_REG, t('rules_password')),
       confirmPassword: yup
         .string()
-        .required('You must enter password again')
-        .matches(PASSWORD_REG, 'Password must be contains at least 8 characters and special characters')
-        .oneOf([yup.ref('password'), ''], 'The confirm password must be same as password')
+        .required(t('required_field'))
+        .matches(PASSWORD_REG, t('rules_password'))
+        .oneOf([yup.ref('password'), ''], t('rules_confirm_password'))
     })
     .required()
   const {
@@ -180,10 +177,10 @@ export const RegisterPage: NextPage<TProps> = () => {
           }}
         >
           <Typography component='h1' variant='h5'>
-            Register
+            {t('register')}
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <Box sx={{ mt: 2 }}>
+            <Box sx={{ mt: 2 }} width={{ md: '350px', xs: 'auto' }}>
               <Controller
                 name='email'
                 control={control}
@@ -194,7 +191,7 @@ export const RegisterPage: NextPage<TProps> = () => {
                   return (
                     <TextField
                       error={Boolean(errors.email)}
-                      placeholder='Enter email'
+                      placeholder={t('enter_your_email')}
                       variant='outlined'
                       fullWidth
                       autoFocus
@@ -208,7 +205,7 @@ export const RegisterPage: NextPage<TProps> = () => {
               />
             </Box>
 
-            <Box sx={{ mt: 2 }}>
+            <Box sx={{ mt: 2 }} width={{ md: '350px', xs: 'auto' }}>
               <Controller
                 name='password'
                 control={control}
@@ -220,7 +217,7 @@ export const RegisterPage: NextPage<TProps> = () => {
                     <TextField
                       error={Boolean(errors.password)}
                       variant='outlined'
-                      placeholder='Enter password'
+                      placeholder={t('enter_current_password')}
                       fullWidth
                       autoFocus
                       helperText={errors?.password?.message}
@@ -247,7 +244,7 @@ export const RegisterPage: NextPage<TProps> = () => {
               />
             </Box>
 
-            <Box sx={{ mt: 2 }}>
+            <Box sx={{ mt: 2 }} width={{ md: '350px', xs: 'auto' }}>
               <Controller
                 name='confirmPassword'
                 control={control}
@@ -258,7 +255,7 @@ export const RegisterPage: NextPage<TProps> = () => {
                   return (
                     <TextField
                       error={Boolean(errors.confirmPassword)}
-                      placeholder='Enter confirm password'
+                      placeholder={t('enter_confirm_password')}
                       variant='outlined'
                       fullWidth
                       autoFocus
@@ -285,8 +282,8 @@ export const RegisterPage: NextPage<TProps> = () => {
                 }}
               />
             </Box>
-            <Button type='submit' fullWidth variant='contained' color='primary'>
-              Register
+            <Button type='submit' fullWidth variant='contained' color='primary' sx={{ m: 2 }}>
+              {t('register')}
             </Button>
             <Grid container>
               <Grid item>
@@ -296,12 +293,12 @@ export const RegisterPage: NextPage<TProps> = () => {
                   }}
                   href='/login'
                 >
-                  {'Already have an account? Sign in'}
+                  {`${t('have_account_already')} ${t('sign_in')}`}
                 </Link>
               </Grid>
             </Grid>
           </form>
-          <Typography sx={{ my: 2 }}>OR</Typography>
+          <Typography sx={{ my: 2 }}>{t('or')}</Typography>
           <Box>
             <IconButton sx={{ color: theme.palette.error.main }}>
               <svg

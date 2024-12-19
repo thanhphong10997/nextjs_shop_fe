@@ -6,6 +6,8 @@ import { NextPage } from 'next'
 // Import components
 import { EMAIL_REG, PASSWORD_REG } from 'src/configs/regex'
 import WrapperFileUpload from 'src/components/wrapper-file-upload'
+import Spinner from 'src/components/spinner'
+import CustomSelect from 'src/components/custom-select'
 
 // Import Mui
 import { Box, Button, Grid, useTheme, Avatar, IconButton, TextField, FormHelperText } from '@mui/material'
@@ -29,21 +31,22 @@ import { Icon } from '@iconify/react/dist/iconify.js'
 
 // services
 import { getAuthMe } from 'src/services/auth'
+import { getAllRoles } from 'src/services/role'
 
 // types
 import { UserDataType } from 'src/contexts/types'
 
 // utils
 import { convertFileToBase64, convertFullName, toFullName } from 'src/utils'
-import { useDispatch, useSelector } from 'react-redux'
-import { AppDispatch, RootState } from 'src/stores'
+
+// react toast
 import toast from 'react-hot-toast'
+
+//  redux
+import { useDispatch, useSelector } from 'react-redux'
 import { resetInitialState } from 'src/stores/auth'
 import { updateAuthMeAsync } from 'src/stores/auth/actions'
-import Spinner from 'src/components/spinner'
-import CustomSelect from 'src/components/custom-select'
-import { InputLabel } from '@mui/material'
-import CustomModal from 'src/components/custom-modal'
+import { AppDispatch, RootState } from 'src/stores'
 
 type TProps = {}
 
@@ -86,10 +89,9 @@ export const MyProfilePage: NextPage<TProps> = () => {
   const { t, i18n } = useTranslation()
 
   // react
-  const [user, setUser] = useState<UserDataType | null>(null)
   const [loading, setLoading] = useState(false)
   const [avatar, setAvatar] = useState('')
-  const [roleId, setRoleId] = useState('')
+  const [roleOptions, setRoleOptions] = useState<{ label: string; value: string }[]>([])
 
   // redux
   const { isLoading, isSuccessUpdateMe, messageUpdateMe, isErrorUpdateMe } = useSelector(
@@ -149,36 +151,55 @@ export const MyProfilePage: NextPage<TProps> = () => {
           firstName,
           middleName,
           lastName,
-          role: roleId,
+          role: data?.role,
           avatar
         })
       )
     }
   }
 
+  // fetch api
   const fetchGetAuthMe = async () => {
     setLoading(true)
     await getAuthMe()
       .then(async res => {
         const data = res?.data
-        console.log('res', res)
         if (data) {
-          setRoleId(data?.role?.id)
           setAvatar(data?.avatar)
-          setUser({ ...res?.data?.data })
           reset({
             email: data?.email,
             phoneNumber: data?.phoneNumber,
             city: data?.city,
             address: data?.address,
-            role: data?.role?.name,
+            role: data?.role?._id,
             fullName: toFullName(data?.lastName, data?.middleName, data?.firstName, i18n.language)
           })
         }
         setLoading(false)
       })
       .catch(() => {
-        setUser(null)
+        setLoading(false)
+      })
+  }
+
+  const fetchAllRoles = async () => {
+    await getAllRoles({ params: { limit: -1, page: -1 } })
+      .then(res => {
+        console.log('res', { res })
+        const data = res?.data?.roles
+        if (data) {
+          setRoleOptions(
+            data?.map((item: { name: string; _id: string }) => {
+              return {
+                label: item?.name,
+                value: item?._id
+              }
+            })
+          )
+        }
+        setLoading(false)
+      })
+      .catch(() => {
         setLoading(false)
       })
   }
@@ -198,6 +219,10 @@ export const MyProfilePage: NextPage<TProps> = () => {
   useEffect(() => {
     fetchGetAuthMe()
   }, [i18n.language])
+
+  useEffect(() => {
+    fetchAllRoles()
+  }, [])
 
   return (
     <>
@@ -326,7 +351,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
                               value={value}
                               onChange={onChange}
                               onBlur={onBlur}
-                              options={[]}
+                              options={roleOptions}
                               error={Boolean(errors?.role)}
                               placeholder={t('enter_your_role')}
                               fullWidth

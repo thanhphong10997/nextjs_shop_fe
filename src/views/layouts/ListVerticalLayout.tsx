@@ -190,6 +190,8 @@ export const ListVerticalLayout: NextPage<TProps> = ({ drawerIsOpening }) => {
     if (!drawerIsOpening) setOpenItems({})
   }, [drawerIsOpening])
 
+  const listVerticalItems = VerticalItems()
+
   return (
     <List
       sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', padding: 0 }}
@@ -197,7 +199,7 @@ export const ListVerticalLayout: NextPage<TProps> = ({ drawerIsOpening }) => {
       aria-labelledby='nested-list-subheader'
     >
       <RecursiveListItems
-        items={VerticalItems}
+        items={listVerticalItems}
         level={1}
         disabled={!drawerIsOpening}
         openItems={openItems}

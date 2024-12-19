@@ -95,19 +95,13 @@ export const ChangePasswordPage: NextPage<TProps> = () => {
   const schema = yup
     .object()
     .shape({
-      currentPassword: yup
-        .string()
-        .required(t('required_field'))
-        .matches(PASSWORD_REG, 'Password must be contains at least 8 characters and special characters'),
-      newPassword: yup
-        .string()
-        .required(t('required_field'))
-        .matches(PASSWORD_REG, 'Password must be contains at least 8 characters and special characters'),
+      currentPassword: yup.string().required(t('required_field')).matches(PASSWORD_REG, t('rules_password')),
+      newPassword: yup.string().required(t('required_field')).matches(PASSWORD_REG, t('rules_password')),
       confirmNewPassword: yup
         .string()
-        .required('You must enter password again')
-        .matches(PASSWORD_REG, 'Password must be contains at least 8 characters and special characters')
-        .oneOf([yup.ref('newPassword'), ''], 'The confirm password must be same as password')
+        .required(t('required_field'))
+        .matches(PASSWORD_REG, t('rules_password'))
+        .oneOf([yup.ref('newPassword'), ''], t('rules_confirm_new_password'))
     })
     .required()
   const {
@@ -193,7 +187,7 @@ export const ChangePasswordPage: NextPage<TProps> = () => {
             {t('Change_password')}
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <Box sx={{ mt: 2 }}>
+            <Box sx={{ mt: 2 }} width={{ md: '350px', xs: 'auto' }}>
               <Controller
                 name='currentPassword'
                 control={control}
@@ -233,7 +227,7 @@ export const ChangePasswordPage: NextPage<TProps> = () => {
               />
             </Box>
 
-            <Box sx={{ mt: 2 }}>
+            <Box sx={{ mt: 2 }} width={{ md: '350px', xs: 'auto' }}>
               <Controller
                 name='newPassword'
                 control={control}
@@ -273,7 +267,7 @@ export const ChangePasswordPage: NextPage<TProps> = () => {
               />
             </Box>
 
-            <Box sx={{ mt: 2 }}>
+            <Box sx={{ mt: 2 }} width={{ md: '350px', xs: 'auto' }}>
               <Controller
                 name='confirmNewPassword'
                 control={control}

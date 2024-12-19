@@ -33,6 +33,7 @@ import Spinner from 'src/components/spinner'
 // react toast
 import toast from 'react-hot-toast'
 import ConfirmationDialog from 'src/components/confirmation-dialog'
+import { Icon } from '@iconify/react/dist/iconify.js'
 
 type TProps = {}
 
@@ -87,10 +88,10 @@ export const RoleListPage: NextPage<TProps> = () => {
         const { row } = params
 
         return (
-          <>
+          <Box sx={{ width: '100%' }}>
             {!row?.permissions?.some((per: string) => {
               return ['ADMIN.GRANTED', 'BASIC.PUBLIC']?.includes(per)
-            }) && (
+            }) ? (
               <Box>
                 <GridEdit
                   onClick={() => {
@@ -110,8 +111,10 @@ export const RoleListPage: NextPage<TProps> = () => {
                   }}
                 />
               </Box>
+            ) : (
+              <Icon icon='material-symbols-light:lock-outline' fontSize={30} />
             )}
-          </>
+          </Box>
         )
       }
     }

@@ -42,5 +42,6 @@
   "title_delete_role": "Deleting",
   "confirm_delete_role": "Do you want to delete the role?",
   "confirm": "Confirm",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "System": "System"
 }
