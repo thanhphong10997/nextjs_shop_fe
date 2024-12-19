@@ -34,6 +34,7 @@ import Spinner from 'src/components/spinner'
 import toast from 'react-hot-toast'
 import ConfirmationDialog from 'src/components/confirmation-dialog'
 import { Icon } from '@iconify/react/dist/iconify.js'
+import { OBJECT_TYPE_ERROR_ROLE } from 'src/configs/role'
 
 type TProps = {}
 
@@ -64,7 +65,8 @@ export const RoleListPage: NextPage<TProps> = () => {
     isLoading,
     isSuccessDelete,
     isErrorDelete,
-    messageErrorDelete
+    messageErrorDelete,
+    typeError
   } = useSelector((state: RootState) => state.role)
 
   // redux
@@ -177,11 +179,20 @@ export const RoleListPage: NextPage<TProps> = () => {
       handleGetListRoles()
       handleCloseCreateEdit()
       dispatch(resetInitialState())
-    } else if (isErrorCreateEdit && messageErrorCreateEdit) {
-      toast.error(t(messageErrorCreateEdit))
+    } else if (isErrorCreateEdit && messageErrorCreateEdit && typeError) {
+      const errorConfig = OBJECT_TYPE_ERROR_ROLE[typeError]
+      if (errorConfig) {
+        toast.error(t(errorConfig))
+      } else {
+        if (openCreateEdit.id) {
+          toast.error(t('update_role_error'))
+        } else {
+          toast.error(t('create_role_error'))
+        }
+      }
       dispatch(resetInitialState())
     }
-  }, [isSuccessCreateEdit, isErrorCreateEdit, messageErrorCreateEdit])
+  }, [isSuccessCreateEdit, isErrorCreateEdit, messageErrorCreateEdit, typeError])
 
   useEffect(() => {
     if (isSuccessDelete) {

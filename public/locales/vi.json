@@ -64,5 +64,9 @@
   "do_not_have_account": "Chưa có tài khoản?",
   "or": "hoặc",
   "remember_me": "Nhớ mật khẩu",
-  "forgot_password": "Quên mật khẩu"
+  "forgot_password": "Quên mật khẩu",
+  "Data_existed_in_system": "Dữ liệu đã tồn tại trên hệ thống",
+  "update_role_error": "Cập nhật vai trò thất bại ",
+  "create_role_error":"Tạo vai trò thất bại ",
+  "Server_is_error": "Lỗi hệ thốn"
 }
