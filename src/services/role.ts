@@ -17,8 +17,8 @@ export const createRole = async (data: TParamsCreateRole) => {
     const res = await instanceAxios.post(`${API_ENDPOINT.ROLE.INDEX}`, data)
 
     return res.data
-  } catch (err) {
-    return err
+  } catch (err: any) {
+    return err?.response?.data
   }
 }
 
@@ -28,8 +28,8 @@ export const updateRole = async (data: TParamsEditRole) => {
     const res = await instanceAxios.put(`${API_ENDPOINT.ROLE.INDEX}/${id}`, rests)
 
     return res.data
-  } catch (err) {
-    return err
+  } catch (err: any) {
+    return err?.response?.data
   }
 }
 
@@ -38,8 +38,8 @@ export const deleteRole = async (id: string) => {
     const res = await instanceAxios.delete(`${API_ENDPOINT.ROLE.INDEX}/${id}`)
 
     return res.data
-  } catch (err) {
-    return err
+  } catch (err: any) {
+    return err?.response?.data
   }
 }
 
@@ -48,7 +48,7 @@ export const getDetailsRole = async (id: string) => {
     const res = await instanceAxios.get(`${API_ENDPOINT.ROLE.INDEX}/${id}`)
 
     return res.data
-  } catch (err) {
-    return err
+  } catch (err: any) {
+    return err?.response?.data
   }
 }
