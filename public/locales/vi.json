@@ -64,5 +64,16 @@
   "do_not_have_account": "Chưa có tài khoản?",
   "or": "hoặc",
   "remember_me": "Nhớ mật khẩu",
-  "forgot_password": "Quên mật khẩu"
+  "forgot_password": "Quên mật khẩu",
+  "Data_existed_in_system": "Dữ liệu đã tồn tại trên hệ thống",
+  "update_role_error": "Cập nhật vai trò thất bại ",
+  "create_role_error":"Tạo vai trò thất bại ",
+  "Server_is_error": "Lỗi hệ thống",
+  "Manage_order": "Quản trị đơn hàng",
+  "Review": "Đánh giá",
+  "Order": "Đơn hàng", 
+  "Delivery_type": "Phương thức giao hàng",
+  "Payment_type": "Phương thức vận chuyển",
+  "Product": "Sản phẩm",
+  "Product_type": "Loại sản phẩm"
 }

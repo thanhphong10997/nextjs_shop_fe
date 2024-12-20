@@ -12,7 +12,7 @@ import Collapse from '@mui/material/Collapse'
 import { Icon } from '@iconify/react/dist/iconify.js'
 
 // Components
-import { VerticalItems } from 'src/configs/layout'
+import { TVertical, VerticalItems } from 'src/configs/layout'
 import { NextPage } from 'next'
 import { Box, styled, Tooltip, useTheme } from '@mui/material'
 import { useRouter } from 'next/router'
@@ -68,7 +68,7 @@ const RecursiveListItems: NextPage<TListItems> = ({
   // router
   const router = useRouter()
 
-  // functionality
+  // handle
   const handleClick = (title: string) => {
     if (!disabled) {
       // setOpenItems(prev => ({
@@ -89,15 +89,26 @@ const RecursiveListItems: NextPage<TListItems> = ({
     }
   }
 
+  const isParentHaveChildActive = (item: TVertical): boolean => {
+    if (!item.children) {
+      return item.path === activePath
+    }
+
+    return item?.children.some(child => isParentHaveChildActive(child))
+  }
+
   return (
     <>
       {items.map((item: any) => {
+        // Check if the current parent has an active child
+        const isParentActive = isParentHaveChildActive(item)
+
         return (
           <React.Fragment key={item.title}>
             <ListItemButton
               sx={{
                 backgroundColor:
-                  (activePath && item.path === activePath) || !!openItems[item.title]
+                  (activePath && item.path === activePath) || !!openItems[item.title] || isParentActive
                     ? `${hexToRGBA(theme.palette.primary.main, 0.08)}!important`
                     : theme.palette.background.default,
                 padding: `8px 10px 8px ${level * 10}px`,
@@ -105,7 +116,7 @@ const RecursiveListItems: NextPage<TListItems> = ({
               }}
               onClick={() => {
                 if (item.children) handleClick(item.title)
-                handleSelectItem(item.path)
+                if (item.path) handleSelectItem(item.path)
               }}
             >
               <ListItemIcon>
@@ -118,7 +129,7 @@ const RecursiveListItems: NextPage<TListItems> = ({
                     width: '30px',
                     borderRadius: '8px',
                     backgroundColor:
-                      (activePath && item.path === activePath) || !!openItems[item.title]
+                      (activePath && item.path === activePath) || !!openItems[item.title] || isParentActive
                         ? `${theme.palette.primary.main}!important`
                         : theme.palette.background.default
                   }}
@@ -127,7 +138,7 @@ const RecursiveListItems: NextPage<TListItems> = ({
                     icon={item.icon}
                     style={{
                       color:
-                        (activePath && item.path === activePath) || !!openItems[item.title]
+                        (activePath && item.path === activePath) || !!openItems[item.title] || isParentActive
                           ? theme.palette.customColors.lightPaperBg
                           : `rgba(${theme.palette.customColors.main}, 0.7)`
                     }}
@@ -138,7 +149,9 @@ const RecursiveListItems: NextPage<TListItems> = ({
                 <Tooltip title={item?.title}>
                   <StyledListItemText
                     primary={item?.title}
-                    active={Boolean((activePath && item.path === activePath) || !!openItems[item.title])}
+                    active={Boolean(
+                      (activePath && item.path === activePath) || !!openItems[item.title] || isParentActive
+                    )}
                   />
                 </Tooltip>
               )}
@@ -149,13 +162,20 @@ const RecursiveListItems: NextPage<TListItems> = ({
                       icon='ic:round-expand-less'
                       style={{
                         color:
-                          (activePath && item.path === activePath) || !!openItems[item.title]
+                          (activePath && item.path === activePath) || !!openItems[item.title] || isParentActive
                             ? theme.palette.primary.main
                             : `rgba(${theme.palette.customColors.main}, 0.7)`
                       }}
                     />
                   ) : (
-                    <Icon icon='ic:round-expand-more' />
+                    <Icon
+                      style={{
+                        color: isParentActive
+                          ? theme.palette.primary.main
+                          : `rgba(${theme.palette.customColors.main}, 0.7)`
+                      }}
+                      icon='ic:round-expand-more'
+                    />
                   )}
                 </>
               )}
