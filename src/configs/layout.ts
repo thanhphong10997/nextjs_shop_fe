@@ -44,8 +44,13 @@ export const VerticalItems = () => {
           title: t('Type_product'),
           icon: 'fluent-mdl2:product-variant',
           path: ROUTE_CONFIG.MANAGE_PRODUCT.MANAGE_TYPE_PRODUCT
-        },
-
+        }
+      ]
+    },
+    {
+      title: t('Manage_order'),
+      icon: 'icon-park-solid:transaction-order',
+      children: [
         {
           title: t('List_order'),
           icon: 'lets-icons:order',

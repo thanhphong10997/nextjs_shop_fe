@@ -35,6 +35,7 @@ import toast from 'react-hot-toast'
 import ConfirmationDialog from 'src/components/confirmation-dialog'
 import { Icon } from '@iconify/react/dist/iconify.js'
 import { OBJECT_TYPE_ERROR_ROLE } from 'src/configs/role'
+import TablePermission from './component/TablePermission'
 
 type TProps = {}
 
@@ -224,11 +225,12 @@ export const RoleListPage: NextPage<TProps> = () => {
           display: 'flex',
           alignItems: 'center',
           padding: '20px',
-          height: '100%'
+          height: '100%',
+          maxHeight: '100%'
         }}
       >
-        <Grid container sx={{ height: '100%', width: '100%' }}>
-          <Grid item md={5} xs={12}>
+        <Grid container sx={{ height: '100%', width: '100%' }} spacing={10}>
+          <Grid item md={4} xs={12}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
               <Box sx={{ width: '200px' }}>
                 <InputSearch value={searchBy} onChange={(value: string) => setSearchBy(value)} />
@@ -260,8 +262,8 @@ export const RoleListPage: NextPage<TProps> = () => {
               }}
             />
           </Grid>
-          <Grid item md={7} xs={12}>
-            List permission
+          <Grid item md={8} xs={12}>
+            <TablePermission />
           </Grid>
         </Grid>
       </Box>
