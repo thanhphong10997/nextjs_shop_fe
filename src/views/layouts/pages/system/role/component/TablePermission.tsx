@@ -1,5 +1,6 @@
 // Import Mui
-import { Box, Button, Checkbox, IconButton, TextField, Tooltip, Typography, useTheme } from '@mui/material'
+import { Checkbox, Typography, useTheme } from '@mui/material'
+import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 
 // Import React
 import React, { useEffect, useState } from 'react'
@@ -7,36 +8,118 @@ import React, { useEffect, useState } from 'react'
 // Translate
 import { useTranslation } from 'react-i18next'
 
-// Import icons
-import { Icon } from '@iconify/react/dist/iconify.js'
-import CustomModal from 'src/components/custom-modal'
-import { Controller, useForm, SubmitHandler } from 'react-hook-form'
+// config
+import { LIST_DATA_PERMISSIONS, PERMISSIONS } from 'src/configs/permission'
 
-// hook form
-import * as yup from 'yup'
-import { yupResolver } from '@hookform/resolvers/yup'
+// Redux
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from 'src/stores'
-import { createRoleAsync, updateRoleAsync } from 'src/stores/role/actions'
-import { getDetailsRole } from 'src/services/role'
+
+// component
 import Spinner from 'src/components/spinner'
 import CustomDataGrid from 'src/components/custom-data-grid'
-import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
-import { LIST_DATA_PERMISSIONS } from 'src/configs/permission'
+import { getAllObjectValues } from 'src/utils'
 
-type TTablePermission = {}
+type TTablePermission = {
+  selectedPermission: string[]
+  setSelectedPermission: React.Dispatch<React.SetStateAction<string[]>>
+  disabled: boolean
+}
 
 const TablePermission = (props: TTablePermission) => {
+  // props
+  const { selectedPermission, setSelectedPermission, disabled } = props
+
+  // translate
   const { t } = useTranslation()
+
+  // theme
   const theme = useTheme()
+
+  // redux
   const dispatch: AppDispatch = useDispatch()
+
+  // react
   const [loading, setLoading] = useState(false)
 
+  // handle
+  // optional parameter must be placed after other parameters
+  const getValuePermission = (value: string, mode: string, parentValue?: string) => {
+    try {
+      return parentValue ? PERMISSIONS[parentValue]?.[value][mode] : PERMISSIONS[value]
+    } catch {
+      return ''
+    }
+  }
+
+  const handleOnChangeCheckBox = (value: string) => {
+    const isChecked = selectedPermission.includes(value)
+    if (isChecked) {
+      // if user uncheck
+      const filteredItems = selectedPermission.filter(item => item !== value)
+      setSelectedPermission(filteredItems)
+    } else {
+      setSelectedPermission([...selectedPermission, value])
+    }
+  }
+
+  const handleIsChecked = (value: string, parentValue?: string) => {
+    const allValue = parentValue
+      ? getAllObjectValues(PERMISSIONS[parentValue][value])
+      : getAllObjectValues(PERMISSIONS[value])
+    const isCheckedAll = allValue.every((item: any) => selectedPermission.includes(item))
+
+    return {
+      isChecked: isCheckedAll,
+      allValue
+    }
+  }
+
+  const handleCheckAllCheckBox = (value: string, parentValue?: string) => {
+    const { isChecked: isCheckedAll, allValue } = handleIsChecked(value, parentValue)
+    if (isCheckedAll) {
+      const filteredItems = selectedPermission.filter(item => !allValue.includes(item))
+      setSelectedPermission(filteredItems)
+    } else {
+      setSelectedPermission([...new Set([...selectedPermission, ...allValue])])
+    }
+  }
   const columns: GridColDef[] = [
+    {
+      field: 'all',
+      headerName: '',
+      minWidth: 80,
+      maxWidth: 80,
+      sortable: false,
+      renderCell: (params: GridRenderCellParams) => {
+        const { row } = params
+        const { isChecked } = handleIsChecked(row.value, row.parentValue)
+
+        return (
+          <>
+            {!row?.isHideAll && (
+              <Checkbox
+                disabled={disabled}
+                value={row?.value}
+                checked={isChecked}
+                onChange={e => {
+                  if (row.isParent) {
+                    handleCheckAllCheckBox(e.target.value)
+                  } else {
+                    handleCheckAllCheckBox(e.target.value, row?.parentValue)
+                  }
+                }}
+              />
+            )}
+          </>
+        )
+      }
+    },
     {
       field: 'name',
       headerName: t('Name'),
       flex: 1,
+      minWidth: 200,
       sortable: false,
       renderCell: (params: GridRenderCellParams) => {
         const { row } = params
@@ -45,7 +128,8 @@ const TablePermission = (props: TTablePermission) => {
           <Typography
             sx={{
               color: row?.isParent ? theme.palette.primary.main : `rgba(${theme.palette.customColors.main},0.78)`,
-              paddingLeft: row?.isParent ? 0 : '40px'
+              paddingLeft: row?.isParent ? 0 : '20px',
+              textTransform: row?.isParent ? 'uppercase' : 'normal'
             }}
           >
             {t(row?.name)}
@@ -53,18 +137,7 @@ const TablePermission = (props: TTablePermission) => {
         )
       }
     },
-    {
-      field: 'all',
-      headerName: t('All'),
-      minWidth: 80,
-      maxWidth: 80,
-      sortable: false,
-      renderCell: (params: GridRenderCellParams) => {
-        const { row } = params
 
-        return <>{row?.isParent && <Checkbox value={row?.view} />}</>
-      }
-    },
     {
       field: 'view',
       headerName: t('View'),
@@ -73,8 +146,20 @@ const TablePermission = (props: TTablePermission) => {
       sortable: false,
       renderCell: (params: GridRenderCellParams) => {
         const { row } = params
+        const value = getValuePermission(row.value, 'VIEW', row.parentValue)
 
-        return <>{!row?.isHideView && !row?.isParent && <Checkbox value={row?.view} />}</>
+        return (
+          <>
+            {!row?.isHideView && !row?.isParent && (
+              <Checkbox
+                disabled={disabled}
+                value={value}
+                onChange={e => handleOnChangeCheckBox(e.target.value)}
+                checked={selectedPermission.includes(value)}
+              />
+            )}
+          </>
+        )
       }
     },
     {
@@ -85,20 +170,44 @@ const TablePermission = (props: TTablePermission) => {
       sortable: false,
       renderCell: (params: GridRenderCellParams) => {
         const { row } = params
+        const value = getValuePermission(row.value, 'CREATE', row.parentValue)
 
-        return <>{!row?.isHideCreate && !row?.isParent && <Checkbox value={row?.create} />}</>
+        return (
+          <>
+            {!row?.isHideCreate && !row?.isParent && (
+              <Checkbox
+                disabled={disabled}
+                value={value}
+                onChange={e => handleOnChangeCheckBox(e.target.value)}
+                checked={selectedPermission.includes(value)}
+              />
+            )}
+          </>
+        )
       }
     },
     {
-      field: 'update',
-      headerName: t('Update'),
-      minWidth: 100,
-      maxWidth: 100,
+      field: 'edit',
+      headerName: t('Edit'),
+      minWidth: 80,
+      maxWidth: 80,
       sortable: false,
       renderCell: (params: GridRenderCellParams) => {
         const { row } = params
+        const value = getValuePermission(row.value, 'UPDATE', row.parentValue)
 
-        return <>{!row?.isHideUpdate && !row?.isParent && <Checkbox value={row?.update} />}</>
+        return (
+          <>
+            {!row?.isHideUpdate && !row?.isParent && (
+              <Checkbox
+                disabled={disabled}
+                value={value}
+                onChange={e => handleOnChangeCheckBox(e.target.value)}
+                checked={selectedPermission.includes(value)}
+              />
+            )}
+          </>
+        )
       }
     },
     {
@@ -109,8 +218,20 @@ const TablePermission = (props: TTablePermission) => {
       sortable: false,
       renderCell: (params: GridRenderCellParams) => {
         const { row } = params
+        const value = getValuePermission(row.value, 'DELETE', row.parentValue)
 
-        return <>{!row?.isHideDelete && !row?.isParent && <Checkbox value={row?.delete} />}</>
+        return (
+          <>
+            {!row?.isHideDelete && !row?.isParent && (
+              <Checkbox
+                disabled={disabled}
+                value={value}
+                onChange={e => handleOnChangeCheckBox(e.target.value)}
+                checked={selectedPermission.includes(value)}
+              />
+            )}
+          </>
+        )
       }
     }
   ]

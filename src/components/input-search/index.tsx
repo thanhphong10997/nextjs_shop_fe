@@ -19,7 +19,7 @@ type TInputSearch = {
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.common.white,
+  backgroundColor: theme.palette.background.paper,
   border: `1px solid ${theme.palette.customColors.borderColor}`,
   marginLeft: 0,
   width: '100%',

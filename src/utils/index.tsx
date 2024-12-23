@@ -52,3 +52,21 @@ export const convertFullName = (fullName: string, language: string) => {
 
   return result
 }
+
+export const getAllObjectValues = (object: any, arrExclude?: string[]) => {
+  try {
+    const values: any = []
+    for (const key in object) {
+      // If the key of the object is also a object
+      if (typeof object[key] === 'object') {
+        values.push(...getAllObjectValues(object[key], arrExclude))
+      } else {
+        if (!arrExclude?.includes(object[key])) values.push(object[key])
+      }
+    }
+
+    return values
+  } catch (err) {
+    return []
+  }
+}
