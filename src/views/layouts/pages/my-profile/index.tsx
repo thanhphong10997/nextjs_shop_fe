@@ -11,7 +11,6 @@ import CustomSelect from 'src/components/custom-select'
 
 // Import Mui
 import { Box, Button, Grid, useTheme, Avatar, IconButton, TextField, FormHelperText } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 
 // Import react hook form
 import { useForm, SubmitHandler, Controller } from 'react-hook-form'
@@ -33,9 +32,6 @@ import { Icon } from '@iconify/react/dist/iconify.js'
 import { getAuthMe } from 'src/services/auth'
 import { getAllRoles } from 'src/services/role'
 
-// types
-import { UserDataType } from 'src/contexts/types'
-
 // utils
 import { convertFileToBase64, convertFullName, toFullName } from 'src/utils'
 
@@ -52,34 +48,12 @@ type TProps = {}
 
 type Inputs = {
   email: string
-  role: string
+  role?: yup.Maybe<string>
   fullName?: yup.Maybe<string>
   city?: yup.Maybe<string>
   address?: yup.Maybe<string>
   phoneNumber: string
 }
-
-const useStyles = makeStyles((theme: any) => {
-  return {
-    paper: {
-      marginTop: '32px',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center'
-    },
-    avatar: {
-      margin: '4px',
-      backgroundColor: '#333'
-    },
-    form: {
-      width: '100%', // Fix IE 11 issue.
-      marginTop: '4px'
-    },
-    submit: {
-      margin: '8px'
-    }
-  }
-})
 
 export const MyProfilePage: NextPage<TProps> = () => {
   // theme
@@ -92,6 +66,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
   const [loading, setLoading] = useState(false)
   const [avatar, setAvatar] = useState('')
   const [roleOptions, setRoleOptions] = useState<{ label: string; value: string }[]>([])
+  const [isDisabledRole, setIsDisabledRole] = useState(false)
 
   // redux
   const { isLoading, isSuccessUpdateMe, messageUpdateMe, isErrorUpdateMe } = useSelector(
@@ -113,7 +88,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
   const schema = yup.object().shape({
     email: yup.string().required(t('required_field')).matches(EMAIL_REG, 'Please enter a valid email address!'),
     fullName: yup.string().notRequired(),
-    role: yup.string().required(t('required_field')),
+    role: isDisabledRole ? yup.string().notRequired() : yup.string().required(t('required_field')),
     phoneNumber: yup.string().required(t('required_field')).min(8, 'The min numbers must from 8'),
     city: yup.string().notRequired(),
     address: yup.string().notRequired()
@@ -166,6 +141,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
         const data = res?.data
         if (data) {
           setAvatar(data?.avatar)
+          setIsDisabledRole(!data?.role?.permissions?.length)
           reset({
             email: data?.email,
             phoneNumber: data?.phoneNumber,
@@ -336,41 +312,43 @@ export const MyProfilePage: NextPage<TProps> = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item md={6} xs={12}>
-                    <Controller
-                      name='role'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { onChange, onBlur, value } }) => {
-                        // Fixing error: Function components cannot be given refs
+                  {!isDisabledRole && (
+                    <Grid item md={6} xs={12}>
+                      <Controller
+                        name='role'
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field: { onChange, onBlur, value } }) => {
+                          // Fixing error: Function components cannot be given refs
 
-                        return (
-                          <>
-                            <CustomSelect
-                              label={t('Role')}
-                              value={value}
-                              onChange={onChange}
-                              onBlur={onBlur}
-                              options={roleOptions}
-                              error={Boolean(errors?.role)}
-                              placeholder={t('enter_your_role')}
-                              fullWidth
-                            />
-                            {errors?.role?.message && (
-                              <FormHelperText
-                                sx={{
-                                  color: theme.palette.error.main,
-                                  position: 'absolute'
-                                }}
-                              >
-                                {errors.role.message}
-                              </FormHelperText>
-                            )}
-                          </>
-                        )
-                      }}
-                    />
-                  </Grid>
+                          return (
+                            <>
+                              <CustomSelect
+                                label={t('Role')}
+                                value={value}
+                                onChange={onChange}
+                                onBlur={onBlur}
+                                options={roleOptions}
+                                error={Boolean(errors?.role)}
+                                placeholder={t('enter_your_role')}
+                                fullWidth
+                              />
+                              {errors?.role?.message && (
+                                <FormHelperText
+                                  sx={{
+                                    color: theme.palette.error.main,
+                                    position: 'absolute'
+                                  }}
+                                >
+                                  {errors.role.message}
+                                </FormHelperText>
+                              )}
+                            </>
+                          )
+                        }}
+                      />
+                    </Grid>
+                  )}
                 </Box>
               </Grid>
             </Box>
