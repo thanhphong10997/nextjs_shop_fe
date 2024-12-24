@@ -61,10 +61,21 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }))
 
 export default function UserDropdown() {
+  // translate
   const { t, i18n } = useTranslation()
+
+  // react
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
+
+  // router
   const router = useRouter()
+
+  // auth
+  const { user, logout } = useAuth()
+  const userPermission = user?.role?.permissions || []
+
+  // handle
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -85,8 +96,6 @@ export default function UserDropdown() {
     router.push(ROUTE_CONFIG.DASHBOARD)
     handleClose()
   }
-
-  const { user, logout } = useAuth()
 
   return (
     <React.Fragment>
@@ -180,12 +189,14 @@ export default function UserDropdown() {
           </Box>
         </Box>
         <Divider />
-        <MenuItem onClick={handleManageSystem}>
-          <Avatar>
-            <Icon icon='carbon:manage-protection' />
-          </Avatar>
-          {t('manage_system')}
-        </MenuItem>
+        {userPermission?.length > 0 && (
+          <MenuItem onClick={handleManageSystem}>
+            <Avatar>
+              <Icon icon='carbon:manage-protection' />
+            </Avatar>
+            {t('manage_system')}
+          </MenuItem>
+        )}
         <MenuItem onClick={handleNavigateMyProfile}>
           <Avatar>
             <Icon icon='clarity:avatar-line' />

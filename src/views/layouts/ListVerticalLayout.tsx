@@ -17,6 +17,8 @@ import { NextPage } from 'next'
 import { Box, styled, Tooltip, useTheme } from '@mui/material'
 import { useRouter } from 'next/router'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
+import { PERMISSIONS } from 'src/configs/permission'
+import { useAuth } from 'src/hooks/useAuth'
 
 type TProps = {
   drawerIsOpening: boolean
@@ -94,7 +96,7 @@ const RecursiveListItems: NextPage<TListItems> = ({
       return item.path === activePath
     }
 
-    return item?.children.some(child => isParentHaveChildActive(child))
+    return item?.children.some((child: TVertical) => isParentHaveChildActive(child))
   }
 
   return (
@@ -180,6 +182,7 @@ const RecursiveListItems: NextPage<TListItems> = ({
                 </>
               )}
             </ListItemButton>
+
             {item?.children && item.children.length > 0 && (
               <>
                 <Collapse key={item.title} in={openItems[item.title]} timeout='auto' unmountOnExit>
@@ -205,12 +208,90 @@ const RecursiveListItems: NextPage<TListItems> = ({
 export const ListVerticalLayout: NextPage<TProps> = ({ drawerIsOpening }) => {
   const [openItems, setOpenItems] = React.useState<{ [key: string]: boolean }>({})
   const [activePath, setActivePath] = React.useState<null | string>('')
+  const router = useRouter()
+
+  // permission
+  const { user } = useAuth()
+  const permissionUser = user?.role?.permissions
+    ? user?.role?.permissions.includes(PERMISSIONS.BASIC)
+      ? [PERMISSIONS.DASHBOARD]
+      : user?.role?.permissions
+    : []
+
+  const listVerticalItems = VerticalItems()
+
+  // handle
+  const findParentActivePath = (items: TVertical[], activePath: string) => {
+    for (const item of items) {
+      if (item.path === activePath) {
+        return item.title
+      }
+      if (item.children && item.children.length > 0) {
+        const child = findParentActivePath(item.children, activePath)
+        if (child) {
+          return item.title
+        }
+      }
+    }
+
+    return ''
+  }
+
+  const hasPermission = (item: any, permissionUser: string[]) => {
+    return permissionUser.includes(item.permission) || !item.permission
+  }
+
+  const formatMenuByPermission = (menu: any[], permissionUser: string[]) => {
+    if (menu) {
+      return menu.filter(item => {
+        if (hasPermission(item, permissionUser)) {
+          if (item.children && item.children.length > 0) {
+            item.children = formatMenuByPermission(item.children, permissionUser)
+          }
+
+          if (!item?.children?.length && !item.path) {
+            return false
+          }
+
+          // return true in the filter method means return the current item of the array
+          return true
+        }
+
+        // return false in the filter method means return nothing
+        return false
+      })
+    }
+
+    return []
+  }
+
+  console.log('listItem', listVerticalItems)
+
+  const memoFormatMenu = React.useMemo(() => {
+    if (permissionUser.includes(PERMISSIONS.ADMIN)) {
+      return listVerticalItems
+    }
+
+    console.log('formatmenu', formatMenuByPermission(listVerticalItems, permissionUser))
+
+    return formatMenuByPermission(listVerticalItems, permissionUser)
+  }, [listVerticalItems, permissionUser])
 
   React.useEffect(() => {
     if (!drawerIsOpening) setOpenItems({})
   }, [drawerIsOpening])
 
-  const listVerticalItems = VerticalItems()
+  React.useEffect(() => {
+    if (router.asPath) {
+      const parentTitle = findParentActivePath(memoFormatMenu, router.asPath)
+      setActivePath(router.asPath)
+      if (parentTitle) {
+        setOpenItems({
+          [parentTitle]: true
+        })
+      }
+    }
+  }, [router.asPath])
 
   return (
     <List
@@ -219,7 +300,7 @@ export const ListVerticalLayout: NextPage<TProps> = ({ drawerIsOpening }) => {
       aria-labelledby='nested-list-subheader'
     >
       <RecursiveListItems
-        items={listVerticalItems}
+        items={memoFormatMenu}
         level={1}
         disabled={!drawerIsOpening}
         openItems={openItems}

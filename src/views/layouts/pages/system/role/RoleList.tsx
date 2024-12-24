@@ -48,6 +48,7 @@ import { getDetailsRole } from 'src/services/role'
 // utils
 import { getAllObjectValues } from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
+import { usePermission } from 'src/hooks/usePermission'
 
 type TProps = {}
 
@@ -75,6 +76,8 @@ export const RoleListPage: NextPage<TProps> = () => {
     name: ''
   })
   const [isDisabledPermission, setIsDisabledPermission] = useState(false)
+
+  const { VIEW, CREATE, UPDATE, DELETE } = usePermission('SYSTEM.ROLE', ['VIEW', 'CREATE', 'UPDATE', 'DELETE'])
 
   // redux
   const {

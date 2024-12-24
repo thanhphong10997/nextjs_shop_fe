@@ -1,14 +1,17 @@
 import { useTranslation } from 'react-i18next'
 import { ROUTE_CONFIG } from './route'
+import { PERMISSIONS } from './permission'
 
 export type TVertical = {
   title: string
   icon: string
   path?: string
+  permission?: string
   children?: {
     title: string
     icon: string
     path?: string
+    permission?: string
   }[]
 }
 export const VerticalItems = () => {
@@ -16,18 +19,26 @@ export const VerticalItems = () => {
 
   return [
     {
+      title: t('Dashboard'),
+      icon: 'material-symbols:dashboard-outline',
+      path: ROUTE_CONFIG.DASHBOARD,
+      permission: PERMISSIONS.DASHBOARD
+    },
+    {
       title: t('System'),
       icon: 'eos-icons:file-system-outlined',
       children: [
         {
           title: t('User'),
           icon: 'ph:users-bold',
-          path: ROUTE_CONFIG.SYSTEM.USER
+          path: ROUTE_CONFIG.SYSTEM.USER,
+          permission: PERMISSIONS.SYSTEM.USER.VIEW
         },
         {
           title: t('Role'),
           icon: 'icon-park-outline:permissions',
-          path: ROUTE_CONFIG.SYSTEM.ROLE
+          path: ROUTE_CONFIG.SYSTEM.ROLE,
+          permission: PERMISSIONS.SYSTEM.ROLE.VIEW
         }
       ]
     },
@@ -54,12 +65,13 @@ export const VerticalItems = () => {
         {
           title: t('List_order'),
           icon: 'lets-icons:order',
-          path: ROUTE_CONFIG.MANAGE_PRODUCT.MANAGE_ORDER
+          path: ROUTE_CONFIG.MANAGE_ORDER.ORDER,
+          permission: PERMISSIONS.MANAGE_ORDER.ORDER.VIEW
         },
         {
           title: t('List_review'),
           icon: 'carbon:star-review',
-          path: ROUTE_CONFIG.MANAGE_PRODUCT.MANAGE_REVIEW
+          path: ROUTE_CONFIG.MANAGE_ORDER.MANAGE_REVIEW
         }
       ]
     },
