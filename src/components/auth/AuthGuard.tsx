@@ -40,6 +40,7 @@ const AuthGuard = (props: AuthGuardProps) => {
   }, [router.route])
 
   useEffect(() => {
+    // remove temporary token when reloading page
     const handleUnload = () => {
       clearTemporaryToken()
     }
