@@ -103,7 +103,7 @@ const CreateEditRole = (props: TCreateEditRole) => {
         >
           <Box sx={{ display: 'flex', justifyContent: 'center', position: 'relative', paddingBottom: '20px' }}>
             <Typography variant='h4' sx={{ fontWeight: 600 }}>
-              {roleId ? t('edit_Role') : t('create_role')}
+              {roleId ? t('edit_role') : t('create_role')}
             </Typography>
             <IconButton sx={{ position: 'absolute', top: -24, right: -26 }} onClick={onClose}>
               <Icon icon='ic:baseline-close' fontSize={'26px '} />

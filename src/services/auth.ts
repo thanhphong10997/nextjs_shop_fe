@@ -5,7 +5,7 @@ import { API_ENDPOINT } from 'src/configs/api'
 import instanceAxios from 'src/helpers/axios'
 
 // Types
-import { TChangePassword, TLoginAuth, TRegisterAuth } from 'src/types/auth'
+import { TChangePassword, TLoginAuth, TRegisterAuth } from 'src/types/auth/auth'
 
 export const loginAuth = async (data: TLoginAuth) => {
   const res = await axios.post(`${API_ENDPOINT.AUTH.INDEX}/login`, data)

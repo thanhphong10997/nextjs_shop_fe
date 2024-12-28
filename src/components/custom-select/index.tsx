@@ -46,7 +46,7 @@ const CustomSelect = (props: TCustomSelect) => {
   const { t } = useTranslation()
 
   return (
-    <Box sx={{ width: '100%', height: '100%', position: 'relative' }}>
+    <Box sx={{ width: '100%', height: '57px', position: 'relative' }}>
       {((Array.isArray(value) && !value.length) || !value) && <CustomPlaceholder>{placeholder}</CustomPlaceholder>}
       {/* <CustomPlaceholder>{placeholder}</CustomPlaceholder> */}
       <StyledSelect fullWidth={fullWidth} value={value} label={label} onChange={onChange} {...rests}>

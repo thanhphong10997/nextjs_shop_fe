@@ -43,6 +43,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { resetInitialState } from 'src/stores/auth'
 import { updateAuthMeAsync } from 'src/stores/auth/actions'
 import { AppDispatch, RootState } from 'src/stores'
+import { useAuth } from 'src/hooks/useAuth'
 
 type TProps = {}
 
@@ -115,7 +116,6 @@ export const MyProfilePage: NextPage<TProps> = () => {
   })
 
   const onSubmit: SubmitHandler<Inputs> = (data: any) => {
-    console.log('data', data)
     if (data) {
       const { firstName, middleName, lastName } = convertFullName(data?.fullName, i18n.language)
       dispatch(
@@ -136,6 +136,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
   // fetch api
   const fetchGetAuthMe = async () => {
     setLoading(true)
+    console.log('loading', loading)
     await getAuthMe()
       .then(async res => {
         const data = res?.data
@@ -152,6 +153,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
           })
         }
         setLoading(false)
+        console.log('loading', loading)
       })
       .catch(() => {
         setLoading(false)
@@ -159,9 +161,9 @@ export const MyProfilePage: NextPage<TProps> = () => {
   }
 
   const fetchAllRoles = async () => {
+    setLoading(true)
     await getAllRoles({ params: { limit: -1, page: -1 } })
       .then(res => {
-        console.log('res', { res })
         const data = res?.data?.roles
         if (data) {
           setRoleOptions(
@@ -183,10 +185,10 @@ export const MyProfilePage: NextPage<TProps> = () => {
   useEffect(() => {
     if (messageUpdateMe) {
       if (isSuccessUpdateMe) {
-        toast.success(messageUpdateMe)
+        toast.success(t('update_profile_success'))
         fetchGetAuthMe()
       } else if (isErrorUpdateMe) {
-        toast.error(messageUpdateMe)
+        toast.error(t('update_profile_success'))
       }
       dispatch(resetInitialState())
     }
@@ -202,7 +204,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
 
   return (
     <>
-      {isLoading || (loading && <Spinner />)}
+      {(isLoading || loading) && <Spinner />}
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Grid container>
           {/* Left side */}
@@ -224,6 +226,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
                       flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      flexWrap: 'wrap',
                       gap: 2
                     }}
                   >
@@ -284,6 +287,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
                     px: 4,
                     gap: 4
                   }}
+                  flexWrap={{ xs: 'wrap', md: 'nowrap' }}
                 >
                   <Grid item md={6} xs={12}>
                     <Controller
@@ -489,7 +493,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', height: '100%' }}>
           <Button type='submit' variant='contained' color='primary' sx={{ margin: '12px 0' }}>
-            {t('Update')}
+            {t('update')}
           </Button>
         </Box>
       </form>

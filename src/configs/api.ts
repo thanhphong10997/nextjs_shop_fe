@@ -6,5 +6,8 @@ export const API_ENDPOINT = {
   },
   ROLE: {
     INDEX: `${BASE_URL}/roles`
+  },
+  USER: {
+    INDEX: `${BASE_URL}/users`
   }
 }

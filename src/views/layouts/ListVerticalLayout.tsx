@@ -265,14 +265,10 @@ export const ListVerticalLayout: NextPage<TProps> = ({ drawerIsOpening }) => {
     return []
   }
 
-  console.log('listItem', listVerticalItems)
-
   const memoFormatMenu = React.useMemo(() => {
     if (permissionUser.includes(PERMISSIONS.ADMIN)) {
       return listVerticalItems
     }
-
-    console.log('formatmenu', formatMenuByPermission(listVerticalItems, permissionUser))
 
     return formatMenuByPermission(listVerticalItems, permissionUser)
   }, [listVerticalItems, permissionUser])

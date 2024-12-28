@@ -15,17 +15,7 @@ export type TParamsEditRole = {
   permissions?: string[]
 }
 
-export type TLoginAuth = {
-  email: string
-  password: string
-}
-
-export type TRegisterAuth = {
-  email: string
-  password: string
-}
-
-export type TChangePassword = {
-  currentPassword: string
-  newPassword: string
+export type TParamsDeleteRole = {
+  name: string
+  id: string
 }
