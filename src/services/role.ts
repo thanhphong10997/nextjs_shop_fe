@@ -1,6 +1,6 @@
 import { API_ENDPOINT } from 'src/configs/api'
 import instanceAxios from 'src/helpers/axios'
-import { TParamsCreateRole, TParamsEditRole, TParamsGetRoles } from 'src/types/auth'
+import { TParamsCreateRole, TParamsEditRole, TParamsGetRoles } from 'src/types/role/role'
 
 export const getAllRoles = async (data: { params: TParamsGetRoles }) => {
   try {

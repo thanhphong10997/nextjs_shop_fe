@@ -30,6 +30,8 @@ import { useRouter } from 'next/router'
 // Component
 import { ROUTE_CONFIG } from 'src/configs/route'
 import { toFullName } from 'src/utils'
+import { useSelector } from 'react-redux'
+import { RootState } from 'src/stores'
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -72,8 +74,11 @@ export default function UserDropdown() {
   const router = useRouter()
 
   // auth
-  const { user, logout } = useAuth()
+  const { user, logout, setUser } = useAuth()
   const userPermission = user?.role?.permissions || []
+
+  // redux
+  const { userData } = useSelector((state: RootState) => state.auth)
 
   // handle
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -96,6 +101,13 @@ export default function UserDropdown() {
     router.push(ROUTE_CONFIG.DASHBOARD)
     handleClose()
   }
+
+  // get the user data from redux after update auth me
+  React.useEffect(() => {
+    if (userData) {
+      setUser({ ...userData })
+    }
+  }, [userData])
 
   return (
     <React.Fragment>

@@ -1,24 +1,28 @@
 // ** Redux Imports
-import { Dispatch } from 'redux'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 // ** Axios Imports
-import axios from 'axios'
-import { ChangePasswordMeAsync, registerAuthAsync, updateAuthMeAsync } from './actions'
+import { ChangePasswordMeAsync, registerAuthAsync, serviceName, updateAuthMeAsync } from './actions'
 
-interface DataParams {
-  q: string
-  role: string
-  status: string
-  currentPlan: string
+// Type
+import { UserDataType } from 'src/contexts/types'
+
+type TInitialState = {
+  isLoading: boolean
+  isSuccess: boolean
+  isError: boolean
+  message: string
+  typeError: string
+  isSuccessUpdateMe: boolean
+  isErrorUpdateMe: boolean
+  messageUpdateMe: string
+  isSuccessChangePasswordMe: boolean
+  isErrorChangePasswordMe: boolean
+  messageChangePasswordMe: string
+  userData: UserDataType | null
 }
 
-interface Redux {
-  getState: any
-  dispatch: Dispatch<any>
-}
-
-const initialState = {
+const initialState: TInitialState = {
   isLoading: false,
   isSuccess: true,
   isError: false,
@@ -29,11 +33,12 @@ const initialState = {
   messageUpdateMe: '',
   isSuccessChangePasswordMe: false,
   isErrorChangePasswordMe: true,
-  messageChangePasswordMe: ''
+  messageChangePasswordMe: '',
+  userData: null
 }
 
 export const authSlice = createSlice({
-  name: 'auth',
+  name: serviceName,
   initialState,
   reducers: {
     resetInitialState: state => {
@@ -73,7 +78,7 @@ export const authSlice = createSlice({
       state.typeError = ''
     })
 
-    // Auth Me
+    // update auth Me
     builder.addCase(updateAuthMeAsync.pending, (state, action) => {
       state.isLoading = true
     })
@@ -86,6 +91,7 @@ export const authSlice = createSlice({
       state.isErrorUpdateMe = !action?.payload?.data?.email
       state.messageUpdateMe = action?.payload?.message
       state.typeError = action?.payload?.typeError
+      state.userData = action?.payload?.data
     })
     builder.addCase(updateAuthMeAsync.rejected, (state, action) => {
       state.isLoading = false
@@ -93,6 +99,7 @@ export const authSlice = createSlice({
       state.isErrorUpdateMe = false
       state.messageUpdateMe = ''
       state.typeError = ''
+      state.userData = null
     })
 
     // change password me

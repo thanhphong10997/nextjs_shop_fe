@@ -5,6 +5,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 // ** Axios Imports
 import axios from 'axios'
 import { createRoleAsync, deleteRoleAsync, getAllRolesAsync, updateRoleAsync } from './actions'
+import { serviceName } from '../role/actions'
 
 interface DataParams {
   q: string
@@ -37,7 +38,7 @@ const initialState = {
 }
 
 export const roleSlice = createSlice({
-  name: 'auth',
+  name: serviceName,
   initialState,
   reducers: {
     resetInitialState: state => {

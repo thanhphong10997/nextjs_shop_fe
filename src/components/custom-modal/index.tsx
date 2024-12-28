@@ -22,7 +22,7 @@ const CustomModal = (props: TCustomModal) => {
       <Box
         sx={{
           height: '100%',
-          width: '100vw',
+          width: '100%',
           overflow: 'auto'
         }}
       >
@@ -30,11 +30,12 @@ const CustomModal = (props: TCustomModal) => {
           <Box
             sx={{
               height: '100%',
-              width: '100%',
+              width: '100vw',
               minHeight: '100vh',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              overflow: 'hidden'
             }}
           >
             <Box

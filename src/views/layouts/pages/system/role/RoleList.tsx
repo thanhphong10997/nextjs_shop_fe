@@ -119,6 +119,7 @@ export const RoleListPage: NextPage<TProps> = () => {
             }) ? (
               <Box>
                 <GridEdit
+                  disabled={!UPDATE}
                   onClick={() => {
                     setOpenCreateEdit({
                       open: true,
@@ -127,6 +128,7 @@ export const RoleListPage: NextPage<TProps> = () => {
                   }}
                 />
                 <GridDelete
+                  disabled={!DELETE}
                   onClick={() => {
                     console.log('click')
                     setOpenConfirmationDeleteRole({
@@ -158,9 +160,9 @@ export const RoleListPage: NextPage<TProps> = () => {
   //   )
   // }
 
-  // fetch API
   // ****** Custom pagination
 
+  // fetch API
   const handleGetListRoles = () => {
     dispatch(getAllRolesAsync({ params: { limit: -1, page: -1, search: searchBy, order: sortBy } }))
   }
@@ -291,11 +293,12 @@ export const RoleListPage: NextPage<TProps> = () => {
       >
         <Grid container sx={{ height: '100%', width: '100%' }}>
           <Grid item md={4} xs={12}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
               <Box sx={{ width: '200px' }}>
                 <InputSearch value={searchBy} onChange={(value: string) => setSearchBy(value)} />
               </Box>
               <GridCreate
+                disabled={!CREATE}
                 onClick={() => {
                   setOpenCreateEdit({
                     open: true,
