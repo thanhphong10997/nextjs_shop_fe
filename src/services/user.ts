@@ -1,6 +1,6 @@
 import { API_ENDPOINT } from 'src/configs/api'
 import instanceAxios from 'src/helpers/axios'
-import { TParamsCreateUser, TParamsEditUser, TParamsGetUsers } from 'src/types/user/user'
+import { TParamsCreateUser, TParamsDeleteMultipleUser, TParamsEditUser, TParamsGetUsers } from 'src/types/user/user'
 
 export const getAllUsers = async (data: { params: TParamsGetUsers }) => {
   try {
@@ -38,6 +38,23 @@ export const deleteUser = async (id: string) => {
     const res = await instanceAxios.delete(`${API_ENDPOINT.USER.INDEX}/${id}`)
 
     return res.data
+  } catch (err: any) {
+    return err?.response?.data
+  }
+}
+
+export const deleteMultipleUser = async (data: TParamsDeleteMultipleUser) => {
+  try {
+    const res = await instanceAxios.delete(`${API_ENDPOINT.USER.INDEX}/delete-many`, { data })
+    if (res?.data?.status === 'Success') {
+      return {
+        data: []
+      }
+    }
+
+    return {
+      data: null
+    }
   } catch (err: any) {
     return err?.response?.data
   }

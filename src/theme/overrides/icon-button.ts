@@ -59,7 +59,7 @@ const IconButton = {
     styleOverrides: {
       root: ({ theme }: OwnerStateThemeType) => ({
         '&:hover': {
-          backgroundColor: `rgba(${theme.palette.customColors.main}, 0.08)`
+          backgroundColor: `${theme.palette.customColors.main}14`
         }
       })
     }

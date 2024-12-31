@@ -2,7 +2,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 // ** actions
-import { createUserAsync, deleteUserAsync, getAllUsersAsync, serviceName, updateUserAsync } from './actions'
+import {
+  createUserAsync,
+  deleteMultipleUserAsync,
+  deleteUserAsync,
+  getAllUsersAsync,
+  serviceName,
+  updateUserAsync
+} from './actions'
+import { deleteMultipleUser } from 'src/services/user'
 
 const initialState = {
   isLoading: false,
@@ -16,6 +24,9 @@ const initialState = {
   isSuccessDelete: false,
   isErrorDelete: false,
   messageErrorDelete: '',
+  isSuccessMultipleDelete: false,
+  isErrorMultipleDelete: false,
+  messageErrorMultipleDelete: '',
   users: {
     data: [],
     total: 0
@@ -49,10 +60,9 @@ export const userSlice = createSlice({
     // Still go to fullfilled (not rejected) even if the api return an error
 
     builder.addCase(getAllUsersAsync.fulfilled, (state, action) => {
-      console.log('action', { action })
       state.isLoading = false
-      state.users.data = action.payload?.data?.users
-      state.users.total = action.payload?.data?.totalCount
+      state.users.data = action?.payload?.data?.users || []
+      state.users.total = action?.payload?.data?.totalCount
     })
     builder.addCase(getAllUsersAsync.rejected, (state, action) => {
       state.isLoading = false
@@ -68,12 +78,11 @@ export const userSlice = createSlice({
     // Still go to fullfilled (not rejected) even if the api return an error
 
     builder.addCase(createUserAsync.fulfilled, (state, action) => {
-      console.log('action', { action })
       state.isLoading = false
-      state.isSuccessCreateEdit = !!action.payload?.data?._id
-      state.isErrorCreateEdit = !action.payload?.data?._id
-      state.messageErrorCreateEdit = action.payload?.message
-      state.typeError = action.payload?.typeError
+      state.isSuccessCreateEdit = !!action?.payload?.data?._id
+      state.isErrorCreateEdit = !action?.payload?.data?._id
+      state.messageErrorCreateEdit = action?.payload?.message
+      state.typeError = action?.payload?.typeError
     })
 
     // **  Because we catch the error from the axios in services folder so the error can't go the rejected status  ** //
@@ -93,12 +102,11 @@ export const userSlice = createSlice({
     // Still go to fullfilled (not rejected) even if the api return an error
 
     builder.addCase(updateUserAsync.fulfilled, (state, action) => {
-      console.log('action', { action })
       state.isLoading = false
-      state.isSuccessCreateEdit = !!action.payload?.data?._id
-      state.isErrorCreateEdit = !action.payload?.data?._id
-      state.messageErrorCreateEdit = action.payload?.message
-      state.typeError = action.payload?.typeError
+      state.isSuccessCreateEdit = !!action?.payload?.data?._id
+      state.isErrorCreateEdit = !action?.payload?.data?._id
+      state.messageErrorCreateEdit = action?.payload?.message
+      state.typeError = action?.payload?.typeError
     })
 
     // Delete User
@@ -109,12 +117,26 @@ export const userSlice = createSlice({
     // Still go to fullfilled (not rejected) even if the api return an error
 
     builder.addCase(deleteUserAsync.fulfilled, (state, action) => {
-      console.log('action', { action })
       state.isLoading = false
-      state.isSuccessDelete = !!action.payload?.data?._id
-      state.isErrorDelete = !action.payload?.data?._id
-      state.messageErrorDelete = action.payload?.message
-      state.typeError = action.payload?.typeError
+      state.isSuccessDelete = !!action?.payload?.data?._id
+      state.isErrorDelete = !action?.payload?.data?._id
+      state.messageErrorDelete = action?.payload?.message
+      state.typeError = action?.payload?.typeError
+    })
+
+    // Delete Multiple User
+    builder.addCase(deleteMultipleUserAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+
+    // Still go to fullfilled (not rejected) even if the api return an error
+
+    builder.addCase(deleteMultipleUserAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccessMultipleDelete = !!action?.payload?.data
+      state.isErrorMultipleDelete = !action?.payload?.data
+      state.messageErrorMultipleDelete = action?.payload?.message
+      state.typeError = action?.payload?.typeError
     })
   }
 })

@@ -8,7 +8,10 @@ const DefaultPalette = (mode: Palette['mode'], skin: Skin): Palette => {
   const lightColor = '47, 43, 61'
   const darkColor = '208, 212, 241'
   const darkPaperBgColor = '#2F3349'
-  const mainColor = mode === 'light' ? `rgb(${lightColor})` : `rgb(${darkColor})`
+
+  const lightColorHex = '#2F2B3D'
+  const darkColorHex = '#D0D4F1'
+  const mainColor = mode === 'light' ? `${lightColorHex}` : `${darkColorHex}`
 
   const defaultBgColor = () => {
     if (skin === 'bordered' && mode === 'light') {
@@ -31,7 +34,7 @@ const DefaultPalette = (mode: Palette['mode'], skin: Skin): Palette => {
       trackBg: mode === 'light' ? '#F1F0F2' : '#363B54',
       avatarBg: mode === 'light' ? '#DBDADE' : '#4A5072',
       tableHeaderBg: mode === 'light' ? '#F6F6F7' : '#4A5072',
-      borderColor: `rgba(${mainColor}, 0.16)`
+      borderColor: `${mainColor}29`
     },
     mode: mode,
     common: {
@@ -91,23 +94,23 @@ const DefaultPalette = (mode: Palette['mode'], skin: Skin): Palette => {
       A700: '#616161'
     },
     text: {
-      primary: `rgba(${mainColor}, 0.78)`,
-      secondary: `rgba(${mainColor}, 0.68)`,
-      disabled: `rgba(${mainColor}, 0.42)`
+      primary: `${mainColor}c7`,
+      secondary: `${mainColor}ad`,
+      disabled: `${mainColor}6b)`
     },
-    divider: `rgba(${mainColor}, 0.16)`,
+    divider: `${mainColor}29`,
     background: {
       paper: mode === 'light' ? whiteColor : darkPaperBgColor,
       default: defaultBgColor()
     },
     action: {
-      active: `rgba(${mainColor}, 0.54)`,
-      hover: `rgba(${mainColor}, 0.04)`,
-      selected: `rgba(${mainColor}, 0.06)`,
+      active: `${mainColor}8a`,
+      hover: `${mainColor}0a`,
+      selected: `${mainColor}0f`,
       selectedOpacity: 0.06,
-      disabled: `rgba(${mainColor}, 0.26)`,
-      disabledBackground: `rgba(${mainColor}, 0.12)`,
-      focus: `rgba(${mainColor}, 0.12)`
+      disabled: `${mainColor}42`,
+      disabledBackground: `${mainColor}1f`,
+      focus: `${mainColor}1f`
     }
   } as Palette
 }
