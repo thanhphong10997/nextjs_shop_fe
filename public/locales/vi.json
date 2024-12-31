@@ -6,7 +6,9 @@
   "Role": "Vai trò",
   "Full_name": "Họ và tên",
   "City": "Thành phố",
+  "Status": "Trạng thái",
   "Address": "Địa chỉ",
+  "Blocking": "Đang tạm khóa",
   "Phone_number": "Số điện thoại",
   "enter_your_role" : "Chọn vai trò của bạn",
   "enter_your_email": "Nhập email của bạn",
@@ -89,8 +91,14 @@
   "update_user_error": "Cập nhật người dùng thất bại",
   "delete_user_success": "Xóa người dùng thành công",
   "delete_user_error": "Xóa người dùng thất bại",
+  "delete_multiple_user_success": "Xóa nhiều người dùng thành công",
+  "delete_multiple_user_error": "Xóa nhiều người dùng thất bại",
   "title_delete_user": "Xóa người dùng",
-  "confirm_delete_user": "Xác nhận xóa người dùng",
+  "confirm_delete_user": "Xác nhận xóa người dùng này" ,
+  "confirm_multiple_delete_user": "Xác nhận xóa những người dùng này",
+  "title_multiple_delete_user": "Xác nhận xóa nhiều người dùng",
   "update_profile_success": "Cập nhật thông tin cá nhân thành công",
-  "update_profile_error": "Cập nhật thông tin cá nhân thất bại"
+  "update_profile_error": "Cập nhật thông tin cá nhân thất bại",
+  "selected": "Đã chọn",
+  "delete": "Xóa"
 }

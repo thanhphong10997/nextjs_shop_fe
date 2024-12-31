@@ -45,7 +45,7 @@ const StyledListItemText = styled(ListItemText)<TListItemText>(({ theme, active 
     '.MuiTypography-root': {
       overflow: 'hidden',
       textOverflow: 'ellipsis',
-      color: active ? `${theme.palette.primary.main}!important` : `rgba(${theme.palette.customColors.main}, 0.7)`,
+      color: active ? `${theme.palette.primary.main}!important` : `${theme.palette.customColors.main}b3`,
       fontWeight: active ? 600 : 400
     }
   }
@@ -142,7 +142,7 @@ const RecursiveListItems: NextPage<TListItems> = ({
                       color:
                         (activePath && item.path === activePath) || !!openItems[item.title] || isParentActive
                           ? theme.palette.customColors.lightPaperBg
-                          : `rgba(${theme.palette.customColors.main}, 0.7)`
+                          : `${theme.palette.customColors.main}b3`
                     }}
                   />
                 </Box>
@@ -166,15 +166,13 @@ const RecursiveListItems: NextPage<TListItems> = ({
                         color:
                           (activePath && item.path === activePath) || !!openItems[item.title] || isParentActive
                             ? theme.palette.primary.main
-                            : `rgba(${theme.palette.customColors.main}, 0.7)`
+                            : `${theme.palette.customColors.main}b3`
                       }}
                     />
                   ) : (
                     <Icon
                       style={{
-                        color: isParentActive
-                          ? theme.palette.primary.main
-                          : `rgba(${theme.palette.customColors.main}, 0.7)`
+                        color: isParentActive ? theme.palette.primary.main : `${theme.palette.customColors.main}b3`
                       }}
                       icon='ic:round-expand-more'
                     />

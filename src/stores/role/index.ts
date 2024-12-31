@@ -64,10 +64,9 @@ export const roleSlice = createSlice({
     // Still go to fullfilled (not rejected) even if the api return an error
 
     builder.addCase(getAllRolesAsync.fulfilled, (state, action) => {
-      console.log('action', { action })
       state.isLoading = false
-      state.roles.data = action.payload?.data?.roles
-      state.roles.total = action.payload?.data?.totalCount
+      state.roles.data = action?.payload?.data?.roles
+      state.roles.total = action?.payload?.data?.totalCount
     })
     builder.addCase(getAllRolesAsync.rejected, (state, action) => {
       state.isLoading = false
@@ -83,12 +82,11 @@ export const roleSlice = createSlice({
     // Still go to fullfilled (not rejected) even if the api return an error
 
     builder.addCase(createRoleAsync.fulfilled, (state, action) => {
-      console.log('action', { action })
       state.isLoading = false
-      state.isSuccessCreateEdit = !!action.payload?.data?._id
-      state.isErrorCreateEdit = !action.payload?.data?._id
-      state.messageErrorCreateEdit = action.payload?.message
-      state.typeError = action.payload?.typeError
+      state.isSuccessCreateEdit = !!action?.payload?.data?._id
+      state.isErrorCreateEdit = !action?.payload?.data?._id
+      state.messageErrorCreateEdit = action?.payload?.message
+      state.typeError = action?.payload?.typeError
     })
 
     // **  Because we catch the error from the axios in services folder so the error can't go the rejected status  ** //
@@ -108,12 +106,11 @@ export const roleSlice = createSlice({
     // Still go to fullfilled (not rejected) even if the api return an error
 
     builder.addCase(updateRoleAsync.fulfilled, (state, action) => {
-      console.log('action', { action })
       state.isLoading = false
-      state.isSuccessCreateEdit = !!action.payload?.data?._id
-      state.isErrorCreateEdit = !action.payload?.data?._id
-      state.messageErrorCreateEdit = action.payload?.message
-      state.typeError = action.payload?.typeError
+      state.isSuccessCreateEdit = !!action?.payload?.data?._id
+      state.isErrorCreateEdit = !action?.payload?.data?._id
+      state.messageErrorCreateEdit = action?.payload?.message
+      state.typeError = action?.payload?.typeError
     })
 
     // Delete Role
@@ -124,12 +121,11 @@ export const roleSlice = createSlice({
     // Still go to fullfilled (not rejected) even if the api return an error
 
     builder.addCase(deleteRoleAsync.fulfilled, (state, action) => {
-      console.log('action', { action })
       state.isLoading = false
-      state.isSuccessDelete = !!action.payload?.data?._id
-      state.isErrorDelete = !action.payload?.data?._id
-      state.messageErrorDelete = action.payload?.message
-      state.typeError = action.payload?.typeError
+      state.isSuccessDelete = !!action?.payload?.data?._id
+      state.isErrorDelete = !action?.payload?.data?._id
+      state.messageErrorDelete = action?.payload?.message
+      state.typeError = action?.payload?.typeError
     })
   }
 })

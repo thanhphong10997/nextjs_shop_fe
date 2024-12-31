@@ -3,18 +3,17 @@ import {
   Avatar,
   Box,
   Button,
-  FormControlLabel,
-  FormGroup,
   FormHelperText,
   Grid,
   IconButton,
   InputAdornment,
-  Switch,
+  styled,
   TextField,
-  Tooltip,
   Typography,
   useTheme
 } from '@mui/material'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Switch, { SwitchProps } from '@mui/material/Switch'
 
 // Import React
 import React, { useEffect, useState } from 'react'
@@ -57,6 +56,14 @@ type TDefaultValues = {
   status?: number
   city?: string
 }
+
+const StyledSwitch = styled(Switch)<SwitchProps>(({ theme }) => {
+  return {
+    '.MuiSwitch-switchBase': {
+      color: `rgba(47, 43, 61,0.78)`
+    }
+  }
+})
 
 const CreateEditUser = (props: TCreateEditUser) => {
   // translate
@@ -132,7 +139,8 @@ const CreateEditUser = (props: TCreateEditUser) => {
             role: data?.role,
             address: data?.address,
             city: data?.city,
-            avatar: avatar
+            avatar: avatar,
+            status: data?.status ? 1 : 0
           })
         )
       } else {
@@ -217,6 +225,8 @@ const CreateEditUser = (props: TCreateEditUser) => {
       reset({
         ...defaultValues
       })
+      setAvatar('')
+      setShowPassword(false)
     } else if (userId) {
       fetchDetailsUser(userId)
     }
@@ -381,6 +391,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
 
                               return (
                                 <TextField
+                                  required
                                   error={Boolean(errors.password)}
                                   variant='outlined'
                                   placeholder={t('enter_current_password')}
@@ -420,7 +431,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
                               return (
                                 <FormControlLabel
                                   control={
-                                    <Switch
+                                    <StyledSwitch
                                       value={value}
                                       checked={Boolean(value)}
                                       onChange={event => {
@@ -447,11 +458,13 @@ const CreateEditUser = (props: TCreateEditUser) => {
                         <Controller
                           name='fullName'
                           control={control}
+                          rules={{ required: true }}
                           render={({ field: { onChange, onBlur, value } }) => {
                             // Fixing error: Function components cannot be given refs
 
                             return (
                               <TextField
+                                required
                                 label={t('Full_name')}
                                 placeholder={t('enter_your_full_name')}
                                 variant='filled'

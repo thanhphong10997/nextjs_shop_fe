@@ -16,10 +16,10 @@ const input = () => {
       styleOverrides: {
         root: ({ theme }: OwnerStateThemeType) => ({
           '&:before': {
-            borderBottom: `1px solid rgba(${theme.palette.customColors.main}, 0.2)`
+            borderBottom: `1px solid ${theme.palette.customColors.main}33`
           },
           '&:hover:not(.Mui-disabled):before': {
-            borderBottom: `1px solid rgba(${theme.palette.customColors.main}, 0.28)`
+            borderBottom: `1px solid ${theme.palette.customColors.main}47`
           },
           '&.Mui-disabled:before': {
             borderBottomStyle: 'solid'
@@ -34,15 +34,15 @@ const input = () => {
             borderTopLeftRadius: 8,
             borderTopRightRadius: 8
           },
-          backgroundColor: `rgba(${theme.palette.customColors.main}, 0.04)`,
+          backgroundColor: `${theme.palette.customColors.main}0a`,
           '&:hover:not(.Mui-disabled)': {
-            backgroundColor: `rgba(${theme.palette.customColors.main}, 0.08)`
+            backgroundColor: `${theme.palette.customColors.main}14`
           },
           '&:before': {
-            borderBottom: `1px solid rgba(${theme.palette.customColors.main}, 0.2)`
+            borderBottom: `1px solid ${theme.palette.customColors.main}33`
           },
           '&:hover:not(.Mui-disabled):before': {
-            borderBottom: `1px solid rgba(${theme.palette.customColors.main}, 0.28)`
+            borderBottom: `1px solid ${theme.palette.customColors.main}47`
           }
         })
       }

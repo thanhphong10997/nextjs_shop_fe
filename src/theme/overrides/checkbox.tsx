@@ -30,7 +30,7 @@ const Icon = () => {
     <svg
       width='24'
       height='24'
-      fill='none'
+      fill={theme.palette.secondary.main}
       viewBox='0 0 24 24'
       xmlns='http://www.w3.org/2000/svg'
       stroke={theme.palette.text.disabled}
@@ -72,9 +72,9 @@ const Checkbox = () => {
         root: ({ theme }: OwnerStateThemeType) => ({
           '&.Mui-checked': {
             '& svg': {
-              filter: `drop-shadow(0 2px 3px rgba(${
-                theme.palette.mode === 'light' ? theme.palette.customColors.main : '12, 16, 27'
-              }, 0.16))`
+              filter: `drop-shadow(0 2px 3px ${
+                theme.palette.mode === 'light' ? theme.palette.customColors.main : '#0C1015'
+              }29)`
             },
             '&.Mui-disabled svg': {
               filter: 'none',

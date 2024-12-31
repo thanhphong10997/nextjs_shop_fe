@@ -20,7 +20,7 @@ const Chip = () => {
         }),
         outlined: ({ theme }: OwnerStateThemeType) => ({
           '&.MuiChip-colorDefault': {
-            borderColor: `rgba(${theme.palette.customColors.main}, 0.2)`
+            borderColor: `${theme.palette.customColors.main}f1`
           }
         }),
         labelSmall: ({ theme }: OwnerStateThemeType) => ({

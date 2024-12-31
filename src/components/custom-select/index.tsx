@@ -1,6 +1,7 @@
 // Mui
 import {
   Box,
+  boxClasses,
   FormControl,
   InputLabel,
   InputLabelProps,
@@ -18,6 +19,12 @@ type TCustomSelect = SelectProps & {
 
 const StyledSelect = styled(Select)<SelectProps>(({ theme }) => {
   return {
+    // '& .MuiSelect-select.MuiSelect-outlined.MuiInputBase-input': {
+    //   padding: '4px 8px 8px 10px !important',
+
+    //   // height: '38px',
+    //   boxSizing: 'border-box'
+    // },
     legend: {
       height: '14px!important',
       lineHeight: 1.2
@@ -25,6 +32,11 @@ const StyledSelect = styled(Select)<SelectProps>(({ theme }) => {
     '.css-14lo706 > span': {
       opacity: 1
     }
+
+    // '.MuiOutlinedInput-notchedOutline': {
+    //   top: '0!important',
+    //   bottom: '2px!important'
+    // }
   }
 })
 
