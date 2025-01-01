@@ -57,14 +57,6 @@ type TDefaultValues = {
   city?: string
 }
 
-const StyledSwitch = styled(Switch)<SwitchProps>(({ theme }) => {
-  return {
-    '.MuiSwitch-switchBase': {
-      color: `rgba(47, 43, 61,0.78)`
-    }
-  }
-})
-
 const CreateEditUser = (props: TCreateEditUser) => {
   // translate
   const { t, i18n } = useTranslation()
@@ -431,7 +423,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
                               return (
                                 <FormControlLabel
                                   control={
-                                    <StyledSwitch
+                                    <Switch
                                       value={value}
                                       checked={Boolean(value)}
                                       onChange={event => {
