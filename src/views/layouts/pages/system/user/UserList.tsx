@@ -283,7 +283,7 @@ export const UserListPage: NextPage<TProps> = () => {
     )
   }
 
-  const handleDeleteRole = () => {
+  const handleDeleteUser = () => {
     dispatch(deleteUserAsync(openConfirmationDeleteUser.id))
   }
 
@@ -412,7 +412,7 @@ export const UserListPage: NextPage<TProps> = () => {
         open={openConfirmationDeleteUser.open}
         handleClose={handleCloseConfirmDeleteUser}
         handleCancel={handleCloseConfirmDeleteUser}
-        handleConfirm={handleDeleteRole}
+        handleConfirm={handleDeleteUser}
       />
       <ConfirmationDialog
         title={t('title_multiple_delete_user')}
@@ -479,7 +479,7 @@ export const UserListPage: NextPage<TProps> = () => {
             <TableHeader
               numRow={selectedRow?.length}
               onClear={() => setSelectedRow([])}
-              actions={[{ label: t('delete'), value: 'delete', disabled: memoDisabledDeleteUser }]}
+              actions={[{ label: t('delete'), value: 'delete', disabled: memoDisabledDeleteUser || !DELETE }]}
               handleAction={handleAction}
             />
           )}
