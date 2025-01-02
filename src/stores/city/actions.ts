@@ -6,7 +6,7 @@ import { createCity, deleteMultipleCity, deleteCity, getAllCities, updateCity } 
 // types
 import { TParamsCreateCity, TParamsDeleteMultipleCity, TParamsEditCity, TParamsGetCities } from 'src/types/city'
 
-export const serviceName = 'City'
+export const serviceName = 'city'
 
 export const getAllCitiesAsync = createAsyncThunk(
   `${serviceName}/get-all`,

@@ -70,3 +70,12 @@ export const getAllObjectValues = (object: any, arrExclude?: string[]) => {
     return []
   }
 }
+
+export const formatDate = (
+  value: Date | string,
+  formatting: Intl.DateTimeFormatOptions = { month: 'numeric', day: 'numeric', year: 'numeric' }
+) => {
+  if (!value) return value
+
+  return new Intl.DateTimeFormat('vi-VN', formatting).format(new Date(value))
+}

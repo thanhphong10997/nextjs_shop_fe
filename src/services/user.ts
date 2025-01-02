@@ -4,7 +4,7 @@ import { TParamsCreateUser, TParamsDeleteMultipleUser, TParamsEditUser, TParamsG
 
 export const getAllUsers = async (data: { params: TParamsGetUsers }) => {
   try {
-    const res = await instanceAxios.get(`${API_ENDPOINT.USER.INDEX}`, data)
+    const res = await instanceAxios.get(`${API_ENDPOINT.SYSTEM.USER.INDEX}`, data)
 
     return res.data
   } catch (err) {
@@ -14,7 +14,7 @@ export const getAllUsers = async (data: { params: TParamsGetUsers }) => {
 
 export const createUser = async (data: TParamsCreateUser) => {
   try {
-    const res = await instanceAxios.post(`${API_ENDPOINT.USER.INDEX}`, data)
+    const res = await instanceAxios.post(`${API_ENDPOINT.SYSTEM.USER.INDEX}`, data)
 
     return res.data
   } catch (err: any) {
@@ -25,7 +25,7 @@ export const createUser = async (data: TParamsCreateUser) => {
 export const updateUser = async (data: TParamsEditUser) => {
   const { id, ...rests } = data
   try {
-    const res = await instanceAxios.put(`${API_ENDPOINT.USER.INDEX}/${id}`, rests)
+    const res = await instanceAxios.put(`${API_ENDPOINT.SYSTEM.USER.INDEX}/${id}`, rests)
 
     return res.data
   } catch (err: any) {
@@ -35,7 +35,7 @@ export const updateUser = async (data: TParamsEditUser) => {
 
 export const deleteUser = async (id: string) => {
   try {
-    const res = await instanceAxios.delete(`${API_ENDPOINT.USER.INDEX}/${id}`)
+    const res = await instanceAxios.delete(`${API_ENDPOINT.SYSTEM.USER.INDEX}/${id}`)
 
     return res.data
   } catch (err: any) {
@@ -45,7 +45,7 @@ export const deleteUser = async (id: string) => {
 
 export const deleteMultipleUser = async (data: TParamsDeleteMultipleUser) => {
   try {
-    const res = await instanceAxios.delete(`${API_ENDPOINT.USER.INDEX}/delete-many`, { data })
+    const res = await instanceAxios.delete(`${API_ENDPOINT.SYSTEM.USER.INDEX}/delete-many`, { data })
     if (res?.data?.status === 'Success') {
       return {
         data: []
@@ -62,7 +62,7 @@ export const deleteMultipleUser = async (data: TParamsDeleteMultipleUser) => {
 
 export const getDetailsUser = async (id: string) => {
   try {
-    const res = await instanceAxios.get(`${API_ENDPOINT.USER.INDEX}/${id}`)
+    const res = await instanceAxios.get(`${API_ENDPOINT.SYSTEM.USER.INDEX}/${id}`)
 
     return res.data
   } catch (err: any) {
