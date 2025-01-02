@@ -4,7 +4,7 @@ import { TParamsCreateRole, TParamsEditRole, TParamsGetRoles } from 'src/types/r
 
 export const getAllRoles = async (data: { params: TParamsGetRoles }) => {
   try {
-    const res = await instanceAxios.get(`${API_ENDPOINT.ROLE.INDEX}`, data)
+    const res = await instanceAxios.get(`${API_ENDPOINT.SYSTEM.ROLE.INDEX}`, data)
 
     return res.data
   } catch (err) {
@@ -14,7 +14,7 @@ export const getAllRoles = async (data: { params: TParamsGetRoles }) => {
 
 export const createRole = async (data: TParamsCreateRole) => {
   try {
-    const res = await instanceAxios.post(`${API_ENDPOINT.ROLE.INDEX}`, data)
+    const res = await instanceAxios.post(`${API_ENDPOINT.SYSTEM.ROLE.INDEX}`, data)
 
     return res.data
   } catch (err: any) {
@@ -25,7 +25,7 @@ export const createRole = async (data: TParamsCreateRole) => {
 export const updateRole = async (data: TParamsEditRole) => {
   const { id, ...rests } = data
   try {
-    const res = await instanceAxios.put(`${API_ENDPOINT.ROLE.INDEX}/${id}`, rests)
+    const res = await instanceAxios.put(`${API_ENDPOINT.SYSTEM.ROLE.INDEX}/${id}`, rests)
 
     return res.data
   } catch (err: any) {
@@ -35,7 +35,7 @@ export const updateRole = async (data: TParamsEditRole) => {
 
 export const deleteRole = async (id: string) => {
   try {
-    const res = await instanceAxios.delete(`${API_ENDPOINT.ROLE.INDEX}/${id}`)
+    const res = await instanceAxios.delete(`${API_ENDPOINT.SYSTEM.ROLE.INDEX}/${id}`)
 
     return res.data
   } catch (err: any) {
@@ -45,7 +45,7 @@ export const deleteRole = async (id: string) => {
 
 export const getDetailsRole = async (id: string) => {
   try {
-    const res = await instanceAxios.get(`${API_ENDPOINT.ROLE.INDEX}/${id}`)
+    const res = await instanceAxios.get(`${API_ENDPOINT.SYSTEM.ROLE.INDEX}/${id}`)
 
     return res.data
   } catch (err: any) {
