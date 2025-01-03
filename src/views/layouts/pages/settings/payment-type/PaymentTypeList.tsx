@@ -11,14 +11,14 @@ import React, { useEffect, useState } from 'react'
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
-import { resetInitialState } from 'src/stores/delivery-type'
+import { resetInitialState } from 'src/stores/payment-type'
 import {
-  getAllDeliveryTypesAsync,
-  deleteDeliveryTypeAsync,
-  deleteMultipleDeliveryTypeAsync,
-  createDeliveryTypeAsync,
-  updateDeliveryTypeAsync
-} from 'src/stores/delivery-type/actions'
+  getAllPaymentTypesAsync,
+  deletePaymentTypeAsync,
+  deleteMultiplePaymentTypeAsync,
+  createPaymentTypeAsync,
+  updatePaymentTypeAsync
+} from 'src/stores/payment-type/actions'
 
 // translate
 import { useTranslation } from 'react-i18next'
@@ -36,7 +36,7 @@ import InputSearch from 'src/components/input-search'
 import Spinner from 'src/components/spinner'
 import ConfirmationDialog from 'src/components/confirmation-dialog'
 import TableHeader from 'src/components/table-header'
-import CreateEditDeliveryType from './component/CreateEditDeliveryType'
+import CreateEditPaymentType from './component/CreateEditPaymentType'
 
 // react toast
 import toast from 'react-hot-toast'
@@ -52,17 +52,20 @@ import { usePermission } from 'src/hooks/usePermission'
 
 // utils
 import { formatDate } from 'src/utils'
+import { PAYMENT_TYPES } from 'src/configs/payment'
 
 type TProps = {}
 
 type TSelectedRow = { id: string; role: { name: string; permissions: string[] } }
 
-export const DeliveryTypeListPage: NextPage<TProps> = () => {
+export const PaymentTypeListPage: NextPage<TProps> = () => {
   // theme
   const theme = useTheme()
 
   // translate
   const { t, i18n } = useTranslation()
+
+  const ObjectPaymentType: any = PAYMENT_TYPES()
 
   // state
   const [page, setPage] = useState(1)
@@ -71,27 +74,22 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
     open: false,
     id: ''
   })
-  const [openConfirmationDeleteDeliveryType, setOpenConfirmationDeleteDeliveryType] = useState({
+  const [openConfirmationDeletePaymentType, setOpenConfirmationDeletePaymentType] = useState({
     open: false,
     id: ''
   })
-  const [openConfirmationDeleteMultipleDeliveryType, setOpenConfirmationDeleteMultipleDeliveryType] = useState(false)
+  const [openConfirmationDeleteMultiplePaymentType, setOpenConfirmationDeleteMultiplePaymentType] = useState(false)
   const [sortBy, setSortBy] = useState('createdAt desc')
   const [searchBy, setSearchBy] = useState('')
   const [loading, setLoading] = useState(false)
   const [selectedRow, setSelectedRow] = useState<string[]>([])
 
   // hooks
-  const { VIEW, CREATE, UPDATE, DELETE } = usePermission('SETTING.DELIVERY_TYPE', [
-    'VIEW',
-    'CREATE',
-    'UPDATE',
-    'DELETE'
-  ])
+  const { VIEW, CREATE, UPDATE, DELETE } = usePermission('SETTING.PAYMENT_TYPE', ['VIEW', 'CREATE', 'UPDATE', 'DELETE'])
 
   // redux
   const {
-    deliveryTypes,
+    paymentTypes,
     isSuccessCreateEdit,
     isErrorCreateEdit,
     messageErrorCreateEdit,
@@ -103,7 +101,7 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
     isErrorMultipleDelete,
     messageErrorMultipleDelete,
     typeError
-  } = useSelector((state: RootState) => state.deliveryType)
+  } = useSelector((state: RootState) => state.paymentType)
 
   // redux
   const dispatch: AppDispatch = useDispatch()
@@ -121,15 +119,15 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
       }
     },
     {
-      field: 'price',
-      headerName: t('Price'),
+      field: 'type',
+      headerName: t('Type'),
       flex: 1,
-      minWidth: 200,
-      maxWidth: 200,
+      minWidth: 220,
+      maxWidth: 220,
       renderCell: params => {
         const { row } = params
 
-        return <Typography>{row?.price}</Typography>
+        return <Typography>{ObjectPaymentType[row?.type]?.label}</Typography>
       }
     },
     {
@@ -168,7 +166,7 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
               <GridDelete
                 disabled={!DELETE}
                 onClick={() => {
-                  setOpenConfirmationDeleteDeliveryType({
+                  setOpenConfirmationDeletePaymentType({
                     open: true,
                     id: String(params.id)
                   })
@@ -188,7 +186,7 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
       <CustomPagination
         pageSize={pageSize}
         page={page}
-        rowLength={deliveryTypes.total}
+        rowLength={paymentTypes.total}
         pageSizeOptions={PAGE_SIZE_OPTION}
         onChangePagination={handleOnChangePagination}
       />
@@ -198,9 +196,9 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
   // ****** Custom pagination
 
   // fetch API
-  const handleGetListDeliveryTypes = () => {
+  const handleGetListPaymentTypes = () => {
     const query = { params: { limit: pageSize, page: page, search: searchBy, order: sortBy } }
-    dispatch(getAllDeliveryTypesAsync(query))
+    dispatch(getAllPaymentTypesAsync(query))
   }
 
   // Handle
@@ -209,27 +207,27 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
     setPageSize(pageSize)
   }
 
-  const handleCloseConfirmDeleteDeliveryType = () => {
-    setOpenConfirmationDeleteDeliveryType({
+  const handleCloseConfirmDeletePaymentType = () => {
+    setOpenConfirmationDeletePaymentType({
       open: false,
       id: ''
     })
   }
 
-  const handleCloseConfirmDeleteMultipleDeliveryType = () => {
-    setOpenConfirmationDeleteMultipleDeliveryType(false)
+  const handleCloseConfirmDeleteMultiplePaymentType = () => {
+    setOpenConfirmationDeleteMultiplePaymentType(false)
   }
 
-  const handleDeleteMultipleDeliveryType = () => {
+  const handleDeleteMultiplePaymentType = () => {
     dispatch(
-      deleteMultipleDeliveryTypeAsync({
-        deliveryTypeIds: selectedRow
+      deleteMultiplePaymentTypeAsync({
+        paymentTypeIds: selectedRow
       })
     )
   }
 
-  const handleDeleteDeliveryType = () => {
-    dispatch(deleteDeliveryTypeAsync(openConfirmationDeleteDeliveryType.id))
+  const handleDeletePaymentType = () => {
+    dispatch(deletePaymentTypeAsync(openConfirmationDeletePaymentType.id))
   }
 
   const handleCloseCreateEdit = () => {
@@ -251,7 +249,7 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
   const handleAction = (action: string) => {
     switch (action) {
       case 'delete': {
-        setOpenConfirmationDeleteMultipleDeliveryType(true)
+        setOpenConfirmationDeleteMultiplePaymentType(true)
         break
       }
     }
@@ -262,17 +260,17 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
   // side effects
 
   useEffect(() => {
-    handleGetListDeliveryTypes()
+    handleGetListPaymentTypes()
   }, [sortBy, searchBy, page, pageSize])
 
   useEffect(() => {
     if (isSuccessCreateEdit) {
       if (openCreateEdit.id) {
-        toast.success(t('update_delivery_type_success'))
+        toast.success(t('update_payment_type_success'))
       } else {
-        toast.success(t('create_delivery_type_success'))
+        toast.success(t('create_payment_type_success'))
       }
-      handleGetListDeliveryTypes()
+      handleGetListPaymentTypes()
       handleCloseCreateEdit()
       dispatch(resetInitialState())
     } else if (isErrorCreateEdit && messageErrorCreateEdit && typeError) {
@@ -281,9 +279,9 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
         toast.error(t(errorConfig))
       } else {
         if (openCreateEdit.id) {
-          toast.error(t('update_delivery_type_error'))
+          toast.error(t('update_payment_type_error'))
         } else {
-          toast.error(t('create_delivery_type_error'))
+          toast.error(t('create_payment_type_error'))
         }
       }
       dispatch(resetInitialState())
@@ -292,24 +290,24 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
 
   useEffect(() => {
     if (isSuccessDelete) {
-      toast.success(t('delete_delivery_type_success'))
-      handleGetListDeliveryTypes()
+      toast.success(t('delete_payment_type_success'))
+      handleGetListPaymentTypes()
       dispatch(resetInitialState())
-      handleCloseConfirmDeleteDeliveryType()
+      handleCloseConfirmDeletePaymentType()
     } else if (isErrorDelete && messageErrorDelete) {
-      toast.error(t('delete_delivery_type_error'))
+      toast.error(t('delete_payment_type_error'))
       dispatch(resetInitialState())
     }
   }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
 
   useEffect(() => {
     if (isSuccessMultipleDelete) {
-      toast.success(t('delete_multiple_delivery_type_success'))
-      handleGetListDeliveryTypes()
+      toast.success(t('delete_multiple_payment_type_success'))
+      handleGetListPaymentTypes()
       dispatch(resetInitialState())
-      handleCloseConfirmDeleteMultipleDeliveryType()
+      handleCloseConfirmDeleteMultiplePaymentType()
     } else if (isErrorMultipleDelete && messageErrorMultipleDelete) {
-      toast.error(t('delete_multiple_delivery_type_error'))
+      toast.error(t('delete_multiple_payment_type_error'))
       dispatch(resetInitialState())
     }
   }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageErrorMultipleDelete])
@@ -318,25 +316,25 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
     <>
       {loading && <Spinner />}
       <ConfirmationDialog
-        title={t('title_delete_delivery_type')}
-        description={t('confirm_delete_delivery_type')}
-        open={openConfirmationDeleteDeliveryType.open}
-        handleClose={handleCloseConfirmDeleteDeliveryType}
-        handleCancel={handleCloseConfirmDeleteDeliveryType}
-        handleConfirm={handleDeleteDeliveryType}
+        title={t('title_delete_payment_type')}
+        description={t('confirm_delete_payment_type')}
+        open={openConfirmationDeletePaymentType.open}
+        handleClose={handleCloseConfirmDeletePaymentType}
+        handleCancel={handleCloseConfirmDeletePaymentType}
+        handleConfirm={handleDeletePaymentType}
       />
       <ConfirmationDialog
-        title={t('title_multiple_delete_delivery_type')}
-        description={t('confirm_multiple_delete_delivery_type')}
-        open={openConfirmationDeleteMultipleDeliveryType}
-        handleClose={handleCloseConfirmDeleteMultipleDeliveryType}
-        handleCancel={handleCloseConfirmDeleteMultipleDeliveryType}
-        handleConfirm={handleDeleteMultipleDeliveryType}
+        title={t('title_multiple_delete_payment_type')}
+        description={t('confirm_multiple_delete_payment_type')}
+        open={openConfirmationDeleteMultiplePaymentType}
+        handleClose={handleCloseConfirmDeleteMultiplePaymentType}
+        handleCancel={handleCloseConfirmDeleteMultiplePaymentType}
+        handleConfirm={handleDeleteMultiplePaymentType}
       />
-      <CreateEditDeliveryType
+      <CreateEditPaymentType
         open={openCreateEdit.open}
         onClose={handleCloseCreateEdit}
-        deliveryTypeId={openCreateEdit.id}
+        paymentTypeId={openCreateEdit.id}
       />
       {isLoading && <Spinner />}
       <Box
@@ -385,7 +383,7 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
                 // }
               }
             }
-            rows={deliveryTypes.data}
+            rows={paymentTypes.data}
             columns={columns}
             checkboxSelection
             autoHeight
@@ -417,4 +415,4 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
   )
 }
 
-export default DeliveryTypeListPage
+export default PaymentTypeListPage
