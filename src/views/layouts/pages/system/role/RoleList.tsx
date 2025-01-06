@@ -39,7 +39,7 @@ import toast from 'react-hot-toast'
 import { Icon } from '@iconify/react/dist/iconify.js'
 
 // config
-import { OBJECT_TYPE_ERROR_ROLE } from 'src/configs/role'
+import { OBJECT_TYPE_ERROR_ROLE } from 'src/configs/error'
 import { PERMISSIONS } from 'src/configs/permission'
 
 // services

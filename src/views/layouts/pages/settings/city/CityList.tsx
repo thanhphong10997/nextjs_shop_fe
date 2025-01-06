@@ -37,7 +37,7 @@ import CreateEditCity from './component/CreateEditCity'
 import toast from 'react-hot-toast'
 
 // config
-import { OBJECT_TYPE_ERROR_ROLE } from 'src/configs/role'
+import { OBJECT_TYPE_ERROR_CITY } from 'src/configs/error'
 import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 
 // services
@@ -254,7 +254,7 @@ export const CityListPage: NextPage<TProps> = () => {
       handleCloseCreateEdit()
       dispatch(resetInitialState())
     } else if (isErrorCreateEdit && messageErrorCreateEdit && typeError) {
-      const errorConfig = OBJECT_TYPE_ERROR_ROLE[typeError]
+      const errorConfig = OBJECT_TYPE_ERROR_CITY[typeError]
       if (errorConfig) {
         toast.error(t(errorConfig))
       } else {
