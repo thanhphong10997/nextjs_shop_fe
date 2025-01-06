@@ -353,7 +353,7 @@ export const RoleListPage: NextPage<TProps> = () => {
                   setSelectedPermission={setSelectedPermission}
                   disabled={isDisabledPermission}
                 />
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
                   <Button
                     disabled={isDisabledPermission}
                     type='submit'
