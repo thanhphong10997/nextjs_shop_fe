@@ -43,7 +43,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { resetInitialState } from 'src/stores/auth'
 import { updateAuthMeAsync } from 'src/stores/auth/actions'
 import { AppDispatch, RootState } from 'src/stores'
-import { useAuth } from 'src/hooks/useAuth'
+import { getAllCities } from 'src/services/city'
 
 type TProps = {}
 
@@ -67,6 +67,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
   const [loading, setLoading] = useState(false)
   const [avatar, setAvatar] = useState('')
   const [roleOptions, setRoleOptions] = useState<{ label: string; value: string }[]>([])
+  const [citiesOption, setCitiesOption] = useState<{ label: string; value: string }[]>([])
   const [isDisabledRole, setIsDisabledRole] = useState(false)
 
   // redux
@@ -182,6 +183,27 @@ export const MyProfilePage: NextPage<TProps> = () => {
       })
   }
 
+  const fetchAllCities = async () => {
+    await getAllCities({ params: { limit: -1, page: -1 } })
+      .then(res => {
+        const data = res?.data?.cities
+        if (data) {
+          setCitiesOption(
+            data?.map((item: { name: string; _id: string }) => {
+              return {
+                label: item?.name,
+                value: item?._id
+              }
+            })
+          )
+        }
+        setLoading(false)
+      })
+      .catch(() => {
+        setLoading(false)
+      })
+  }
+
   useEffect(() => {
     if (messageUpdateMe) {
       if (isSuccessUpdateMe) {
@@ -200,6 +222,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
 
   useEffect(() => {
     fetchAllRoles()
+    fetchAllCities()
   }, [])
 
   return (
@@ -431,7 +454,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
                             value={value}
                             onChange={onChange}
                             onBlur={onBlur}
-                            options={[]}
+                            options={citiesOption}
                             error={Boolean(errors?.city)}
                             placeholder={t('enter_your_city')}
                             fullWidth

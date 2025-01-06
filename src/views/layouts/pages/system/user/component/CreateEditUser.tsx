@@ -7,7 +7,6 @@ import {
   Grid,
   IconButton,
   InputAdornment,
-  styled,
   TextField,
   Typography,
   useTheme
@@ -39,6 +38,7 @@ import WrapperFileUpload from 'src/components/wrapper-file-upload'
 import { convertFileToBase64, convertFullName, toFullName } from 'src/utils'
 import { getAllRoles } from 'src/services/role'
 import CustomSelect from 'src/components/custom-select'
+import { getAllCities } from 'src/services/city'
 
 type TCreateEditUser = {
   open: boolean
@@ -74,6 +74,8 @@ const CreateEditUser = (props: TCreateEditUser) => {
   const [loading, setLoading] = useState(false)
   const [avatar, setAvatar] = useState('')
   const [roleOptions, setRoleOptions] = useState<{ label: string; value: string }[]>([])
+  const [citiesOption, setCitiesOption] = useState<{ label: string; value: string }[]>([])
+
   const [showPassword, setShowPassword] = useState(false)
 
   // react hook form
@@ -187,6 +189,27 @@ const CreateEditUser = (props: TCreateEditUser) => {
       })
   }
 
+  const fetchAllCities = async () => {
+    await getAllCities({ params: { limit: -1, page: -1 } })
+      .then(res => {
+        const data = res?.data?.cities
+        if (data) {
+          setCitiesOption(
+            data?.map((item: { name: string; _id: string }) => {
+              return {
+                label: item?.name,
+                value: item?._id
+              }
+            })
+          )
+        }
+        setLoading(false)
+      })
+      .catch(() => {
+        setLoading(false)
+      })
+  }
+
   const fetchDetailsUser = async (id: string) => {
     setLoading(true)
     await getDetailsUser(id)
@@ -226,6 +249,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
 
   useEffect(() => {
     fetchAllRoles()
+    fetchAllCities()
   }, [])
 
   return (
@@ -504,7 +528,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
                                   value={value}
                                   onChange={onChange}
                                   onBlur={onBlur}
-                                  options={[]}
+                                  options={citiesOption}
                                   error={Boolean(errors?.city)}
                                   placeholder={t('enter_your_city')}
                                   fullWidth
