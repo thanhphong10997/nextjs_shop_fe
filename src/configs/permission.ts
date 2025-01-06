@@ -4,6 +4,7 @@ export const PERMISSIONS: any = {
   DASHBOARD: 'DASHBOARD',
   MANAGE_PRODUCT: {
     PRODUCT: {
+      VIEW: 'MANAGE_PRODUCT.PRODUCT.VIEW',
       CREATE: 'MANAGE_PRODUCT.PRODUCT.CREATE',
       UPDATE: 'MANAGE_PRODUCT.PRODUCT.UPDATE',
       DELETE: 'MANAGE_PRODUCT.PRODUCT.DELETE'
@@ -86,8 +87,7 @@ export const LIST_DATA_PERMISSIONS: any = [
     name: 'Product',
     isParent: false,
     value: 'PRODUCT',
-    parentValue: 'MANAGE_PRODUCT',
-    isHideView: true
+    parentValue: 'MANAGE_PRODUCT'
   },
   {
     id: 3,
