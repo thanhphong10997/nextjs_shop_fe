@@ -243,7 +243,14 @@ export const LoginPage: NextPage<TProps> = () => {
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href='#'>{t('forgot_password')}</Link>
+              <Link
+                style={{
+                  color: `rgb(${theme.palette.mode === 'light' ? theme.palette.customColors.light : theme.palette.customColors.dark})`
+                }}
+                href='#'
+              >
+                {t('forgot_password')}
+              </Link>
             </Grid>
             <Grid item>
               <Link

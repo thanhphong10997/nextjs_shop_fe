@@ -51,7 +51,7 @@ export const productSlice = createSlice({
     }
   },
   extraReducers: builder => {
-    // Get all product types
+    // Get all product
     builder.addCase(getAllProductsAsync.pending, (state, action) => {
       state.isLoading = true
     })
@@ -69,7 +69,7 @@ export const productSlice = createSlice({
       state.products.total = 0
     })
 
-    // Create Product type
+    // Create Product
     builder.addCase(createProductAsync.pending, (state, action) => {
       state.isLoading = true
     })
@@ -93,7 +93,7 @@ export const productSlice = createSlice({
     //   state.typeError = action.payload?.data?.typeError
     // })
 
-    // Update Product type
+    // Update Product
     builder.addCase(updateProductAsync.pending, (state, action) => {
       state.isLoading = true
     })
@@ -108,7 +108,7 @@ export const productSlice = createSlice({
       state.typeError = action?.payload?.typeError
     })
 
-    // Delete Product type
+    // Delete Product
     builder.addCase(deleteProductAsync.pending, (state, action) => {
       state.isLoading = true
     })
@@ -123,7 +123,7 @@ export const productSlice = createSlice({
       state.typeError = action?.payload?.typeError
     })
 
-    // Delete Multiple Product type
+    // Delete Multiple Product
     builder.addCase(deleteMultipleProductAsync.pending, (state, action) => {
       state.isLoading = true
     })

@@ -470,7 +470,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
                 <Grid container item md={6} xs={12}>
                   <Box>
                     <Grid container spacing={5}>
-                      <Grid item md={6} xs={12}>
+                      <Grid item md={12} xs={12}>
                         <Controller
                           name='fullName'
                           control={control}
@@ -486,6 +486,8 @@ const CreateEditUser = (props: TCreateEditUser) => {
                                 variant='filled'
                                 fullWidth
                                 value={value}
+                                error={Boolean(errors.fullName)}
+                                helperText={errors?.fullName?.message}
                                 onBlur={onBlur}
                                 onChange={onChange}
                               />
@@ -493,7 +495,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
                           }}
                         />
                       </Grid>
-                      <Grid item md={6} xs={12}>
+                      <Grid item md={12} xs={12}>
                         <Controller
                           name='address'
                           control={control}
@@ -514,7 +516,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
                           }}
                         />
                       </Grid>
-                      <Grid item md={6} xs={12}>
+                      <Grid item md={12} xs={12}>
                         <Controller
                           name='city'
                           control={control}
@@ -548,7 +550,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
                           }}
                         />
                       </Grid>
-                      <Grid item md={6} xs={12}>
+                      <Grid item md={12} xs={12}>
                         <Controller
                           name='phoneNumber'
                           rules={{ required: true }}
@@ -560,11 +562,11 @@ const CreateEditUser = (props: TCreateEditUser) => {
                               <TextField
                                 required
                                 label={t('Phone_number')}
-                                error={Boolean(errors.phoneNumber)}
                                 placeholder={t('enter_your_phone')}
                                 variant='filled'
                                 value={value}
                                 fullWidth
+                                error={Boolean(errors.phoneNumber)}
                                 helperText={errors?.phoneNumber?.message}
                                 inputProps={{
                                   inputMode: 'numeric',
