@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // Import Mui
-import { Box, Grid, Typography, useTheme } from '@mui/material'
+import { Box, Chip, ChipProps, Grid, styled, Typography, useTheme } from '@mui/material'
 import { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
@@ -45,9 +45,32 @@ import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 import { usePermission } from 'src/hooks/usePermission'
 
 // utils
-import { formatDate } from 'src/utils'
+import { formatDate, formatFilter } from 'src/utils'
+import CustomSelect from 'src/components/custom-select'
+import { OBJECT_STATUS_PRODUCT } from 'src/configs/product'
+import { getAllProductTypes } from 'src/services/product-type'
 
 type TProps = {}
+
+const ActiveUserStyled = styled(Chip)<ChipProps>(({ theme }) => {
+  return {
+    backgroundColor: '#28c76f29',
+    color: '#3a8431',
+    fontSize: '14px',
+    fontWeight: 400,
+    padding: '8px 4px'
+  }
+})
+
+const DeactiveUserStyled = styled(Chip)<ChipProps>(({ theme }) => {
+  return {
+    backgroundColor: '#da251d29',
+    color: '#da251d',
+    fontSize: '14px',
+    fontWeight: 400,
+    padding: '8px 4px'
+  }
+})
 
 export const ProductListPage: NextPage<TProps> = () => {
   // theme
@@ -72,6 +95,13 @@ export const ProductListPage: NextPage<TProps> = () => {
   const [searchBy, setSearchBy] = useState('')
   const [loading, setLoading] = useState(false)
   const [selectedRow, setSelectedRow] = useState<string[]>([])
+
+  const [typesOption, setTypesOption] = useState<{ label: string; value: string }[]>([])
+  const [typeSelected, setTypeSelected] = useState<string[]>([])
+  const [statusSelected, setStatusSelected] = useState<string[]>([])
+  const [filterBy, setFilterBy] = useState<Record<string, string | string[]>>({})
+
+  const CONSTANT_STATUS_PRODUCT = OBJECT_STATUS_PRODUCT()
 
   // hooks
   const { VIEW, CREATE, UPDATE, DELETE } = usePermission('MANAGE_PRODUCT.PRODUCT', [
@@ -113,15 +143,39 @@ export const ProductListPage: NextPage<TProps> = () => {
       }
     },
     {
-      field: 'slug',
-      headerName: t('Slug'),
+      field: 'type',
+      headerName: t('Type'),
       flex: 1,
       minWidth: 200,
       maxWidth: 200,
       renderCell: params => {
         const { row } = params
 
-        return <Typography>{row?.slug}</Typography>
+        return <Typography>{row?.type?.name}</Typography>
+      }
+    },
+    {
+      field: 'price',
+      headerName: t('Price'),
+      flex: 1,
+      minWidth: 200,
+      maxWidth: 200,
+      renderCell: params => {
+        const { row } = params
+
+        return <Typography>{row?.price}</Typography>
+      }
+    },
+    {
+      field: 'countInStock',
+      headerName: t('Count_in_stock'),
+      flex: 1,
+      minWidth: 200,
+      maxWidth: 200,
+      renderCell: params => {
+        const { row } = params
+
+        return <Typography>{row?.countInStock}</Typography>
       }
     },
     {
@@ -133,7 +187,23 @@ export const ProductListPage: NextPage<TProps> = () => {
       renderCell: params => {
         const { row } = params
 
-        return <Typography>{formatDate(row?.createdAt, { dateStyle: 'short' })}</Typography>
+        return <Typography>{formatDate(row?.createdAt)}</Typography>
+      }
+    },
+    {
+      field: 'status',
+      headerName: t('Status'),
+      flex: 1,
+      minWidth: 200,
+      maxWidth: 200,
+      renderCell: params => {
+        const { row } = params
+
+        return (
+          <Typography>
+            {row.status ? <ActiveUserStyled label={t('Public')} /> : <DeactiveUserStyled label={t('Private')} />}
+          </Typography>
+        )
       }
     },
 
@@ -191,7 +261,9 @@ export const ProductListPage: NextPage<TProps> = () => {
 
   // fetch API
   const handleGetListProducts = () => {
-    const query = { params: { limit: pageSize, page: page, search: searchBy, order: sortBy } }
+    const query = {
+      params: { limit: pageSize, page: page, search: searchBy, order: sortBy, ...formatFilter(filterBy) }
+    }
     dispatch(getAllProductsAsync(query))
   }
 
@@ -250,12 +322,41 @@ export const ProductListPage: NextPage<TProps> = () => {
   }
 
   // fetch api
+  const fetchAllTypes = async () => {
+    setLoading(true)
+    await getAllProductTypes({ params: { limit: -1, page: -1 } })
+      .then(res => {
+        const data = res?.data?.productTypes
+        if (data) {
+          setTypesOption(
+            data?.map((item: { name: string; _id: string }) => {
+              return {
+                label: item?.name,
+                value: item?._id
+              }
+            })
+          )
+        }
+        setLoading(false)
+      })
+      .catch(() => {
+        setLoading(false)
+      })
+  }
 
   // side effects
 
   useEffect(() => {
     handleGetListProducts()
-  }, [sortBy, searchBy, page, pageSize])
+  }, [sortBy, searchBy, page, pageSize, filterBy])
+
+  useEffect(() => {
+    fetchAllTypes()
+  }, [])
+
+  useEffect(() => {
+    setFilterBy({ productType: typeSelected, status: statusSelected })
+  }, [typeSelected, statusSelected])
 
   useEffect(() => {
     if (isSuccessCreateEdit) {
@@ -342,6 +443,30 @@ export const ProductListPage: NextPage<TProps> = () => {
             <Box
               sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mb: 4, width: '100%', gap: 4 }}
             >
+              <Box sx={{ width: '200px' }}>
+                <CustomSelect
+                  value={typeSelected}
+                  options={typesOption}
+                  placeholder={t('Product_type')}
+                  fullWidth
+                  multiple
+                  onChange={e => {
+                    setTypeSelected(e.target.value as string[])
+                  }}
+                />
+              </Box>
+              <Box sx={{ width: '200px' }}>
+                <CustomSelect
+                  value={statusSelected}
+                  options={Object.values(CONSTANT_STATUS_PRODUCT)}
+                  placeholder={t('Status')}
+                  fullWidth
+                  multiple
+                  onChange={e => {
+                    setStatusSelected(e.target.value as string[])
+                  }}
+                />
+              </Box>
               <Box sx={{ width: '200px' }}>
                 <InputSearch value={searchBy} onChange={(value: string) => setSearchBy(value)} />
               </Box>

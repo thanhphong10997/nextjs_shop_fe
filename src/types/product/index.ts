@@ -7,13 +7,31 @@ export type TParamsGetProducts = {
 
 export type TParamsCreateProduct = {
   name: string
+  image: string
+  type: string
+  discount: number
+  price: number
+  description: string
   slug: string
+  countInStock: number
+  discountEndDate: Date | null
+  discountStartDate: Date | null
+  status: number
 }
 
 export type TParamsEditProduct = {
   id: string
-  slug: string
   name: string
+  image: string
+  type: string
+  discount: number
+  price: number
+  description: string
+  slug: string
+  countInStock: number
+  discountEndDate: Date | null
+  discountStartDate: Date | null
+  status: number
 }
 
 export type TParamsDeleteProduct = {

@@ -322,6 +322,7 @@ export const UserListPage: NextPage<TProps> = () => {
   // fetch api
 
   const fetchAllRoles = async () => {
+    setLoading(true)
     await getAllRoles({ params: { limit: -1, page: -1 } })
       .then(res => {
         const data = res?.data?.roles
