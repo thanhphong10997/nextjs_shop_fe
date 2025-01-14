@@ -127,3 +127,13 @@ export const convertHTMLToDraft = (html: string) => {
 
   return editorState
 }
+
+export const formatNumberToLocal = (value: string | number) => {
+  try {
+    return Number(value).toLocaleString('vi-VN', {
+      minimumFractionDigits: 0
+    })
+  } catch (e) {
+    return value
+  }
+}

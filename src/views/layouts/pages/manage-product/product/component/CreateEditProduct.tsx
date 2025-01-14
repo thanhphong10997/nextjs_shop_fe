@@ -12,7 +12,7 @@ import {
   useTheme
 } from '@mui/material'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import Switch, { SwitchProps } from '@mui/material/Switch'
+import Switch from '@mui/material/Switch'
 
 // Import React
 import React, { useEffect, useState } from 'react'
@@ -356,7 +356,7 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
                             ) : (
                               <>
                                 <Avatar sx={{ width: 100, height: 100 }}>
-                                  <Icon icon='ph:user-thin' fontSize={50} />
+                                  <Icon icon='gridicons:product' fontSize={50} />
                                 </Avatar>
                               </>
                             )}

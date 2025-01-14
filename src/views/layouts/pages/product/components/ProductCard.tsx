@@ -10,7 +10,7 @@ import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
 import IconButton, { IconButtonProps } from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
-import { Box, Button } from '@mui/material'
+import { Box, Button, Rating } from '@mui/material'
 
 // translate
 import { useTranslation } from 'react-i18next'
@@ -21,6 +21,9 @@ import { Icon } from '@iconify/react/dist/iconify.js'
 // Types
 import { TProduct } from 'src/types/product'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
+import { useRouter } from 'next/router'
+import { ROUTE_CONFIG } from 'src/configs/route'
+import { formatNumberToLocal } from 'src/utils'
 
 type TProductCard = {
   item: TProduct
@@ -29,7 +32,10 @@ type TProductCard = {
 const StyledCard = styled(Card)<CardProps>(({ theme }) => {
   return {
     position: 'relative',
-    boxShadow: theme.shadows[4]
+    boxShadow: theme.shadows[4],
+    '.MuiCardMedia-root.MuiCardMedia-media': {
+      objectFit: 'contain'
+    }
   }
 })
 
@@ -37,16 +43,36 @@ const ProductCard = (props: TProductCard) => {
   // translate
   const { t, i18n } = useTranslation()
 
+  // props
   const { item } = props
 
+  // theme
   const theme = useTheme()
+  const router = useRouter()
+
+  // handle
+  const handleNavigateDetails = (slug: string) => {
+    router.push(`${ROUTE_CONFIG.PRODUCT}/${slug}`)
+  }
 
   return (
     <>
       <StyledCard sx={{ width: '100%' }}>
         <CardMedia component='img' height='194' image={item.image} alt='Paella dish' />
         <CardContent sx={{ padding: '8px 12px' }}>
-          <Typography variant='h3' sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
+          <Typography
+            variant='h3'
+            sx={{
+              color: theme.palette.primary.main,
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              '-webkitLineClamp': '2',
+              '-webkitBoxOrient': 'vertical'
+            }}
+            onClick={() => handleNavigateDetails(item?.slug)}
+          >
             {item?.name}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -60,17 +86,17 @@ const ProductCard = (props: TProductCard) => {
                   fontSize: '14px'
                 }}
               >
-                {item?.price} VND
+                {formatNumberToLocal(item?.price)} VND
               </Typography>
             )}
             <Typography variant='h4' sx={{ color: theme.palette.primary.main, fontWeight: 'bold', fontSize: '18px' }}>
-              {(item?.price * (100 - item.discount)) / 100} VND
+              {formatNumberToLocal((item?.price * (100 - item.discount)) / 100)} VND
             </Typography>
             {item.discount > 0 && (
               <Box
                 sx={{
                   backgroundColor: hexToRGBA(theme.palette.error.main, 0.42),
-                  width: '25px',
+                  width: '32px',
                   height: '14px',
                   display: 'flex',
                   alignItems: 'center',
@@ -82,10 +108,11 @@ const ProductCard = (props: TProductCard) => {
                   variant='h6'
                   sx={{
                     color: theme.palette.error.main,
-                    fontSize: '10px'
+                    fontSize: '10px',
+                    whiteSpace: 'nowrap'
                   }}
                 >
-                  {item?.discount}%
+                  - {item?.discount}%
                 </Typography>
               </Box>
             )}
@@ -107,8 +134,14 @@ const ProductCard = (props: TProductCard) => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               {!!item.averageRating && (
                 <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-                  <b>5</b>
-                  <Icon icon='fluent-color:star-16' fontSize={16} style={{ position: 'relative', top: '-1' }} />
+                  <b>{item.averageRating}</b>
+                  <Rating
+                    sx={{ fontSize: '16px' }}
+                    name='read-only'
+                    defaultValue={item?.averageRating}
+                    precision={0.5}
+                    readOnly
+                  />
                 </Typography>
               )}
               <Typography sx={{ display: 'flex', alignItems: 'center' }}>
