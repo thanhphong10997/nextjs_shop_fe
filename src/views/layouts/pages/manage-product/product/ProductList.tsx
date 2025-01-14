@@ -45,7 +45,7 @@ import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 import { usePermission } from 'src/hooks/usePermission'
 
 // utils
-import { formatDate, formatFilter } from 'src/utils'
+import { formatDate, formatFilter, formatNumberToLocal } from 'src/utils'
 import CustomSelect from 'src/components/custom-select'
 import { OBJECT_STATUS_PRODUCT } from 'src/configs/product'
 import { getAllProductTypes } from 'src/services/product-type'
@@ -163,12 +163,12 @@ export const ProductListPage: NextPage<TProps> = () => {
       renderCell: params => {
         const { row } = params
 
-        return <Typography>{row?.price}</Typography>
+        return <Typography>{`${formatNumberToLocal(row?.price)} VND`}</Typography>
       }
     },
     {
       field: 'countInStock',
-      headerName: t('Count_in_stock'),
+      headerName: t('count_in_stock'),
       flex: 1,
       minWidth: 200,
       maxWidth: 200,

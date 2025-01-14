@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // Import Mui
-import { Box, Chip, ChipProps, Grid, styled, Tab, Tabs, TabsProps, Typography, useTheme } from '@mui/material'
+import { Box, Grid, styled, Tab, Tabs, TabsProps, Typography, useTheme } from '@mui/material'
 
 // Import React
 import React, { useEffect, useState } from 'react'
@@ -17,7 +17,6 @@ import CustomPagination from 'src/components/custom-pagination'
 import Spinner from 'src/components/spinner'
 
 // config
-import { OBJECT_TYPE_ERROR_PRODUCT } from 'src/configs/error'
 import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 
 // services
@@ -28,11 +27,11 @@ import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 import { formatDate, formatFilter } from 'src/utils'
 
 import { getAllProductTypes } from 'src/services/product-type'
-import ProductCard from './components/ProductCard'
+import ProductCard from '../product/components/ProductCard'
 import { getAllProductsPublic } from 'src/services/product'
 import { TProduct } from 'src/types/product'
 import InputSearch from 'src/components/input-search'
-import ProductFilter from './components/ProductFilter'
+import ProductFilter from '../product/components/ProductFilter'
 
 type TProps = {}
 

@@ -1,4 +1,5 @@
 // api endpoints
+import axios from 'axios'
 import { API_ENDPOINT } from 'src/configs/api'
 
 // axios
@@ -24,7 +25,7 @@ export const getAllProducts = async (data: { params: TParamsGetProducts }) => {
 
 export const getAllProductsPublic = async (data: { params: TParamsGetProducts }) => {
   try {
-    const res = await instanceAxios.get(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT.INDEX}/public`, data)
+    const res = await axios.get(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT.INDEX}/public`, data)
 
     return res.data
   } catch (err) {
@@ -92,7 +93,17 @@ export const getDetailsProduct = async (id: string) => {
 
 export const getDetailsProductPublic = async (id: string) => {
   try {
-    const res = await instanceAxios.get(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT.INDEX}/public/${id}`)
+    const res = await axios.get(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT.INDEX}/public/${id}`)
+
+    return res.data
+  } catch (err: any) {
+    return err?.response?.data
+  }
+}
+
+export const getDetailsProductPublicBySlug = async (slug: string) => {
+  try {
+    const res = await axios.get(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT.INDEX}/public/slug/${slug}`)
 
     return res.data
   } catch (err: any) {
