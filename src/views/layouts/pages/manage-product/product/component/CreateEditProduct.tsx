@@ -268,12 +268,12 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
             countInStock: data?.countInStock,
             discount: data?.discount || '',
             type: data?.type,
-            discountStartDate: new Date(data?.discountStartDate) || null,
-            discountEndDate: new Date(data?.discountEndDate) || null,
+            discountStartDate: data.discountStartDate ? new Date(data?.discountStartDate) : null,
+            discountEndDate: data.discountEndDate ? new Date(data?.discountEndDate) : null,
             description: data?.description ? convertHTMLToDraft(data.description) : '',
             status: data?.status
           })
-          setProductImage(data?.productImage)
+          setProductImage(data?.image)
         }
         setLoading(false)
       })

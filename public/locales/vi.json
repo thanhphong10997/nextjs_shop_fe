@@ -200,5 +200,11 @@
   "enter_delivery_type_price": "Nhập giá",
   "least_1000_in_price": "Giá phải ít nhất 1000",
   "public": "Công khai",
-  "private": "Không công khai"
+  "private": "Không công khai",
+  "add_to_cart": "Thêm giỏ hàng",
+  "buy_now": "Mua hàng",
+ "not_review": "Chưa đánh giá",
+ "count_in_stock_product": "Còn {{count}} sản phẩm trong kho",
+ "sold_product": "Đã bán {{count}} sản phẩm",
+ "out_of_stock": "Hết hàng"
 }
