@@ -19,6 +19,7 @@ import { useAuth } from 'src/hooks/useAuth'
 import { Button } from '@mui/material'
 import { useRouter } from 'next/router'
 import { ROUTE_CONFIG } from 'src/configs/route'
+import Link from 'next/link'
 
 // Iconify
 // import { Icon } from '@iconify/react'
@@ -78,7 +79,7 @@ const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer, hideMenu }) =>
           </IconButton>
         )}
         <Typography component='h1' variant='h6' color='inherit' noWrap sx={{ flexGrow: 1 }}>
-          Dashboard
+          <Link href={ROUTE_CONFIG.HOME}>HOME</Link>
         </Typography>
         <LanguageDropdown />
         <ModeToggle />

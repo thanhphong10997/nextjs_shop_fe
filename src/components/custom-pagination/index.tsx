@@ -11,6 +11,7 @@ type TProps = {
   rowLength: number
   pageSizeOptions: number[]
   onChangePagination: (page: number, pageSize: number) => void
+  isHideShowed?: boolean
 }
 
 const StyledPagination = styled(Pagination)<PaginationProps>(({ theme }) => {
@@ -28,25 +29,28 @@ const StyledPagination = styled(Pagination)<PaginationProps>(({ theme }) => {
 })
 
 const CustomPagination = React.forwardRef((props: TProps, ref: Ref<any>) => {
-  const { page, pageSize, rowLength, pageSizeOptions, onChangePagination, ...rests } = props
+  const { page, pageSize, rowLength, pageSizeOptions, isHideShowed, onChangePagination, ...rests } = props
   const { t } = useTranslation()
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', padding: '0 8px' }}>
-      {rowLength > 0 ? (
-        <Box sx={{ mr: 4 }}>
-          <span>{t('is_showing')}</span>
-          <span style={{ fontWeight: 'bold', marginLeft: '4px' }}>
-            {page === 1 ? page : 1 + pageSize} {' - '}
-          </span>
-          <span style={{ fontWeight: 'bold' }}>{page * pageSize < rowLength ? page * pageSize : rowLength}</span>
-          <span style={{ margin: '0 4px' }}>{t('trên')}</span>
-          <span style={{ fontWeight: 'bold' }}>{rowLength}</span>
-        </Box>
-      ) : (
-        <Box></Box>
+      {!isHideShowed && (
+        <>
+          {rowLength > 0 ? (
+            <Box sx={{ mr: 4 }}>
+              <span>{t('is_showing')}</span>
+              <span style={{ fontWeight: 'bold', marginLeft: '4px' }}>
+                {page === 1 ? page : 1 + pageSize} {' - '}
+              </span>
+              <span style={{ fontWeight: 'bold' }}>{page * pageSize < rowLength ? page * pageSize : rowLength}</span>
+              <span style={{ margin: '0 4px' }}>{t('trên')}</span>
+              <span style={{ fontWeight: 'bold' }}>{rowLength}</span>
+            </Box>
+          ) : (
+            <Box></Box>
+          )}
+        </>
       )}
-
       <Box sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <span>{t('Số dòng hiển thị')}</span>
