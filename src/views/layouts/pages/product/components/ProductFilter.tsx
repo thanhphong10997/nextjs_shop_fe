@@ -20,7 +20,8 @@ const StyledFilterProduct = styled(Box)<BoxProps>(({ theme }) => {
     boxShadow: theme.shadows[4],
     border: `1px solid  ${theme.palette.customColors.main}33`,
     borderRadius: '15px',
-    padding: '10px'
+    padding: '10px',
+    backgroundColor: theme.palette.background.paper
   }
 })
 

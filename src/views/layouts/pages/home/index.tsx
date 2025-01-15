@@ -5,7 +5,7 @@ import { NextPage } from 'next'
 import { Box, Grid, styled, Tab, Tabs, TabsProps, Typography, useTheme } from '@mui/material'
 
 // Import React
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 // translate
 import { useTranslation } from 'react-i18next'
@@ -72,6 +72,9 @@ export const HomePage: NextPage<TProps> = () => {
     setProductTypeSelected(newValue)
   }
 
+  // ref
+  const firstRender = useRef<boolean>(false)
+
   // fetch API
   const handleGetListProducts = async () => {
     setLoading(true)
@@ -117,6 +120,7 @@ export const HomePage: NextPage<TProps> = () => {
             })
           )
           setProductTypeSelected(data?.[0]?._id)
+          firstRender.current = true
         }
         setLoading(false)
       })
@@ -126,17 +130,16 @@ export const HomePage: NextPage<TProps> = () => {
   }
 
   // side effects
-
-  useEffect(() => {
-    handleGetListProducts()
-  }, [sortBy, searchBy, page, pageSize, filterBy])
-
   useEffect(() => {
     fetchAllTypes()
   }, [])
 
   useEffect(() => {
-    setFilterBy({ productType: productTypeSelected, minStar: reviewSelected })
+    if (firstRender.current) handleGetListProducts()
+  }, [sortBy, searchBy, page, pageSize, filterBy])
+
+  useEffect(() => {
+    if (firstRender.current) setFilterBy({ productType: productTypeSelected, minStar: reviewSelected })
   }, [productTypeSelected, reviewSelected])
 
   return (

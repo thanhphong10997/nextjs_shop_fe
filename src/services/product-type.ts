@@ -1,4 +1,5 @@
 // api endpoints
+import axios from 'axios'
 import { API_ENDPOINT } from 'src/configs/api'
 
 // axios
@@ -14,7 +15,7 @@ import {
 
 export const getAllProductTypes = async (data: { params: TParamsGetProductTypes }) => {
   try {
-    const res = await instanceAxios.get(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT_TYPE.INDEX}`, data)
+    const res = await axios.get(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT_TYPE.INDEX}`, data)
 
     return res.data
   } catch (err) {

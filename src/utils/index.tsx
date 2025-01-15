@@ -1,4 +1,5 @@
 import { EditorState, ContentState } from 'draft-js'
+import { TItemOrderProduct } from 'src/types/order-product'
 
 // fix window is not defined with html-to-draftjs
 let htmlToDraft = null
@@ -135,5 +136,31 @@ export const formatNumberToLocal = (value: string | number) => {
     })
   } catch (e) {
     return value
+  }
+}
+
+export const cloneDeep = (data: any) => {
+  try {
+    return JSON.parse(JSON.stringify(data))
+  } catch (error) {
+    return data
+  }
+}
+
+export const convertAddProductToCart = (orderItems: TItemOrderProduct[], addItem: TItemOrderProduct) => {
+  try {
+    const cloneOrderItems = cloneDeep(orderItems)
+    const findItems = cloneOrderItems.find((item: TItemOrderProduct) => item.product === addItem.product)
+
+    // Item is already in cart, so just increase the quantity
+    if (findItems) {
+      findItems.amount += addItem.amount
+    } else {
+      cloneOrderItems.push(addItem)
+    }
+
+    return cloneOrderItems
+  } catch (e) {
+    return orderItems
   }
 }
