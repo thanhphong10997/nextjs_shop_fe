@@ -101,8 +101,8 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       display: '-webkit-box',
-                      '-webkitLineClamp': '2',
-                      '-webkitBoxOrient': 'vertical'
+                      WebkitLineClamp: '2',
+                      WebkitBoxOrient: 'vertical'
                     }}
                   >
                     {dataProduct?.name}

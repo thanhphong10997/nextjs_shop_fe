@@ -20,6 +20,7 @@ import { Button } from '@mui/material'
 import { useRouter } from 'next/router'
 import { ROUTE_CONFIG } from 'src/configs/route'
 import Link from 'next/link'
+import CartProduct from '../components/cart-product'
 
 // Iconify
 // import { Icon } from '@iconify/react'
@@ -83,10 +84,11 @@ const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer, hideMenu }) =>
         </Typography>
         <LanguageDropdown />
         <ModeToggle />
+        <CartProduct />
         {auth.user ? (
           <UserDropdown />
         ) : (
-          <Button variant='contained' sx={{ width: 'auto' }} onClick={() => router.push(ROUTE_CONFIG.LOGIN)}>
+          <Button variant='contained' sx={{ width: 'auto', ml: 4 }} onClick={() => router.push(ROUTE_CONFIG.LOGIN)}>
             Sign In
           </Button>
         )}

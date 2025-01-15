@@ -4,11 +4,9 @@ import * as React from 'react'
 // Mui
 import { styled, useTheme } from '@mui/material/styles'
 import Card, { CardProps } from '@mui/material/Card'
-import CardHeader from '@mui/material/CardHeader'
 import CardMedia from '@mui/material/CardMedia'
 import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
-import IconButton, { IconButtonProps } from '@mui/material/IconButton'
+import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import { Box, Button, Rating } from '@mui/material'
 
@@ -20,10 +18,25 @@ import { Icon } from '@iconify/react/dist/iconify.js'
 
 // Types
 import { TProduct } from 'src/types/product'
+
+// utils
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
+import { convertAddProductToCart, formatNumberToLocal } from 'src/utils'
+
+// next
 import { useRouter } from 'next/router'
+
+// configs
 import { ROUTE_CONFIG } from 'src/configs/route'
-import { formatNumberToLocal } from 'src/utils'
+
+// redux
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from 'src/stores'
+
+// storage
+import { addProductToCart } from 'src/stores/order-product'
+import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
+import { useAuth } from 'src/hooks/useAuth'
 
 type TProductCard = {
   item: TProduct
@@ -50,9 +63,36 @@ const ProductCard = (props: TProductCard) => {
   const theme = useTheme()
   const router = useRouter()
 
+  const { user } = useAuth()
+
+  // redux
+  const dispatch: AppDispatch = useDispatch()
+  const { orderItems } = useSelector((state: RootState) => state.orderProduct)
+
   // handle
   const handleNavigateDetails = (slug: string) => {
     router.push(`${ROUTE_CONFIG.PRODUCT}/${slug}`)
+  }
+
+  const handleAddProductToCart = (item: TProduct) => {
+    const productCart = getLocalProductCart()
+    const parseData = productCart ? JSON.parse(productCart) : {}
+    const listOrderItems = convertAddProductToCart(orderItems, {
+      name: item?.name,
+      amount: 1,
+      image: item?.image,
+      price: item?.price,
+      discount: item?.discount,
+      product: item?._id
+    })
+    dispatch(
+      addProductToCart({
+        orderItems: listOrderItems
+      })
+    )
+    if (user?._id) {
+      setLocalProductToCart({ ...parseData, [user?._id]: listOrderItems })
+    }
   }
 
   return (
@@ -68,8 +108,9 @@ const ProductCard = (props: TProductCard) => {
               cursor: 'pointer',
               textOverflow: 'ellipsis',
               display: '-webkit-box',
-              '-webkitLineClamp': '2',
-              '-webkitBoxOrient': 'vertical'
+              WebkitLineClamp: '2',
+              WebkitBoxOrient: 'vertical',
+              minHeight: '48px'
             }}
             onClick={() => handleNavigateDetails(item?.slug)}
           >
@@ -164,7 +205,14 @@ const ProductCard = (props: TProductCard) => {
             gap: 2
           }}
         >
-          <Button fullWidth type='submit' variant='outlined' color='primary' sx={{ height: '40px', display: 'flex' }}>
+          <Button
+            fullWidth
+            type='submit'
+            variant='outlined'
+            color='primary'
+            sx={{ height: '40px', display: 'flex' }}
+            onClick={() => handleAddProductToCart(item)}
+          >
             {t('add_to_cart')}
           </Button>
           <Button fullWidth type='submit' variant='contained' color='primary' sx={{ height: '40px', display: 'flex' }}>
