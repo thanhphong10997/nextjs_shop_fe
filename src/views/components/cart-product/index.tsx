@@ -7,7 +7,7 @@ import Menu from '@mui/material/Menu'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import Tooltip from '@mui/material/Tooltip'
-import { Badge, styled } from '@mui/material'
+import { Avatar, Badge, Button, MenuItem, MenuItemProps, styled, useTheme } from '@mui/material'
 
 // Hooks
 import { useAuth } from 'src/hooks/useAuth'
@@ -30,7 +30,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import { TItemOrderProduct } from 'src/types/order-product'
 import { getLocalProductCart } from 'src/helpers/storage'
-import { addProductToCart } from 'src/stores/order-product'
+import { updateProductToCart } from 'src/stores/order-product'
+import { formatNumberToLocal } from 'src/utils'
+import { ROUTE_CONFIG } from 'src/configs/route'
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -61,6 +63,10 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   }
 }))
 
+const StyledMenuItem = styled(MenuItem)<MenuItemProps>(({ theme }) => {
+  return {}
+})
+
 export default function CartProduct() {
   // translate
   const { t, i18n } = useTranslation()
@@ -76,10 +82,21 @@ export default function CartProduct() {
   // router
   const router = useRouter()
 
+  // theme
+  const theme = useTheme()
+
   // auth
   const { user } = useAuth()
 
   // handle
+  const handleNavigateDetailsProduct = (slug: string) => {
+    router.push(`${ROUTE_CONFIG.PRODUCT}/${slug}`)
+  }
+
+  const handleNavigateToMyCart = () => {
+    router.push(ROUTE_CONFIG.MY_CART)
+  }
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -100,7 +117,7 @@ export default function CartProduct() {
     const parseData = productCart ? JSON.parse(productCart) : {}
     if (user?._id) {
       dispatch(
-        addProductToCart({
+        updateProductToCart({
           orderItems: parseData[user?._id] || []
         })
       )
@@ -114,10 +131,10 @@ export default function CartProduct() {
           <IconButton onClick={handleClick} color='inherit'>
             {!!orderItems.length ? (
               <Badge color='primary' badgeContent={totalCartItems}>
-                <Icon icon='tdesign:cart' />
+                <Icon icon='tdesign:cart' color={theme.palette.mode === 'light' ? '#2F2B3D8a' : '#D0D4F18a'} />
               </Badge>
             ) : (
-              <Icon icon='tdesign:cart' />
+              <Icon icon='tdesign:cart' color={theme.palette.mode === 'light' ? '#2F2B3D8a' : '#D0D4F18a'} />
             )}
           </IconButton>
         </Tooltip>
@@ -158,7 +175,50 @@ export default function CartProduct() {
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-      ></Menu>
+      >
+        {orderItems.map((item: TItemOrderProduct) => {
+          return (
+            <StyledMenuItem key={item?.product} onClick={() => handleNavigateDetailsProduct(item.slug)}>
+              <Avatar src={item?.image} />
+              <Box>
+                <Typography>{item?.name}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  {item.discount > 0 && (
+                    <Typography
+                      variant='h6'
+                      sx={{
+                        color: theme.palette.error.main,
+                        fontWeight: 'bold',
+                        textDecoration: 'line-through',
+                        fontSize: '10px'
+                      }}
+                    >
+                      {formatNumberToLocal(item?.price)} VND
+                    </Typography>
+                  )}
+                  <Typography
+                    variant='h4'
+                    sx={{ color: theme.palette.primary.main, fontWeight: 'bold', fontSize: '12px' }}
+                  >
+                    {formatNumberToLocal((item?.price * (100 - item.discount)) / 100)} VND
+                  </Typography>
+                </Box>
+              </Box>
+            </StyledMenuItem>
+          )
+        })}
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            type='submit'
+            variant='contained'
+            color='primary'
+            sx={{ mt: 3, mb: 2, mr: 2 }}
+            onClick={handleNavigateToMyCart}
+          >
+            {t('view_cart')}
+          </Button>
+        </Box>
+      </Menu>
     </React.Fragment>
   )
 }

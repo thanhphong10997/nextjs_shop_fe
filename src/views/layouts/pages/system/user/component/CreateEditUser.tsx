@@ -12,7 +12,7 @@ import {
   useTheme
 } from '@mui/material'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import Switch, { SwitchProps } from '@mui/material/Switch'
+import Switch from '@mui/material/Switch'
 
 // Import React
 import React, { useEffect, useState } from 'react'
@@ -23,22 +23,32 @@ import { useTranslation } from 'react-i18next'
 // Import icons
 import { Icon } from '@iconify/react/dist/iconify.js'
 import CustomModal from 'src/components/custom-modal'
-import { Controller, useForm, SubmitHandler } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 
 // hook form
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+
+// redux
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from 'src/stores'
 import { createUserAsync, updateUserAsync } from 'src/stores/user/actions'
+
+// services
 import { getDetailsUser } from 'src/services/user'
-import Spinner from 'src/components/spinner'
-import { EMAIL_REG, PASSWORD_REG } from 'src/configs/regex'
-import WrapperFileUpload from 'src/components/wrapper-file-upload'
-import { convertFileToBase64, convertFullName, toFullName } from 'src/utils'
 import { getAllRoles } from 'src/services/role'
-import CustomSelect from 'src/components/custom-select'
 import { getAllCities } from 'src/services/city'
+
+// components
+import Spinner from 'src/components/spinner'
+import WrapperFileUpload from 'src/components/wrapper-file-upload'
+import CustomSelect from 'src/components/custom-select'
+
+// configs
+import { EMAIL_REG, PASSWORD_REG } from 'src/configs/regex'
+
+// utils
+import { convertFileToBase64, convertFullName, toFullName } from 'src/utils'
 
 type TCreateEditUser = {
   open: boolean
@@ -589,8 +599,8 @@ const CreateEditUser = (props: TCreateEditUser) => {
                 </Grid>
               </Grid>
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
-              <Button type='submit' variant='contained' color='primary'>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button type='submit' variant='contained' color='primary' sx={{ mt: 3, mb: 2 }}>
                 {!userId ? t('Create') : t('Update')}
               </Button>
             </Box>

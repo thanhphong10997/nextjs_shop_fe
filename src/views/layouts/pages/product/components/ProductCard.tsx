@@ -21,7 +21,7 @@ import { TProduct } from 'src/types/product'
 
 // utils
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
-import { convertAddProductToCart, formatNumberToLocal } from 'src/utils'
+import { convertUpdateProductToCart, formatNumberToLocal } from 'src/utils'
 
 // next
 import { useRouter } from 'next/router'
@@ -34,7 +34,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 
 // storage
-import { addProductToCart } from 'src/stores/order-product'
+import { updateProductToCart } from 'src/stores/order-product'
 import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 import { useAuth } from 'src/hooks/useAuth'
 
@@ -74,24 +74,31 @@ const ProductCard = (props: TProductCard) => {
     router.push(`${ROUTE_CONFIG.PRODUCT}/${slug}`)
   }
 
-  const handleAddProductToCart = (item: TProduct) => {
+  const handleUpdateProductToCart = (item: TProduct) => {
     const productCart = getLocalProductCart()
     const parseData = productCart ? JSON.parse(productCart) : {}
-    const listOrderItems = convertAddProductToCart(orderItems, {
+    const listOrderItems = convertUpdateProductToCart(orderItems, {
       name: item?.name,
       amount: 1,
       image: item?.image,
       price: item?.price,
       discount: item?.discount,
-      product: item?._id
+      product: item?._id,
+      slug: item?.slug
     })
-    dispatch(
-      addProductToCart({
-        orderItems: listOrderItems
-      })
-    )
+
     if (user?._id) {
+      dispatch(
+        updateProductToCart({
+          orderItems: listOrderItems
+        })
+      )
       setLocalProductToCart({ ...parseData, [user?._id]: listOrderItems })
+    } else {
+      router.replace({
+        pathname: '/login',
+        query: { returnUrl: router.asPath }
+      })
     }
   }
 
@@ -211,7 +218,7 @@ const ProductCard = (props: TProductCard) => {
             variant='outlined'
             color='primary'
             sx={{ height: '40px', display: 'flex' }}
-            onClick={() => handleAddProductToCart(item)}
+            onClick={() => handleUpdateProductToCart(item)}
           >
             {t('add_to_cart')}
           </Button>
