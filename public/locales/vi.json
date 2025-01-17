@@ -207,5 +207,9 @@
  "count_in_stock_product": "Còn {{count}} sản phẩm trong kho",
  "sold_product": "Đã bán {{count}} sản phẩm",
  "out_of_stock": "Hết hàng",
- "product_description": "Mô tả sản phẩm"
+ "product_description": "Mô tả sản phẩm",
+ "view_cart": "Xem giỏ hàng",
+ "original_price": "Giá gốc",
+ "discount_price": "Giảm giá",
+ "count": "Số lượng"
 }

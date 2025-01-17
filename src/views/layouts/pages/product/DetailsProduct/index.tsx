@@ -2,12 +2,13 @@
 
 // Import Next
 import { NextPage } from 'next'
+import Image from 'next/image'
 
 // Import components
 import Spinner from 'src/components/spinner'
 
 // Import Mui
-import { Box, Button, Grid, useTheme, Typography, Rating } from '@mui/material'
+import { Box, Button, Grid, useTheme, Typography, Rating, IconButton, TextField } from '@mui/material'
 
 // Import React
 import React, { useEffect, useState } from 'react'
@@ -16,16 +17,29 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // utils
-import { formatNumberToLocal } from 'src/utils'
+import { convertUpdateProductToCart, formatNumberToLocal } from 'src/utils'
+import { hexToRGBA } from 'src/utils/hex-to-rgba'
+
+// router
+import { useRouter } from 'next/router'
+
+// types
+import { TProduct } from 'src/types/product'
 
 //  redux
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import { getDetailsProductPublicBySlug } from 'src/services/product'
-import { useRouter } from 'next/router'
-import { TProduct } from 'src/types/product'
-import Image from 'next/image'
-import { hexToRGBA } from 'src/utils/hex-to-rgba'
+import { updateProductToCart } from 'src/stores/order-product'
+
+// icon
+import { Icon } from '@iconify/react/dist/iconify.js'
+
+// helpers
+import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
+
+// auth
+import { useAuth } from 'src/hooks/useAuth'
 
 type TProps = {}
 
@@ -39,13 +53,17 @@ export const DetailsProductPage: NextPage<TProps> = () => {
   // react
   const [loading, setLoading] = useState(false)
   const [dataProduct, setDataProduct] = useState<TProduct | any>({})
+  const [amountProduct, setAmountProduct] = useState(1)
 
   // router
   const router = useRouter()
   const productId = router.query?.productId as string
 
-  // redux
+  // auth
+  const { user } = useAuth()
 
+  // redux
+  const { orderItems } = useSelector((state: RootState) => state.orderProduct)
   const dispatch: AppDispatch = useDispatch()
 
   // fetch api
@@ -62,6 +80,35 @@ export const DetailsProductPage: NextPage<TProps> = () => {
       .catch(() => {
         setLoading(false)
       })
+  }
+
+  // handle
+  const handleUpdateProductToCart = (item: TProduct) => {
+    const productCart = getLocalProductCart()
+    const parseData = productCart ? JSON.parse(productCart) : {}
+    const listOrderItems = convertUpdateProductToCart(orderItems, {
+      name: item?.name,
+      amount: amountProduct,
+      image: item?.image,
+      price: item?.price,
+      discount: item?.discount,
+      product: item?._id,
+      slug: item?.slug
+    })
+
+    if (user?._id) {
+      dispatch(
+        updateProductToCart({
+          orderItems: listOrderItems
+        })
+      )
+      setLocalProductToCart({ ...parseData, [user?._id]: listOrderItems })
+    } else {
+      router.replace({
+        pathname: '/login',
+        query: { returnUrl: router.asPath }
+      })
+    }
   }
 
   useEffect(() => {
@@ -203,16 +250,88 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                     </Box>
                   )}
                 </Box>
+                <Box sx={{ flexBasis: '10%', mt: 8, display: 'flex', alignItems: 'center' }}>
+                  <IconButton
+                    sx={{
+                      backgroundColor: `${theme.palette.primary.main}`,
+                      color: `${theme.palette.common.white}`,
+                      '&:hover': { backgroundColor: `${theme.palette.primary.main}!important` }
+                    }}
+                    onClick={() => {
+                      if (amountProduct > 1) {
+                        setAmountProduct(prev => prev - 1)
+                      }
+                    }}
+                  >
+                    <Icon icon='lucide:minus' fontSize={12} />
+                  </IconButton>
+                  <TextField
+                    type='number'
+                    value={amountProduct}
+                    sx={{
+                      '.MuiInputBase-root.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'transparent'
+                      },
+                      '.MuiInputBase-input.MuiOutlinedInput-input': {
+                        width: '30px',
+                        padding: '4px 8px',
+                        textAlign: 'center'
+                      },
+                      '.MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'transparent'
+                      },
+
+                      // Hide increase/decrease button
+                      '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+                        display: 'none'
+                      },
+                      '& input[type=number]': {
+                        MozAppearance: 'textfield'
+                      }
+
+                      // Hide increase/decrease button
+                    }}
+                    inputProps={{
+                      inputMode: 'numeric',
+                      min: 1,
+                      max: dataProduct?.countInStock
+                    }}
+                    onChange={e => {
+                      // replace all of characters into empty string, only accept numbers
+                      setAmountProduct(+e.target.value)
+                    }}
+                  />
+                  <IconButton
+                    sx={{
+                      backgroundColor: `${theme.palette.primary.main}`,
+                      color: `${theme.palette.common.white}`,
+                      '&:hover': { backgroundColor: `${theme.palette.primary.main}!important` }
+                    }}
+                    onClick={() => {
+                      if (amountProduct < dataProduct.countInStock) {
+                        setAmountProduct(prev => prev + 1)
+                      }
+                    }}
+                  >
+                    <Icon icon='meteor-icons:plus' fontSize={12} />
+                  </IconButton>
+                </Box>
                 <Box
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    padding: '0 12px 10px',
+                    paddingBottom: '10px',
                     gap: 6,
                     mt: 8
                   }}
                 >
-                  <Button type='submit' variant='outlined' color='primary' sx={{ height: '40px', display: 'flex' }}>
+                  <Button
+                    type='submit'
+                    variant='outlined'
+                    color='primary'
+                    sx={{ height: '40px', display: 'flex' }}
+                    onClick={() => handleUpdateProductToCart(dataProduct)}
+                  >
                     {t('add_to_cart')}
                   </Button>
                   <Button type='submit' variant='contained' color='primary' sx={{ height: '40px', display: 'flex' }}>

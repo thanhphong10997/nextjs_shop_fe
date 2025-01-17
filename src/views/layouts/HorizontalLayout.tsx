@@ -2,7 +2,7 @@
 import * as React from 'react'
 
 // Mui
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
+import { styled, createTheme, ThemeProvider, useTheme } from '@mui/material/styles'
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
@@ -58,12 +58,14 @@ const AppBar = styled(MuiAppBar, {
 const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer, hideMenu }) => {
   const auth = useAuth()
   const router = useRouter()
+  const theme = useTheme()
 
   return (
-    <AppBar position='absolute' open={open}>
+    <AppBar position='absolute' open={open} sx={{ backgroundColor: theme.palette.background.paper }}>
       <Toolbar
         sx={{
-          pr: '24px' // keep right padding when drawer closed
+          pr: '24px', // keep right padding when drawer closed
+          margin: '0 20px'
         }}
       >
         {!hideMenu && (
@@ -79,8 +81,10 @@ const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer, hideMenu }) =>
             <Icon icon='mingcute:menu-line' />
           </IconButton>
         )}
-        <Typography component='h1' variant='h6' color='inherit' noWrap sx={{ flexGrow: 1 }}>
-          <Link href={ROUTE_CONFIG.HOME}>HOME</Link>
+        <Typography component='h1' variant='h6' color='primary' noWrap sx={{ flexGrow: 1 }}>
+          <Link href={ROUTE_CONFIG.HOME} style={{ color: 'inherit' }}>
+            HOME
+          </Link>
         </Typography>
         <LanguageDropdown />
         <ModeToggle />

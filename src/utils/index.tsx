@@ -147,8 +147,9 @@ export const cloneDeep = (data: any) => {
   }
 }
 
-export const convertAddProductToCart = (orderItems: TItemOrderProduct[], addItem: TItemOrderProduct) => {
+export const convertUpdateProductToCart = (orderItems: TItemOrderProduct[], addItem: TItemOrderProduct) => {
   try {
+    let result = []
     const cloneOrderItems = cloneDeep(orderItems)
     const findItems = cloneOrderItems.find((item: TItemOrderProduct) => item.product === addItem.product)
 
@@ -159,7 +160,10 @@ export const convertAddProductToCart = (orderItems: TItemOrderProduct[], addItem
       cloneOrderItems.push(addItem)
     }
 
-    return cloneOrderItems
+    // Remove the item which have the quantity = 0
+    result = cloneOrderItems.filter((item: TItemOrderProduct) => item.amount)
+
+    return result
   } catch (e) {
     return orderItems
   }

@@ -20,7 +20,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { AppDispatch, RootState } from 'src/stores'
 import { useDispatch, useSelector } from 'react-redux'
-import { addProductToCart } from 'src/stores/order-product'
+import { updateProductToCart } from 'src/stores/order-product'
 
 // ** Defaults
 const defaultProvider: AuthValuesType = {
@@ -114,7 +114,7 @@ const AuthProvider = ({ children }: Props) => {
       clearLocalUserData()
 
       // reset the items in the cart when the user is logged out
-      dispatch(addProductToCart({ orderItems: [] }))
+      dispatch(updateProductToCart({ orderItems: [] }))
       setLoading(false)
 
       // router.push('/login')
