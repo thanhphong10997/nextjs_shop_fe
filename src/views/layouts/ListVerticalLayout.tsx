@@ -14,7 +14,7 @@ import { Icon } from '@iconify/react/dist/iconify.js'
 // Components
 import { TVertical, VerticalItems } from 'src/configs/layout'
 import { NextPage } from 'next'
-import { Box, styled, Tooltip, useTheme } from '@mui/material'
+import { Box, IconButton, styled, Tooltip, useTheme } from '@mui/material'
 import { useRouter } from 'next/router'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 import { PERMISSIONS } from 'src/configs/permission'
@@ -275,6 +275,7 @@ export const ListVerticalLayout: NextPage<TProps> = ({ drawerIsOpening }) => {
     if (!drawerIsOpening) setOpenItems({})
   }, [drawerIsOpening])
 
+  // handle to open the item menu depends on the router address when the page loads
   React.useEffect(() => {
     if (router.asPath) {
       const parentTitle = findParentActivePath(memoFormatMenu, router.asPath)

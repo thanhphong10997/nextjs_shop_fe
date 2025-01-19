@@ -6,9 +6,8 @@ import { styled, useTheme } from '@mui/material/styles'
 import Card, { CardProps } from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import CardContent from '@mui/material/CardContent'
-import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
-import { Box, Button, Rating } from '@mui/material'
+import { Box, Rating } from '@mui/material'
 
 // translate
 import { useTranslation } from 'react-i18next'
@@ -21,7 +20,7 @@ import { TProduct } from 'src/types/product'
 
 // utils
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
-import { convertUpdateProductToCart, formatNumberToLocal, isExpiry } from 'src/utils'
+import { formatNumberToLocal, isExpiry } from 'src/utils'
 
 // next
 import { useRouter } from 'next/router'
@@ -29,16 +28,7 @@ import { useRouter } from 'next/router'
 // configs
 import { ROUTE_CONFIG } from 'src/configs/route'
 
-// redux
-import { useDispatch, useSelector } from 'react-redux'
-import { AppDispatch, RootState } from 'src/stores'
-
-// storage
-import { updateProductToCart } from 'src/stores/order-product'
-import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
-import { useAuth } from 'src/hooks/useAuth'
-
-type TProductCard = {
+type TProductCardRelated = {
   item: TProduct
 }
 
@@ -52,7 +42,7 @@ const StyledCard = styled(Card)<CardProps>(({ theme }) => {
   }
 })
 
-const ProductCard = (props: TProductCard) => {
+const ProductCardRelated = (props: TProductCardRelated) => {
   // translate
   const { t, i18n } = useTranslation()
 
@@ -63,12 +53,6 @@ const ProductCard = (props: TProductCard) => {
   const theme = useTheme()
   const router = useRouter()
 
-  const { user } = useAuth()
-
-  // redux
-  const dispatch: AppDispatch = useDispatch()
-  const { orderItems } = useSelector((state: RootState) => state.orderProduct)
-
   const memoIsExpiry = React.useMemo(() => {
     return isExpiry(item?.discountStartDate, item?.discountEndDate)
   }, [item])
@@ -78,40 +62,11 @@ const ProductCard = (props: TProductCard) => {
     router.push(`${ROUTE_CONFIG.PRODUCT}/${slug}`)
   }
 
-  const handleUpdateProductToCart = (item: TProduct) => {
-    const productCart = getLocalProductCart()
-    const parseData = productCart ? JSON.parse(productCart) : {}
-    const discountItem = isExpiry(item?.discountStartDate, item?.discountEndDate) ? item?.discount : 0
-    const listOrderItems = convertUpdateProductToCart(orderItems, {
-      name: item?.name,
-      amount: 1,
-      image: item?.image,
-      price: item?.price,
-      discount: discountItem,
-      product: item?._id,
-      slug: item?.slug
-    })
-
-    if (user?._id) {
-      dispatch(
-        updateProductToCart({
-          orderItems: listOrderItems
-        })
-      )
-      setLocalProductToCart({ ...parseData, [user?._id]: listOrderItems })
-    } else {
-      router.replace({
-        pathname: '/login',
-        query: { returnUrl: router.asPath }
-      })
-    }
-  }
-
   return (
     <>
       <StyledCard sx={{ width: '100%' }}>
-        <CardMedia component='img' height='194' image={item.image} alt='Paella dish' />
-        <CardContent sx={{ padding: '8px 12px' }}>
+        <CardMedia component='img' height='160' image={item.image} alt='Paella dish' />
+        <CardContent sx={{ padding: '8px 12px 12px!important' }}>
           <Typography
             variant='h3'
             sx={{
@@ -122,7 +77,6 @@ const ProductCard = (props: TProductCard) => {
               display: '-webkit-box',
               WebkitLineClamp: '2',
               WebkitBoxOrient: 'vertical',
-              minHeight: '48px',
               mb: 2
             }}
             onClick={() => handleNavigateDetails(item?.slug)}
@@ -223,39 +177,11 @@ const ProductCard = (props: TProductCard) => {
                 {!!item.totalReview ? <b>{item.totalReview}</b> : <span>{t('not_review')}</span>}
               </Typography>
             </Box>
-            <IconButton>
-              <Icon icon='mdi:heart' />
-            </IconButton>
           </Box>
         </CardContent>
-
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexDirection: 'column',
-            padding: '0 12px 10px',
-            gap: 2
-          }}
-        >
-          <Button
-            fullWidth
-            type='submit'
-            variant='outlined'
-            color='primary'
-            sx={{ height: '40px', display: 'flex' }}
-            onClick={() => handleUpdateProductToCart(item)}
-          >
-            {t('add_to_cart')}
-          </Button>
-          <Button fullWidth type='submit' variant='contained' color='primary' sx={{ height: '40px', display: 'flex' }}>
-            {t('buy_now')}
-          </Button>
-        </Box>
       </StyledCard>
     </>
   )
 }
 
-export default ProductCard
+export default ProductCardRelated

@@ -33,7 +33,7 @@ const Icon = () => {
       fill='none'
       viewBox='0 0 24 24'
       xmlns='http://www.w3.org/2000/svg'
-      stroke={theme.palette.text.disabled}
+      stroke={theme.palette.mode === 'light' ? theme.palette.grey[400] : theme.palette.grey[600]}
     >
       <path d='M12 3.5C16.6944 3.5 20.5 7.30558 20.5 12C20.5 16.6944 16.6944 20.5 12 20.5C7.30558 20.5 3.5 16.6944 3.5 12C3.5 7.30558 7.30558 3.5 12 3.5Z' />
     </svg>

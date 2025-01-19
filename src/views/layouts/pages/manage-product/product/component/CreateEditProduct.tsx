@@ -28,19 +28,28 @@ import { Controller, useForm } from 'react-hook-form'
 // hook form
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+
+// redux
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from 'src/stores'
 import { createProductAsync, updateProductAsync } from 'src/stores/product/actions'
+
+// components
 import Spinner from 'src/components/spinner'
 import WrapperFileUpload from 'src/components/wrapper-file-upload'
-import { convertFileToBase64, convertHTMLToDraft, stringToSlug } from 'src/utils'
 import CustomSelect from 'src/components/custom-select'
-import { getAllProductTypes } from 'src/services/product-type'
 import CustomDatePicker from 'src/components/custom-date-picker'
+import CustomEditor from 'src/components/custom-editor'
+
+// others
+import { convertFileToBase64, convertHTMLToDraft, stringToSlug } from 'src/utils'
+import { getAllProductTypes } from 'src/services/product-type'
+import { getDetailsProduct } from 'src/services/product'
+import { getAllCities } from 'src/services/city'
+
+// draftJs
 import { EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
-import CustomEditor from 'src/components/custom-editor'
-import { getDetailsProduct } from 'src/services/product'
 
 type TCreateEditProduct = {
   open: boolean
@@ -52,6 +61,7 @@ type TDefaultValues = {
   name: string
   image: string
   type: string
+  location: string
   discount?: string
   price: string
   description: EditorState
@@ -78,7 +88,8 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
   // react
   const [loading, setLoading] = useState(false)
   const [productImage, setProductImage] = useState('')
-  const [citiesOption, setOptionTypes] = useState<{ label: string; value: string }[]>([])
+  const [typesOption, setOptionTypes] = useState<{ label: string; value: string }[]>([])
+  const [citiesOption, setCitiesOption] = useState<{ label: string; value: string }[]>([])
 
   // react hook form
   const defaultValues: TDefaultValues = {
@@ -86,6 +97,7 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
     image: '',
     type: '',
     slug: '',
+    location: '',
     discount: '',
     price: '',
     discountStartDate: null,
@@ -100,6 +112,7 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
       name: yup.string().required(t('required_field')),
       slug: yup.string().required(t('required_field')),
       type: yup.string().required(t('required_field')),
+      location: yup.string().required(t('required_field')),
       price: yup
         .string()
         .required(t('required_field'))
@@ -190,6 +203,7 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
             id: productId,
             name: data?.name,
             slug: data?.slug,
+            location: data?.location,
             price: Number(data?.price),
             discount: Number(data?.discount) || 0,
             countInStock: Number(data?.countInStock),
@@ -210,6 +224,7 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
             discount: Number(data?.discount),
             countInStock: Number(data?.countInStock),
             type: data?.type,
+            location: data?.location,
             discountStartDate: data?.discountStartDate || null,
             discountEndDate: data?.discountEndDate || null,
             description: data?.description ? draftToHtml(convertToRaw(data.description.getCurrentContent())) : '',
@@ -265,6 +280,7 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
             name: data?.name,
             slug: data?.slug,
             price: data?.price,
+            location: data?.location,
             countInStock: data?.countInStock,
             discount: data?.discount || '',
             type: data?.type,
@@ -282,6 +298,27 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
       })
   }
 
+  const fetchAllCities = async () => {
+    await getAllCities({ params: { limit: -1, page: -1 } })
+      .then(res => {
+        const data = res?.data?.cities
+        if (data) {
+          setCitiesOption(
+            data?.map((item: { name: string; _id: string }) => {
+              return {
+                label: item?.name,
+                value: item?._id
+              }
+            })
+          )
+        }
+        setLoading(false)
+      })
+      .catch(() => {
+        setLoading(false)
+      })
+  }
+
   useEffect(() => {
     if (!open) {
       reset({
@@ -295,6 +332,7 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
 
   useEffect(() => {
     fetchAllProductTypes()
+    fetchAllCities()
   }, [])
 
   return (
@@ -541,7 +579,7 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
                                   value={value}
                                   onChange={onChange}
                                   onBlur={onBlur}
-                                  options={citiesOption}
+                                  options={typesOption}
                                   error={Boolean(errors?.type)}
                                   placeholder={t('Select')}
                                   fullWidth
@@ -638,6 +676,40 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
                                   onChange(date)
                                 }}
                               />
+                            )
+                          }}
+                        />
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        <Controller
+                          name='location'
+                          control={control}
+                          render={({ field: { onChange, onBlur, value } }) => {
+                            // Fixing error: Function components cannot be given refs
+
+                            return (
+                              <>
+                                <CustomSelect
+                                  label={t('location')}
+                                  value={value}
+                                  onChange={onChange}
+                                  onBlur={onBlur}
+                                  options={citiesOption}
+                                  error={Boolean(errors?.location)}
+                                  placeholder={t('Select')}
+                                  fullWidth
+                                />
+                                {errors?.location?.message && (
+                                  <FormHelperText
+                                    sx={{
+                                      color: theme.palette.error.main,
+                                      position: 'absolute'
+                                    }}
+                                  >
+                                    {errors.location.message}
+                                  </FormHelperText>
+                                )}
+                              </>
                             )
                           }}
                         />

@@ -9,6 +9,7 @@ export type TParamsCreateProduct = {
   name: string
   image: string
   type: string
+  location: string
   discount: number
   price: number
   description: string
@@ -24,6 +25,7 @@ export type TParamsEditProduct = {
   name: string
   image: string
   type: string
+  location: string
   discount: number
   price: number
   description: string
@@ -52,7 +54,21 @@ export type TProduct = {
   sold: number
   price: number
   discount: number
+  location: {
+    name: string
+    _id: string
+  }
   name: string
   slug: string
   totalLike: number
+  discountEndDate: Date | null
+  discountStartDate: Date | null
+}
+
+export type TParamGetRelatedProduct = {
+  limit?: number
+  page?: number
+  search?: string
+  order?: string
+  slug: string
 }

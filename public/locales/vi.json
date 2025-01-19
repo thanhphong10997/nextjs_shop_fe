@@ -211,5 +211,13 @@
  "view_cart": "Xem giỏ hàng",
  "original_price": "Giá gốc",
  "discount_price": "Giảm giá",
- "count": "Số lượng"
+ "count": "Số lượng",
+ "no_data": "Không có dữ liệu",
+ "no_product": "Không có sản phẩm",
+ "select_all": "Chọn tất cả",
+ "delete_all": "Xóa tất cả",
+ "location": "Vị trí",
+ "same_product": "Sản phẩm tương tự",
+ "delete_filter": "Bỏ bộ lọc",
+ "search_product_name": "Tìm kiếm theo tên sản phẩm"
 }

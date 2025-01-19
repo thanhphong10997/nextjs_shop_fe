@@ -33,6 +33,7 @@ import { getLocalProductCart } from 'src/helpers/storage'
 import { updateProductToCart } from 'src/stores/order-product'
 import { formatNumberToLocal } from 'src/utils'
 import { ROUTE_CONFIG } from 'src/configs/route'
+import NoData from 'src/components/no-data'
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -176,48 +177,56 @@ export default function CartProduct() {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        {orderItems.map((item: TItemOrderProduct) => {
-          return (
-            <StyledMenuItem key={item?.product} onClick={() => handleNavigateDetailsProduct(item.slug)}>
-              <Avatar src={item?.image} />
-              <Box>
-                <Typography>{item?.name}</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  {item.discount > 0 && (
-                    <Typography
-                      variant='h6'
-                      sx={{
-                        color: theme.palette.error.main,
-                        fontWeight: 'bold',
-                        textDecoration: 'line-through',
-                        fontSize: '10px'
-                      }}
-                    >
-                      {formatNumberToLocal(item?.price)} VND
-                    </Typography>
-                  )}
-                  <Typography
-                    variant='h4'
-                    sx={{ color: theme.palette.primary.main, fontWeight: 'bold', fontSize: '12px' }}
-                  >
-                    {formatNumberToLocal((item?.price * (100 - item.discount)) / 100)} VND
-                  </Typography>
-                </Box>
-              </Box>
-            </StyledMenuItem>
-          )
-        })}
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-          <Button
-            type='submit'
-            variant='contained'
-            color='primary'
-            sx={{ mt: 3, mb: 2, mr: 2 }}
-            onClick={handleNavigateToMyCart}
-          >
-            {t('view_cart')}
-          </Button>
-        </Box>
+        {orderItems.length > 0 ? (
+          <>
+            {orderItems.map((item: TItemOrderProduct) => {
+              return (
+                <StyledMenuItem key={item?.product} onClick={() => handleNavigateDetailsProduct(item.slug)}>
+                  <Avatar src={item?.image} />
+                  <Box>
+                    <Typography>{item?.name}</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      {item.discount > 0 && (
+                        <Typography
+                          variant='h6'
+                          sx={{
+                            color: theme.palette.error.main,
+                            fontWeight: 'bold',
+                            textDecoration: 'line-through',
+                            fontSize: '10px'
+                          }}
+                        >
+                          {formatNumberToLocal(item?.price)} VND
+                        </Typography>
+                      )}
+                      <Typography
+                        variant='h4'
+                        sx={{ color: theme.palette.primary.main, fontWeight: 'bold', fontSize: '12px' }}
+                      >
+                        {formatNumberToLocal((item?.price * (100 - item.discount)) / 100)} VND
+                      </Typography>
+                    </Box>
+                  </Box>
+                </StyledMenuItem>
+              )
+            })}
+            <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+              <Button
+                type='submit'
+                variant='contained'
+                color='primary'
+                sx={{ mt: 3, mb: 2, mr: 2 }}
+                onClick={handleNavigateToMyCart}
+              >
+                {t('view_cart')}
+              </Button>
+            </Box>
+          </>
+        ) : (
+          <Box sx={{ width: '200px', padding: '20px' }}>
+            <NoData widthImage='60px' heightImage='60px' textNodata={t('no_product')} />
+          </Box>
+        )}
       </Menu>
     </React.Fragment>
   )

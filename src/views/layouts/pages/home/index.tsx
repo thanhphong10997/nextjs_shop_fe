@@ -13,25 +13,24 @@ import { useTranslation } from 'react-i18next'
 // Components
 
 import CustomPagination from 'src/components/custom-pagination'
-
 import Spinner from 'src/components/spinner'
+import ProductCard from '../product/components/ProductCard'
+import InputSearch from 'src/components/input-search'
+import ProductFilter from '../product/components/ProductFilter'
 
 // config
 import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 
 // services
+import { getAllProductTypes } from 'src/services/product-type'
+import { getAllProductsPublic } from 'src/services/product'
+import { getAllCities } from 'src/services/city'
 
-// hooks
+// types
+import { TProduct } from 'src/types/product'
 
 // utils
-import { formatDate, formatFilter } from 'src/utils'
-
-import { getAllProductTypes } from 'src/services/product-type'
-import ProductCard from '../product/components/ProductCard'
-import { getAllProductsPublic } from 'src/services/product'
-import { TProduct } from 'src/types/product'
-import InputSearch from 'src/components/input-search'
-import ProductFilter from '../product/components/ProductFilter'
+import { formatFilter } from 'src/utils'
 
 type TProps = {}
 
@@ -67,12 +66,15 @@ export const HomePage: NextPage<TProps> = () => {
 
   const [productTypeSelected, setProductTypeSelected] = React.useState('')
   const [reviewSelected, setReviewSelected] = React.useState('')
+  const [locationSelected, setLocationSelected] = React.useState('')
+  const [citiesOption, setCitiesOption] = useState<{ label: string; value: string }[]>([])
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setProductTypeSelected(newValue)
   }
 
   // ref
+  // optimize the calling api for better performance
   const firstRender = useRef<boolean>(false)
 
   // fetch API
@@ -100,8 +102,20 @@ export const HomePage: NextPage<TProps> = () => {
     setPageSize(pageSize)
   }
 
-  const handleFilterProduct = (review: string) => {
-    setReviewSelected(review)
+  const handleFilterProduct = (value: string, type: string) => {
+    switch (type) {
+      case 'review':
+        setReviewSelected(value)
+        break
+      case 'location':
+        setLocationSelected(value)
+        break
+    }
+  }
+
+  const handleResetFilter = () => {
+    setReviewSelected('')
+    setLocationSelected('')
   }
 
   // fetch api
@@ -129,9 +143,31 @@ export const HomePage: NextPage<TProps> = () => {
       })
   }
 
+  const fetchAllCities = async () => {
+    await getAllCities({ params: { limit: -1, page: -1 } })
+      .then(res => {
+        const data = res?.data?.cities
+        if (data) {
+          setCitiesOption(
+            data?.map((item: { name: string; _id: string }) => {
+              return {
+                label: item?.name,
+                value: item?._id
+              }
+            })
+          )
+        }
+        setLoading(false)
+      })
+      .catch(() => {
+        setLoading(false)
+      })
+  }
+
   // side effects
   useEffect(() => {
     fetchAllTypes()
+    fetchAllCities()
   }, [])
 
   useEffect(() => {
@@ -139,8 +175,9 @@ export const HomePage: NextPage<TProps> = () => {
   }, [sortBy, searchBy, page, pageSize, filterBy])
 
   useEffect(() => {
-    if (firstRender.current) setFilterBy({ productType: productTypeSelected, minStar: reviewSelected })
-  }, [productTypeSelected, reviewSelected])
+    if (firstRender.current)
+      setFilterBy({ productType: productTypeSelected, minStar: reviewSelected, productLocation: locationSelected })
+  }, [productTypeSelected, reviewSelected, locationSelected])
 
   return (
     <>
@@ -160,7 +197,11 @@ export const HomePage: NextPage<TProps> = () => {
         </StyledTabs>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
           <Box sx={{ width: '200px' }}>
-            <InputSearch value={searchBy} onChange={(value: string) => setSearchBy(value)} />
+            <InputSearch
+              placeholder={t('search_product_name')}
+              value={searchBy}
+              onChange={(value: string) => setSearchBy(value)}
+            />
           </Box>
         </Box>
         <Box sx={{ height: '100%', width: '100%', mt: 4, mb: 8 }}>
@@ -173,7 +214,13 @@ export const HomePage: NextPage<TProps> = () => {
           >
             <Grid item md={3} display={{ md: 'flex', xs: 'none' }}>
               <Box sx={{ width: '100%', height: 'auto' }}>
-                <ProductFilter handleFilterProduct={handleFilterProduct} />
+                <ProductFilter
+                  reviewSelected={reviewSelected}
+                  locationSelected={locationSelected}
+                  citiesOption={citiesOption}
+                  handleFilterProduct={handleFilterProduct}
+                  handleReset={handleResetFilter}
+                />
               </Box>
             </Grid>
             <Grid item md={9} xs={12}>

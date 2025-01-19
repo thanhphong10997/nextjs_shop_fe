@@ -1,16 +1,5 @@
 // Mui
-import {
-  Box,
-  boxClasses,
-  FormControl,
-  InputLabel,
-  InputLabelProps,
-  MenuItem,
-  MenuItemProps,
-  Select,
-  SelectProps,
-  styled
-} from '@mui/material'
+import { Box, InputLabel, InputLabelProps, MenuItem, Select, SelectProps, styled } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 
 type TCustomSelect = SelectProps & {
@@ -47,10 +36,6 @@ const CustomPlaceholder = styled(InputLabel)<InputLabelProps>(({ theme }) => {
     transform: 'translateY(-50%)',
     left: '18px'
   }
-})
-
-const StyledMenuItem = styled(MenuItem)<MenuItemProps>(({ theme }) => {
-  return {}
 })
 
 const CustomSelect = (props: TCustomSelect) => {
