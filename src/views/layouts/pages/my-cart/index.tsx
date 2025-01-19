@@ -41,6 +41,7 @@ import { updateProductToCart } from 'src/stores/order-product'
 
 // helpers
 import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
+import NoData from 'src/components/no-data'
 
 type TProps = {}
 
@@ -324,7 +325,10 @@ export const MyCartPage: NextPage<TProps> = () => {
             </Box>
           </Fragment>
         ) : (
-          <Box>Khong co du lieu</Box>
+          <Box sx={{ width: '100%', padding: '20px' }}>
+            {' '}
+            <NoData widthImage='100px' heightImage='100px' textNodata={t('no_product')} />
+          </Box>
         )}
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', mt: 2 }}>

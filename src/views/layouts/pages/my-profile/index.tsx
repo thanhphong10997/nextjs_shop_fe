@@ -382,7 +382,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
           </Grid>
 
           {/* Right side */}
-          <Grid container item md={6} xs={12}>
+          <Grid container item md={6} xs={12} mt={{ md: 0, xs: 5 }}>
             <Box
               sx={{
                 height: '100%',
