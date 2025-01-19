@@ -13,7 +13,7 @@ import useDebounce from 'src/hooks/useDebounce'
 
 type TInputSearch = {
   value: string
-  placeholder: string
+  placeholder?: string
   onChange: (value: string) => void
 }
 
