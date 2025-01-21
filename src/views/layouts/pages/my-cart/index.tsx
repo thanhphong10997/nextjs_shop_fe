@@ -197,7 +197,7 @@ export const MyCartPage: NextPage<TProps> = () => {
                       <Avatar sx={{ width: '100px', height: '100px', borderRadius: 0 }} src={item?.image} />
                       <Typography
                         sx={{
-                          fontSize: '24px',
+                          fontSize: '20px',
                           flexBasis: '35%',
                           maxWidth: '100%',
                           overflow: 'hidden',
@@ -209,29 +209,29 @@ export const MyCartPage: NextPage<TProps> = () => {
                         {item?.name}
                       </Typography>
                       <Box sx={{ flexBasis: '20%' }}>
-                        {item.discount > 0 && (
-                          <Typography
-                            variant='h6'
-                            mt={2}
-                            sx={{
-                              color: theme.palette.error.main,
-                              fontWeight: 'bold',
-                              textDecoration: 'line-through',
-                              fontSize: '20px'
-                            }}
-                          >
-                            {formatNumberToLocal(item?.price)} VND
-                          </Typography>
-                        )}
+                        <Typography
+                          variant='h6'
+                          mt={2}
+                          sx={{
+                            color: item?.discount ? theme.palette.error.main : theme.palette.primary.main,
+                            fontWeight: 'bold',
+                            textDecoration: item?.discount ? 'line-through' : 'normal',
+                            fontSize: '18px'
+                          }}
+                        >
+                          {formatNumberToLocal(item?.price)} VND
+                        </Typography>
                       </Box>
                       <Box sx={{ flexBasis: '20%', display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography
-                          variant='h4'
-                          mt={2}
-                          sx={{ color: theme.palette.primary.main, fontWeight: 'bold', fontSize: '20px' }}
-                        >
-                          {formatNumberToLocal((item?.price * (100 - item.discount)) / 100)} VND
-                        </Typography>
+                        {item.discount > 0 && (
+                          <Typography
+                            variant='h4'
+                            mt={2}
+                            sx={{ color: theme.palette.primary.main, fontWeight: 'bold', fontSize: '18px' }}
+                          >
+                            {formatNumberToLocal((item?.price * (100 - item.discount)) / 100)} VND
+                          </Typography>
+                        )}
                         {item.discount > 0 && (
                           <Box
                             sx={{

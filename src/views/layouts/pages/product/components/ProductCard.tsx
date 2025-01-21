@@ -37,6 +37,7 @@ import { AppDispatch, RootState } from 'src/stores'
 import { updateProductToCart } from 'src/stores/order-product'
 import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 import { useAuth } from 'src/hooks/useAuth'
+import { likeProductAsync, unLikeProductAsync } from 'src/stores/product/actions'
 
 type TProductCard = {
   item: TProduct
@@ -76,6 +77,21 @@ const ProductCard = (props: TProductCard) => {
   // handle
   const handleNavigateDetails = (slug: string) => {
     router.push(`${ROUTE_CONFIG.PRODUCT}/${slug}`)
+  }
+
+  const handleToggleProduct = (id: string, isLiked: boolean) => {
+    if (user?._id) {
+      if (isLiked) {
+        dispatch(unLikeProductAsync({ productId: id }))
+      } else {
+        dispatch(likeProductAsync({ productId: id }))
+      }
+    } else {
+      router.replace({
+        pathname: '/login',
+        query: { returnUrl: router.asPath }
+      })
+    }
   }
 
   const handleUpdateProductToCart = (item: TProduct) => {
@@ -223,8 +239,14 @@ const ProductCard = (props: TProductCard) => {
                 {!!item.totalReview ? <b>{item.totalReview}</b> : <span>{t('not_review')}</span>}
               </Typography>
             </Box>
-            <IconButton>
-              <Icon icon='mdi:heart' />
+            <IconButton
+              onClick={() => handleToggleProduct(item?._id, Boolean(user && item?.likedBy?.includes(user?._id)))}
+            >
+              {user && item?.likedBy?.includes(user?._id) ? (
+                <Icon icon='mdi:heart' />
+              ) : (
+                <Icon icon='mdi-light:heart' style={{ color: theme.palette.primary.main }} />
+              )}
             </IconButton>
           </Box>
         </CardContent>

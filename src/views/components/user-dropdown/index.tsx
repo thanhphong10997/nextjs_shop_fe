@@ -102,6 +102,11 @@ export default function UserDropdown() {
     handleClose()
   }
 
+  const handleNavigateMyProduct = () => {
+    router.push(ROUTE_CONFIG.MY_PRODUCT)
+    handleClose()
+  }
+
   // get the user data from redux after update auth me
   React.useEffect(() => {
     if (userData) {
@@ -214,6 +219,12 @@ export default function UserDropdown() {
             <Icon icon='clarity:avatar-line' />
           </Avatar>
           {t('my_profile')}
+        </MenuItem>
+        <MenuItem onClick={handleNavigateMyProduct}>
+          <Avatar>
+            <Icon icon='fa-brands:product-hunt' />
+          </Avatar>
+          {t('my_product')}
         </MenuItem>
         <MenuItem onClick={handleNavigateChangePassword}>
           <Avatar sx={{ backgroundColor: 'transparent' }}>

@@ -219,5 +219,12 @@
  "location": "Vị trí",
  "same_product": "Sản phẩm tương tự",
  "delete_filter": "Bỏ bộ lọc",
- "search_product_name": "Tìm kiếm theo tên sản phẩm"
+ "search_product_name": "Tìm kiếm theo tên sản phẩm",
+ "like_product_successfully": "Thích sản phẩm thành công",
+ "like_product_error": "Thích sản phẩm thất bại",
+ "unlike_product_successfully": "Bỏ thích sản phẩm thành công",
+  "unlike_product_error": "Bỏ thích sản phẩm thất bại",
+  "my_product": "Sản phẩm của tôi",
+  "viewed_product": "Đã xem",
+  "liked_product": "Đã thích"
 }

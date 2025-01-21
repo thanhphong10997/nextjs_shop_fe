@@ -73,6 +73,10 @@ const InputSearch = (props: TInputSearch) => {
     onChange(debounceSearch)
   }, [debounceSearch])
 
+  useEffect(() => {
+    setSearch(value)
+  }, [value])
+
   return (
     <Search>
       <SearchIconWrapper>

@@ -31,6 +31,12 @@ import { TProduct } from 'src/types/product'
 
 // utils
 import { formatFilter } from 'src/utils'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from 'src/stores'
+import toast from 'react-hot-toast'
+import { resetInitialState } from 'src/stores/product'
+import { OBJECT_TYPE_ERROR_PRODUCT } from 'src/configs/error'
+import NoData from 'src/components/no-data'
 
 type TProps = {}
 
@@ -48,6 +54,19 @@ export const HomePage: NextPage<TProps> = () => {
 
   // translate
   const { t, i18n } = useTranslation()
+
+  // redux
+  const {
+    isSuccessLike,
+    isErrorLike,
+    messageErrorLike,
+    isSuccessUnLike,
+    isErrorUnLike,
+    messageErrorUnLike,
+    typeError,
+    isLoading
+  } = useSelector((state: RootState) => state.product)
+  const dispatch: AppDispatch = useDispatch()
 
   // state
   const [page, setPage] = useState(1)
@@ -179,6 +198,38 @@ export const HomePage: NextPage<TProps> = () => {
       setFilterBy({ productType: productTypeSelected, minStar: reviewSelected, productLocation: locationSelected })
   }, [productTypeSelected, reviewSelected, locationSelected])
 
+  useEffect(() => {
+    if (isSuccessLike) {
+      toast.success(t('like_product_successfully'))
+      dispatch(resetInitialState())
+      handleGetListProducts()
+    } else if (isErrorLike && messageErrorLike && typeError) {
+      const errorConfig = OBJECT_TYPE_ERROR_PRODUCT[typeError]
+      if (errorConfig) {
+        toast.error(t(errorConfig))
+      } else {
+        toast.error(t('like_product_error'))
+      }
+      dispatch(resetInitialState())
+    }
+  }, [isSuccessLike, isErrorLike, messageErrorLike, typeError])
+
+  useEffect(() => {
+    if (isSuccessUnLike) {
+      toast.success(t('unlike_product_successfully'))
+      dispatch(resetInitialState())
+      handleGetListProducts()
+    } else if (isErrorUnLike && messageErrorUnLike && typeError) {
+      const errorConfig = OBJECT_TYPE_ERROR_PRODUCT[typeError]
+      if (errorConfig) {
+        toast.error(t(errorConfig))
+      } else {
+        toast.error(t('unlike_product_error'))
+      }
+      dispatch(resetInitialState())
+    }
+  }, [isSuccessUnLike, isErrorUnLike, messageErrorUnLike, typeError])
+
   return (
     <>
       {loading && <Spinner />}
@@ -196,7 +247,7 @@ export const HomePage: NextPage<TProps> = () => {
           })}
         </StyledTabs>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
-          <Box sx={{ width: '200px' }}>
+          <Box sx={{ width: '240px' }}>
             <InputSearch
               placeholder={t('search_product_name')}
               value={searchBy}
@@ -238,8 +289,8 @@ export const HomePage: NextPage<TProps> = () => {
                     </Grid>
                   ))
                 ) : (
-                  <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mt: 4 }}>
-                    <Typography>Khong co du lieu</Typography>
+                  <Box sx={{ width: '100%', mt: 10 }}>
+                    <NoData widthImage='60px' heightImage='60px' textNodata={t('no_product')} />
                   </Box>
                 )}
               </Grid>
@@ -249,7 +300,7 @@ export const HomePage: NextPage<TProps> = () => {
         <CustomPagination
           pageSize={pageSize}
           page={page}
-          rowLength={10}
+          rowLength={productsPublic?.total}
           pageSizeOptions={PAGE_SIZE_OPTION}
           onChangePagination={handleOnChangePagination}
           isHideShowed
