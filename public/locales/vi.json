@@ -226,5 +226,9 @@
   "unlike_product_error": "Bỏ thích sản phẩm thất bại",
   "my_product": "Sản phẩm của tôi",
   "viewed_product": "Đã xem",
-  "liked_product": "Đã thích"
+  "liked_product": "Đã thích",
+  "sum_money": "Tổng tiền",
+  "select_payment_type": "Chọn phương thức thanh toán",
+  "select_delivery_type": "Chọn phương thức giao hàng",
+  "order_now": "Đặt hàng"
 }
