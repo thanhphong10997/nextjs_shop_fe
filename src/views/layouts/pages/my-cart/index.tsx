@@ -42,6 +42,8 @@ import { updateProductToCart } from 'src/stores/order-product'
 // helpers
 import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 import NoData from 'src/components/no-data'
+import { useRouter } from 'next/router'
+import { ROUTE_CONFIG } from 'src/configs/route'
 
 type TProps = {}
 
@@ -55,6 +57,9 @@ export const MyCartPage: NextPage<TProps> = () => {
   // translate
   const { t, i18n } = useTranslation()
 
+  // router
+  const router = useRouter()
+
   // react
   const [loading, setLoading] = useState(false)
   const [selectedRows, setSelectedRows] = useState<string[]>([])
@@ -63,9 +68,30 @@ export const MyCartPage: NextPage<TProps> = () => {
   const { orderItems } = useSelector((state: RootState) => state.orderProduct)
   const dispatch: AppDispatch = useDispatch()
 
+  // memo
   const memoListAllProducts = useMemo(() => {
     return orderItems.map((item: TItemOrderProduct) => item?.product)
   }, [orderItems])
+
+  const memoItemSelectedProduct = useMemo(() => {
+    return selectedRows.map((idSelected: string) => {
+      const findItem: any = orderItems.find((item: TItemOrderProduct) => item?.product === idSelected)
+      if (findItem) {
+        return findItem
+      }
+    })
+  }, [selectedRows, orderItems])
+
+  const memoTotalSelectedProduct = useMemo(() => {
+    const total = memoItemSelectedProduct.reduce((result, current) => {
+      const currentPrice = current?.discount > 0 ? (current.price * (100 - current?.discount)) / 100 : current?.price
+
+      return result + currentPrice * current?.amount
+    }, 0)
+
+    return total
+  }, [memoItemSelectedProduct])
+  console.log('memoTotalSelectedProduct', memoTotalSelectedProduct)
 
   // handle
 
@@ -140,6 +166,19 @@ export const MyCartPage: NextPage<TProps> = () => {
       )
       setLocalProductToCart({ ...parseData, [user?._id]: filteredItems })
     }
+  }
+
+  const handleNavigateCheckOut = () => {
+    router.push(
+      {
+        pathname: ROUTE_CONFIG.CHECKOUT_PRODUCT,
+        query: {
+          totalPrice: memoTotalSelectedProduct,
+          productSelected: JSON.stringify(memoItemSelectedProduct)
+        }
+      },
+      'checkout-product'
+    )
   }
 
   return (
@@ -330,6 +369,12 @@ export const MyCartPage: NextPage<TProps> = () => {
             <NoData widthImage='100px' heightImage='100px' textNodata={t('no_product')} />
           </Box>
         )}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+          <Typography sx={{ fontSize: '24px', fontWeight: 600 }}>{t('sum_money')}:</Typography>
+          <Typography sx={{ fontSize: '24px', fontWeight: 600, color: theme.palette.primary.main }}>
+            {formatNumberToLocal(memoTotalSelectedProduct)} VND
+          </Typography>
+        </Box>
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', mt: 2 }}>
         <Button
@@ -338,6 +383,7 @@ export const MyCartPage: NextPage<TProps> = () => {
           color='primary'
           disabled={!selectedRows.length}
           sx={{ height: '40px', display: 'flex' }}
+          onClick={handleNavigateCheckOut}
         >
           {t('buy_now')}
         </Button>

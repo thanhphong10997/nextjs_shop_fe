@@ -128,6 +128,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
           middleName,
           lastName,
           role: data?.role,
+          city: data?.city,
           avatar
         })
       )
