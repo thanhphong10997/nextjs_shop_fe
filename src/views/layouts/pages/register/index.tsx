@@ -194,7 +194,6 @@ export const RegisterPage: NextPage<TProps> = () => {
                       placeholder={t('enter_your_email')}
                       variant='outlined'
                       fullWidth
-                      autoFocus
                       helperText={errors?.email?.message}
                       value={value}
                       onBlur={onBlur}
@@ -219,7 +218,6 @@ export const RegisterPage: NextPage<TProps> = () => {
                       variant='outlined'
                       placeholder={t('enter_current_password')}
                       fullWidth
-                      autoFocus
                       helperText={errors?.password?.message}
                       type={showPassword ? 'text' : 'password'}
                       InputProps={{
@@ -258,7 +256,6 @@ export const RegisterPage: NextPage<TProps> = () => {
                       placeholder={t('enter_confirm_password')}
                       variant='outlined'
                       fullWidth
-                      autoFocus
                       helperText={errors?.confirmPassword?.message}
                       type={showConfirmPassword ? 'text' : 'password'}
                       InputProps={{

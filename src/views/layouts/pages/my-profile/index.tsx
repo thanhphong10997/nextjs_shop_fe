@@ -330,7 +330,6 @@ export const MyProfilePage: NextPage<TProps> = () => {
                             placeholder={t('enter_your_email')}
                             variant='filled'
                             fullWidth
-                            autoFocus
                             helperText={errors?.email?.message}
                             value={value}
                             onBlur={onBlur}
@@ -410,7 +409,6 @@ export const MyProfilePage: NextPage<TProps> = () => {
                           placeholder={t('enter_your_full_name')}
                           variant='filled'
                           fullWidth
-                          autoFocus
                           value={value}
                           onBlur={onBlur}
                           onChange={onChange}
@@ -432,7 +430,6 @@ export const MyProfilePage: NextPage<TProps> = () => {
                           placeholder={t('enter_your_address')}
                           variant='filled'
                           fullWidth
-                          autoFocus
                           value={value}
                           onBlur={onBlur}
                           onChange={onChange}
@@ -492,7 +489,6 @@ export const MyProfilePage: NextPage<TProps> = () => {
                           variant='filled'
                           value={value}
                           fullWidth
-                          autoFocus
                           helperText={errors?.phoneNumber?.message}
                           inputProps={{
                             inputMode: 'numeric',

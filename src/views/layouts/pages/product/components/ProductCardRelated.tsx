@@ -133,13 +133,36 @@ const ProductCardRelated = (props: TProductCardRelated) => {
           {item.countInStock > 0 ? (
             <>{t('count_in_stock_product', { count: item.countInStock })}</>
           ) : (
-            <span>{t('out_of_stock')}</span>
+            <Box
+              sx={{
+                backgroundColor: hexToRGBA(theme.palette.error.main, 0.42),
+                width: '60px',
+                height: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '2px',
+                my: 1
+              }}
+            >
+              <Typography
+                variant='h6'
+                sx={{
+                  color: theme.palette.error.main,
+                  fontSize: '12px',
+                  lineHeight: 1,
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {t('out_of_stock')}
+              </Typography>
+            </Box>
           )}
 
           {item.sold > 0 && (
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-                {t('sold_product', { count: item.sold })}
+                {t('sold')} <b>{item?.sold}</b> {t('product')}
               </Typography>
             </Box>
           )}

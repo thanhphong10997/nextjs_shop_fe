@@ -202,7 +202,6 @@ export const ChangePasswordPage: NextPage<TProps> = () => {
                       label={t('Current_password')}
                       placeholder={t('enter_current_password')}
                       fullWidth
-                      autoFocus
                       helperText={errors?.currentPassword?.message}
                       type={showCurrentPassword ? 'text' : 'password'}
                       InputProps={{
@@ -242,7 +241,6 @@ export const ChangePasswordPage: NextPage<TProps> = () => {
                       variant='outlined'
                       placeholder={t('enter_new_password')}
                       fullWidth
-                      autoFocus
                       helperText={errors?.newPassword?.message}
                       type={showNewPassword ? 'text' : 'password'}
                       InputProps={{
@@ -282,7 +280,6 @@ export const ChangePasswordPage: NextPage<TProps> = () => {
                       placeholder={t('enter_confirm_new_password')}
                       variant='outlined'
                       fullWidth
-                      autoFocus
                       helperText={errors?.confirmNewPassword?.message}
                       type={showConfirmNewPassword ? 'text' : 'password'}
                       InputProps={{

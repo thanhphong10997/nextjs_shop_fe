@@ -128,7 +128,7 @@ export default function CartProduct() {
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        <Tooltip title={t('Account')}>
+        <Tooltip title={t('my_cart')}>
           <IconButton onClick={handleClick} color='inherit'>
             {!!orderItems.length ? (
               <Badge color='primary' badgeContent={totalCartItems}>
@@ -150,6 +150,7 @@ export default function CartProduct() {
           paper: {
             elevation: 0,
             sx: {
+              minWidth: '300px',
               overflow: 'visible',
               filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
               mt: 1.5,
@@ -189,7 +190,9 @@ export default function CartProduct() {
                       sx={{ height: '60px!important', width: '60px!important' }}
                     />
                     <Box>
-                      <Typography>{item?.name}</Typography>
+                      <Typography sx={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {item?.name}
+                      </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         {item.discount > 0 && (
                           <Typography
@@ -229,7 +232,7 @@ export default function CartProduct() {
             </Box>
           </>
         ) : (
-          <Box sx={{ width: '200px', padding: '20px' }}>
+          <Box sx={{ width: '100%', padding: '20px' }}>
             <NoData widthImage='60px' heightImage='60px' textNodata={t('no_product')} />
           </Box>
         )}

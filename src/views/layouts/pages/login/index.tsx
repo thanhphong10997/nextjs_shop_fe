@@ -178,7 +178,6 @@ export const LoginPage: NextPage<TProps> = () => {
                     error={Boolean(errors.email)}
                     placeholder={t('enter_your_email')}
                     variant='outlined'
-                    autoFocus
                     fullWidth
                     helperText={errors?.email?.message}
                     value={value}

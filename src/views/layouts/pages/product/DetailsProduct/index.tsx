@@ -1,11 +1,11 @@
-'use client'
-
 // Import Next
 import { NextPage } from 'next'
 import Image from 'next/image'
 
 // Import components
 import Spinner from 'src/components/spinner'
+import NoData from 'src/components/no-data'
+import ProductCardRelated from '../components/ProductCardRelated'
 
 // Import Mui
 import { Box, Button, Grid, useTheme, Typography, Rating, IconButton, TextField } from '@mui/material'
@@ -24,24 +24,21 @@ import { hexToRGBA } from 'src/utils/hex-to-rgba'
 import { useRouter } from 'next/router'
 
 // types
-import { TParamGetRelatedProduct, TProduct } from 'src/types/product'
+import { TProduct } from 'src/types/product'
+
+// auth
+import { useAuth } from 'src/hooks/useAuth'
 
 //  redux
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
-import { getDetailsProductPublicBySlug, getListRelatedProductBySlug } from 'src/services/product'
 import { updateProductToCart } from 'src/stores/order-product'
 
-// icon
+// others
 import { Icon } from '@iconify/react/dist/iconify.js'
-
-// helpers
+import { getDetailsProductPublicBySlug, getListRelatedProductBySlug } from 'src/services/product'
 import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
-
-// auth
-import { useAuth } from 'src/hooks/useAuth'
-import NoData from 'src/components/no-data'
-import ProductCardRelated from '../components/ProductCardRelated'
+import { ROUTE_CONFIG } from 'src/configs/route'
 
 type TProps = {}
 
@@ -137,6 +134,22 @@ export const DetailsProductPage: NextPage<TProps> = () => {
     }
   }
 
+  const handleBuyProductToCart = (item: TProduct) => {
+    handleUpdateProductToCart(item)
+
+    // ROUTE_CONFIG.MY_CART is the custom URL so the cart page won't show the query on the router and the query data will be gone if the page reloads
+    router.push(
+      {
+        pathname: ROUTE_CONFIG.MY_CART,
+
+        query: {
+          selected: item?._id
+        }
+      },
+      ROUTE_CONFIG.MY_CART
+    )
+  }
+
   useEffect(() => {
     if (productId) {
       fetchGetDetailsProduct(productId)
@@ -190,6 +203,34 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                     {dataProduct?.name}
                   </Typography>
                 </Box>
+                {dataProduct.countInStock > 0 ? (
+                  <>{t('count_in_stock_product', { count: dataProduct.countInStock })}</>
+                ) : (
+                  <Box
+                    sx={{
+                      backgroundColor: hexToRGBA(theme.palette.error.main, 0.42),
+                      width: '60px',
+                      height: '20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '2px',
+                      my: 1
+                    }}
+                  >
+                    <Typography
+                      variant='h6'
+                      sx={{
+                        color: theme.palette.error.main,
+                        fontSize: '12px',
+                        lineHeight: 1,
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      {t('out_of_stock')}
+                    </Typography>
+                  </Box>
+                )}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
                   {dataProduct.averageRating > 0 && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -222,10 +263,12 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                       <span>{t('not_review')}</span>
                     )}
                   </Typography>
+                  {'|'}
                   {dataProduct.sold > 0 && (
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-                        {t('sold_product', { count: dataProduct.sold })}
+                        {/* {t('sold_product', { count: dataProduct.sold })} */}
+                        {t('sold')} <b>{dataProduct?.sold}</b> {t('product')}
                       </Typography>
                     </Box>
                   )}
@@ -377,6 +420,7 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                   }}
                 >
                   <Button
+                    disabled={dataProduct?.countInStock < 1}
                     type='submit'
                     variant='outlined'
                     color='primary'
@@ -385,7 +429,14 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                   >
                     {t('add_to_cart')}
                   </Button>
-                  <Button type='submit' variant='contained' color='primary' sx={{ height: '40px', display: 'flex' }}>
+                  <Button
+                    disabled={dataProduct?.countInStock < 1}
+                    type='submit'
+                    variant='contained'
+                    color='primary'
+                    sx={{ height: '40px', display: 'flex' }}
+                    onClick={() => handleBuyProductToCart(dataProduct)}
+                  >
                     {t('buy_now')}
                   </Button>
                 </Box>

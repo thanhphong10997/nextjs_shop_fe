@@ -123,6 +123,22 @@ const ProductCard = (props: TProductCard) => {
     }
   }
 
+  const handleBuyProductToCart = (item: TProduct) => {
+    handleUpdateProductToCart(item)
+
+    // ROUTE_CONFIG.MY_CART is the custom URL so the cart page won't show the query on the router and the query data will be gone if the page reloads
+    router.push(
+      {
+        pathname: ROUTE_CONFIG.MY_CART,
+
+        query: {
+          selected: item?._id
+        }
+      },
+      ROUTE_CONFIG.MY_CART
+    )
+  }
+
   return (
     <>
       <StyledCard sx={{ width: '100%' }}>
@@ -195,13 +211,36 @@ const ProductCard = (props: TProductCard) => {
           {item.countInStock > 0 ? (
             <>{t('count_in_stock_product', { count: item.countInStock })}</>
           ) : (
-            <span>{t('out_of_stock')}</span>
+            <Box
+              sx={{
+                backgroundColor: hexToRGBA(theme.palette.error.main, 0.42),
+                width: '60px',
+                height: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '2px',
+                my: 1
+              }}
+            >
+              <Typography
+                variant='h6'
+                sx={{
+                  color: theme.palette.error.main,
+                  fontSize: '12px',
+                  lineHeight: 1,
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {t('out_of_stock')}
+              </Typography>
+            </Box>
           )}
 
           {item.sold > 0 && (
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-                {t('sold_product', { count: item.sold })}
+                {t('sold')} <b>{item?.sold}</b> {t('product')}
               </Typography>
             </Box>
           )}
@@ -263,6 +302,7 @@ const ProductCard = (props: TProductCard) => {
         >
           <Button
             fullWidth
+            disabled={item?.countInStock < 1}
             type='submit'
             variant='outlined'
             color='primary'
@@ -271,7 +311,15 @@ const ProductCard = (props: TProductCard) => {
           >
             {t('add_to_cart')}
           </Button>
-          <Button fullWidth type='submit' variant='contained' color='primary' sx={{ height: '40px', display: 'flex' }}>
+          <Button
+            fullWidth
+            disabled={item?.countInStock < 1}
+            type='submit'
+            variant='contained'
+            color='primary'
+            sx={{ height: '40px', display: 'flex' }}
+            onClick={() => handleBuyProductToCart(item)}
+          >
             {t('buy_now')}
           </Button>
         </Box>

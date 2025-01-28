@@ -132,7 +132,6 @@ const CreateEditRole = (props: TCreateEditRole) => {
                       label={t('Role_name')}
                       placeholder={t('enter_name')}
                       fullWidth
-                      autoFocus
                       helperText={errors?.name?.message}
                       value={value}
                       onBlur={onBlur}
