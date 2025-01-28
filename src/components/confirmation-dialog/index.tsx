@@ -21,8 +21,6 @@ import { useTranslation } from 'react-i18next'
 
 // Import icons
 import { Icon } from '@iconify/react/dist/iconify.js'
-import useDebounce from 'src/hooks/useDebounce'
-import themeConfig from 'src/configs/themeConfig'
 
 type TConfirmationDialog = {
   open: boolean
@@ -84,7 +82,7 @@ const ConfirmationDialog = (props: TConfirmationDialog) => {
             {' '}
             {t('confirm')}
           </Button>
-          <Button color='error' variant='outlined' onClick={handleCancel} autoFocus>
+          <Button color='error' variant='outlined' onClick={handleCancel}>
             {t('cancel')}
           </Button>
         </DialogActions>

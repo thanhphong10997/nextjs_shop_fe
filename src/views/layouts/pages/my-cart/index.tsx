@@ -91,7 +91,6 @@ export const MyCartPage: NextPage<TProps> = () => {
 
     return total
   }, [memoItemSelectedProduct])
-  console.log('memoTotalSelectedProduct', memoTotalSelectedProduct)
 
   // handle
 
@@ -169,17 +168,26 @@ export const MyCartPage: NextPage<TProps> = () => {
   }
 
   const handleNavigateCheckOut = () => {
-    router.push(
-      {
-        pathname: ROUTE_CONFIG.CHECKOUT_PRODUCT,
-        query: {
-          totalPrice: memoTotalSelectedProduct,
-          productSelected: JSON.stringify(memoItemSelectedProduct)
-        }
-      },
-      'checkout-product'
+    // only pass id and amount of the product to the router
+    const formatData = JSON.stringify(
+      memoItemSelectedProduct?.map(item => ({ product: item?.product, amount: item?.amount }))
     )
+    router.push({
+      pathname: ROUTE_CONFIG.CHECKOUT_PRODUCT,
+      query: {
+        totalPrice: memoTotalSelectedProduct,
+        productSelected: formatData
+      }
+    })
   }
+
+  // side Effects
+  useEffect(() => {
+    const selectedProduct: any = router?.query?.selected
+    if (selectedProduct) {
+      setSelectedRows([selectedProduct])
+    }
+  }, [router.query])
 
   return (
     <>

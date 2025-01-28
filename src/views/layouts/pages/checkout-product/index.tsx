@@ -1,5 +1,3 @@
-'use client'
-
 // Import Next
 import { NextPage } from 'next'
 
@@ -25,7 +23,7 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // utils
-import { formatNumberToLocal, toFullName } from 'src/utils'
+import { convertUpdateProductToCart, formatNumberToLocal, toFullName } from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 // hooks
@@ -44,8 +42,17 @@ import { useRouter } from 'next/router'
 // services
 import { getAllPaymentTypes } from 'src/services/payment-type'
 import { getAllDeliveryTypes } from 'src/services/delivery-type'
-import { resetInitialState } from 'src/stores/order-product'
+import { resetInitialState, updateProductToCart } from 'src/stores/order-product'
 import toast from 'react-hot-toast'
+import { Icon } from '@iconify/react/dist/iconify.js'
+import ModalAddAddress from './components/ModalAddAddress'
+import { getAllCities } from 'src/services/city'
+import Spinner from 'src/components/spinner'
+import ModalWarning from './components/ModalWarning'
+
+// alert
+import Swal from 'sweetalert2'
+import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 
 type TProps = {}
 
@@ -68,14 +75,51 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
   const [deliveryOptions, setDeliveryOptions] = useState<{ label: string; value: string; price: string }[]>([])
   const [paymentSelected, setPaymentSelected] = useState('')
   const [deliverySelected, setDeliverySelected] = useState('')
+  const [openAddress, setOpenAddress] = useState(false)
+  const [citiesOption, setCitiesOption] = useState<{ label: string; value: string }[]>([])
+  const [openWarning, setOpenWarning] = useState(false)
 
   // redux
   const dispatch: AppDispatch = useDispatch()
-  const { isLoading, isSuccessCreate, isErrorCreate, typeError, messageErrorCreate } = useSelector(
+  const { isLoading, isSuccessCreate, isErrorCreate, messageErrorCreate, orderItems } = useSelector(
     (state: RootState) => state.orderProduct
   )
 
   // memo
+  const memoDefaultAddress = useMemo(() => {
+    const findDefaultAddress = user?.addresses?.find(address => address.isDefault)
+
+    return findDefaultAddress
+  }, [user?.addresses])
+
+  const memoNameCity = useMemo(() => {
+    if (memoDefaultAddress) {
+      const findCity = citiesOption?.find(city => city?.value === memoDefaultAddress?.city)
+
+      return findCity?.label
+    }
+
+    return ''
+  }, [memoDefaultAddress, citiesOption])
+
+  const memoShippingPrice = useMemo(() => {
+    const findItemPrice = deliveryOptions?.find(item => item?.value === deliverySelected)
+    const shippingPrice = findItemPrice ? +findItemPrice?.price : 0
+
+    return shippingPrice
+  }, [deliverySelected])
+
+  const handleFormatProductData = (items: any) => {
+    const objectMap: Record<string, TItemOrderProduct> = {}
+    orderItems?.forEach((order: any) => {
+      objectMap[order?.product] = order
+    })
+
+    return items?.map((item: any) => ({
+      ...objectMap[item?.product],
+      amount: item?.amount
+    }))
+  }
 
   // get data from query string of router
   const memoQueryProduct = useMemo(() => {
@@ -86,11 +130,11 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
     const data: any = router.query
     if (data) {
       result.totalPrice = data?.totalPrice || 0
-      result.selectedProduct = data.productSelected ? JSON.parse(data.productSelected) : []
+      result.selectedProduct = data.productSelected ? handleFormatProductData(JSON.parse(data.productSelected)) : []
     }
 
     return result
-  }, [router.query])
+  }, [router.query, orderItems])
 
   // handle
   const onChangeDelivery = (value: string) => {
@@ -101,44 +145,53 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
     setPaymentSelected(value)
   }
 
-  // fetch api
+  // handle
   const handleGetListPaymentMethod = async () => {
-    await getAllPaymentTypes({ params: { limit: -1, page: -1 } }).then(res => {
-      if (res?.data) {
-        setPaymentOptions(
-          res?.data?.paymentTypes?.map((item: { name: string; _id: string }) => {
-            return {
-              label: item?.name,
-              value: item?._id
-            }
-          })
-        )
-        setPaymentSelected(res?.data?.paymentTypes?.[0]?._id)
-      }
-    })
+    setLoading(true)
+    await getAllPaymentTypes({ params: { limit: -1, page: -1 } })
+      .then(res => {
+        if (res?.data) {
+          setPaymentOptions(
+            res?.data?.paymentTypes?.map((item: { name: string; _id: string }) => {
+              return {
+                label: item?.name,
+                value: item?._id
+              }
+            })
+          )
+          setPaymentSelected(res?.data?.paymentTypes?.[0]?._id)
+        }
+        setLoading(false)
+      })
+      .catch(err => {
+        setLoading(false)
+      })
   }
 
   const handleGetListDeliveryMethod = async () => {
-    await getAllDeliveryTypes({ params: { limit: -1, page: -1 } }).then(res => {
-      if (res?.data) {
-        setDeliveryOptions(
-          res?.data?.deliveryTypes?.map((item: { name: string; _id: string; price: string }) => {
-            return {
-              label: item?.name,
-              value: item?._id,
-              price: item?.price
-            }
-          })
-        )
-        setDeliverySelected(res?.data?.deliveryTypes?.[0]?._id)
-      }
-    })
+    setLoading(true)
+    await getAllDeliveryTypes({ params: { limit: -1, page: -1 } })
+      .then(res => {
+        if (res?.data) {
+          setDeliveryOptions(
+            res?.data?.deliveryTypes?.map((item: { name: string; _id: string; price: string }) => {
+              return {
+                label: item?.name,
+                value: item?._id,
+                price: item?.price
+              }
+            })
+          )
+          setDeliverySelected(res?.data?.deliveryTypes?.[0]?._id)
+        }
+      })
+      .catch(e => {
+        setLoading(false)
+      })
   }
 
   const handleOrderProduct = () => {
-    const findItemPrice = deliveryOptions?.find(item => item?.value === deliverySelected)
-    const shippingPrice = findItemPrice ? +findItemPrice?.price : 0
-    const totalPrice = +shippingPrice + Number(memoQueryProduct?.totalPrice)
+    const totalPrice = +memoShippingPrice + Number(memoQueryProduct?.totalPrice)
     dispatch(
       createOrderProductAsync({
         orderItems: memoQueryProduct?.selectedProduct,
@@ -146,36 +199,188 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
         paymentMethod: paymentSelected,
         deliveryMethod: deliverySelected,
         user: user ? user?._id : '',
-        fullName: user
-          ? toFullName(user?.lastName || '', user?.middleName || '', user?.firstName || '', i18n.language) || 'Phong'
+        fullName: memoDefaultAddress
+          ? toFullName(
+              memoDefaultAddress?.lastName || '',
+              memoDefaultAddress?.middleName || '',
+              memoDefaultAddress?.firstName || '',
+              i18n.language
+            )
           : '',
-        address: user ? user?.address || 'HCM' : '',
-        city: user ? user?.city : '',
-        phone: user ? user?.phoneNumber : '',
-        shippingPrice: shippingPrice,
+        address: memoDefaultAddress ? memoDefaultAddress?.address : '',
+        city: memoDefaultAddress ? memoDefaultAddress?.city : '',
+        phone: memoDefaultAddress ? memoDefaultAddress?.phoneNumber : '',
+        shippingPrice: memoShippingPrice,
         totalPrice: totalPrice
       })
     )
   }
 
+  const handleChangeAmountCart = (items: TItemOrderProduct[]) => {
+    const productCart = getLocalProductCart()
+    const parseData = productCart ? JSON.parse(productCart) : {}
+    const objectMap: Record<string, number> = {}
+    items.forEach(item => {
+      objectMap[item?.product] = -item?.amount
+    })
+    const listOrderItems: TItemOrderProduct[] = []
+
+    // orderItems means every product which added to the cart
+    orderItems.forEach((cartItem: TItemOrderProduct) => {
+      // check if the selected product is existed in the objectMap
+      if (objectMap[cartItem?.product]) {
+        listOrderItems.push({
+          ...cartItem,
+
+          // amount of the product after place order will be calculated by the amount of the product in the cart minus the amount of the product in checkout step
+          amount: cartItem?.amount + objectMap[cartItem?.product]
+        })
+      } else {
+        listOrderItems.push(cartItem)
+      }
+    })
+
+    const filterOrderList = listOrderItems?.filter(item => item?.amount)
+
+    if (user) {
+      dispatch(
+        updateProductToCart({
+          // filter to get the product have amount > 0
+          orderItems: filterOrderList
+        })
+      )
+      setLocalProductToCart({ ...parseData, [user?._id]: filterOrderList })
+    }
+  }
+
+  // fetch api
+  const fetchAllCities = async () => {
+    await getAllCities({ params: { limit: -1, page: -1 } })
+      .then(res => {
+        const data = res?.data?.cities
+        if (data) {
+          setCitiesOption(
+            data?.map((item: { name: string; _id: string }) => {
+              return {
+                label: item?.name,
+                value: item?._id
+              }
+            })
+          )
+        }
+        setLoading(false)
+      })
+      .catch(() => {
+        setLoading(false)
+      })
+  }
+
   useEffect(() => {
     handleGetListPaymentMethod()
     handleGetListDeliveryMethod()
+    fetchAllCities()
   }, [])
 
   useEffect(() => {
     if (isSuccessCreate) {
-      toast.success(t('create_product_order_success'))
+      Swal.fire({
+        title: t('Congratulation!'),
+        text: t('create_product_order_success'),
+        icon: 'success',
+        confirmButtonText: t('confirm'),
+        background: theme.palette.background.paper,
+        color: `${theme.palette.customColors.main}c7`
+      }).then(result => {
+        if (result.isConfirmed) {
+        }
+      })
+
+      // decrease the amount of the product in cart after order has been created
+      handleChangeAmountCart(memoQueryProduct.selectedProduct)
+
+      // memoQueryProduct.selectedProduct?.map((item: TItemOrderProduct) => handleChangeAmountCart(item, -item?.amount))
       dispatch(resetInitialState())
     } else if (isErrorCreate && messageErrorCreate) {
-      toast.error(t('create_product_order_error'))
+      Swal.fire({
+        title: t('Opps!'),
+        text: t('create_product_order_error'),
+        icon: 'error',
+        confirmButtonText: t('confirm'),
+        background: theme.palette.background.paper,
+        color: `${theme.palette.customColors.main}c7`
+      })
       dispatch(resetInitialState())
     }
   }, [isSuccessCreate, isErrorCreate, messageErrorCreate])
 
+  useEffect(() => {
+    const data: any = router.query
+    if (!data?.productSelected) {
+      setOpenWarning(true)
+    }
+  }, [router.query])
+
   return (
     <>
-      {/* {(isLoading || loading) && <Spinner />} */}
+      {(isLoading || loading) && <Spinner />}
+      <ModalWarning open={openWarning} onClose={() => setOpenAddress(false)} />
+      <ModalAddAddress open={openAddress} onClose={() => setOpenAddress(false)} />
+      <Box
+        sx={{
+          backgroundColor: theme.palette.background.paper,
+          padding: '40px',
+          width: '100%',
+          borderRadius: '15px',
+          mb: 6
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 4, flexDirection: 'column' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Icon icon='bx:map' style={{ color: theme.palette.primary.main }} />
+            <Typography
+              variant='h6'
+              sx={{
+                fontSize: '18px',
+                fontWeight: 'bold',
+                mt: 1,
+                color: theme.palette.primary.main
+              }}
+            >
+              {t('shipping_address')}
+            </Typography>
+          </Box>
+          <Box>
+            {user && user?.addresses?.length > 0 ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Typography sx={{ fontWeight: 'bold', fontSize: '18px' }}>
+                  {memoDefaultAddress?.phoneNumber}{' '}
+                  {toFullName(
+                    memoDefaultAddress?.lastName || '',
+                    memoDefaultAddress?.middleName || '',
+                    memoDefaultAddress?.firstName || '',
+                    i18n.language
+                  )}
+                </Typography>
+                <Typography component='span' sx={{ fontSize: '18px' }}>
+                  {memoDefaultAddress?.address} {memoNameCity}
+                </Typography>
+                <Button
+                  sx={{ border: `1px solid ${theme.palette.primary.main}` }}
+                  onClick={() => {
+                    setOpenAddress(true)
+                  }}
+                >
+                  {t('Change')}
+                </Button>
+              </Box>
+            ) : (
+              <Button sx={{ border: `1px solid ${theme.palette.primary.main}` }} onClick={() => setOpenAddress(true)}>
+                {t('add_address')}
+              </Button>
+            )}
+          </Box>
+        </Box>
+      </Box>
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,
@@ -368,6 +573,28 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
           </FormControl>
         </Box>
         {/* Payment method */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Typography sx={{ fontSize: '20px', minWidth: '200px' }}>{t('item_price')}:</Typography>
+            <Typography sx={{ fontSize: '20px', minWidth: '200px' }}>
+              {formatNumberToLocal(memoQueryProduct?.totalPrice)} VND
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Typography sx={{ fontSize: '20px', minWidth: '200px' }}>{t('shipping_price')}:</Typography>
+            <Typography sx={{ fontSize: '20px', minWidth: '200px' }}>
+              {formatNumberToLocal(memoShippingPrice)} VND
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Typography sx={{ fontSize: '20px', minWidth: '200px', fontWeight: 600 }}>{t('sum_money')}:</Typography>
+            <Typography
+              sx={{ fontSize: '20px', color: theme.palette.primary.main, minWidth: '200px', fontWeight: 600 }}
+            >
+              {formatNumberToLocal(+memoQueryProduct?.totalPrice + +memoShippingPrice)} VND
+            </Typography>
+          </Box>
+        </Box>
       </Box>
       {/* Delivery method */}
 
