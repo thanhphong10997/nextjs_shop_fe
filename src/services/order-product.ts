@@ -6,17 +6,27 @@ import { API_ENDPOINT } from 'src/configs/api'
 import instanceAxios from 'src/helpers/axios'
 
 // types
-import { TParamsCreateOrderProduct } from 'src/types/order-product'
+import { TParamsCreateOrderProduct, TParamsGetOrderProducts } from 'src/types/order-product'
 
-// export const getAllProducts = async (data: { params: TParamsGetProducts }) => {
-//   try {
-//     const res = await instanceAxios.get(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT.INDEX}`, data)
+export const getAllOrderProductsByMe = async (data: { params: TParamsGetOrderProducts }) => {
+  try {
+    const res = await instanceAxios.get(`${API_ENDPOINT.MANAGE_ORDER.ORDER.INDEX}/me`, data)
 
-//     return res.data
-//   } catch (err) {
-//     return err
-//   }
-// }
+    return res.data
+  } catch (err) {
+    return err
+  }
+}
+
+export const getDetailsOrderProductsByMe = async (id: string) => {
+  try {
+    const res = await instanceAxios.get(`${API_ENDPOINT.MANAGE_ORDER.ORDER.INDEX}/me/${id}`)
+
+    return res.data
+  } catch (err) {
+    return err
+  }
+}
 
 // export const getAllProductsPublic = async (data: { params: TParamsGetProducts }) => {
 //   try {

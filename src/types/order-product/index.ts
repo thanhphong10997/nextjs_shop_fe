@@ -1,3 +1,10 @@
+export type TParamsGetOrderProducts = {
+  limit?: number
+  page?: number
+  search?: string
+  order?: string
+}
+
 export type TItemOrderProduct = {
   name: string
   amount: number
@@ -20,4 +27,35 @@ export type TParamsCreateOrderProduct = {
   shippingPrice: number
   totalPrice: number
   user: string
+}
+
+export type TItemOrderProductMe = {
+  _id: string
+  shippingAddress: {
+    fullName: string
+    address: string
+    city: string
+    phone: string
+  }
+  orderItems: TItemOrderProduct[]
+  paymentMethod: {
+    _id: string
+    name: string
+    type: string
+  }
+  deliveryMethod: {
+    _id: string
+    name: string
+    price: number
+  }
+  totalPrice: number
+  user: {
+    _id: string
+    firstName: string
+    lastName: string
+    middleName: string
+  }
+  isPaid: number
+  isDelivered: number
+  status: number
 }

@@ -247,5 +247,8 @@
   "warning": "Cảnh báo",
   "order_product_warning": "Cảnh báo sản phẩm mua hàng đang gặp vấn đề",
   "return_home": "Quay về trang chủ",
-  "image": "Hình ảnh"
+  "image": "Hình ảnh",
+  "my-order": "Đơn hàng của tôi",
+  "view_details": "Xem chi tiết",
+  "buy_again": "Mua lại"
 }
