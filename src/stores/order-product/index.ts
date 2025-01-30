@@ -2,7 +2,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 // ** actions
-import { createOrderProductAsync, serviceName } from './actions'
+import { createOrderProductAsync, getAllOrderProductsByMeAsync, serviceName } from './actions'
 
 const initialState = {
   isLoading: false,
@@ -10,7 +10,11 @@ const initialState = {
   isErrorCreate: false,
   messageErrorCreate: '',
   typeError: '',
-  orderItems: []
+  orderItems: [],
+  ordersOfMe: {
+    data: [],
+    total: 0
+  }
 }
 
 export const orderProductSlice = createSlice({
@@ -27,6 +31,24 @@ export const orderProductSlice = createSlice({
     }
   },
   extraReducers: builder => {
+    // Get all order product by me
+    builder.addCase(getAllOrderProductsByMeAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+
+    // Still go to fullfilled (not rejected) even if the api return an error
+
+    builder.addCase(getAllOrderProductsByMeAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.ordersOfMe.data = action?.payload?.data?.orders || []
+      state.ordersOfMe.total = action?.payload?.data?.totalCount
+    })
+    builder.addCase(getAllOrderProductsByMeAsync.rejected, (state, action) => {
+      state.isLoading = false
+      state.ordersOfMe.data = []
+      state.ordersOfMe.total = 0
+    })
+
     // create product order
     builder.addCase(createOrderProductAsync.pending, (state, action) => {
       state.isLoading = true

@@ -4,6 +4,7 @@ export const ROUTE_CONFIG = {
   PRODUCT: '/product',
   CHECKOUT_PRODUCT: '/checkout-product',
   MY_PRODUCT: '/my-product',
+  MY_ORDER: '/my-order',
   MY_CART: '/my-cart',
   LOGIN: '/login',
   CHANGE_PASSWORD: '/change-password',
