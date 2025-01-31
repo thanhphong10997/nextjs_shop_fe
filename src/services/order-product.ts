@@ -28,16 +28,6 @@ export const getDetailsOrderProductsByMe = async (id: string) => {
   }
 }
 
-// export const getAllProductsPublic = async (data: { params: TParamsGetProducts }) => {
-//   try {
-//     const res = await axios.get(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT.INDEX}/public`, data)
-
-//     return res.data
-//   } catch (err) {
-//     return err
-//   }
-// }
-
 export const createOrderProduct = async (data: TParamsCreateOrderProduct) => {
   try {
     const res = await instanceAxios.post(`${API_ENDPOINT.MANAGE_ORDER.ORDER.INDEX}`, data)
@@ -48,16 +38,15 @@ export const createOrderProduct = async (data: TParamsCreateOrderProduct) => {
   }
 }
 
-// export const updateOrderProduct = async (data: TParamsEditProduct) => {
-//   const { id, ...rests } = data
-//   try {
-//     const res = await instanceAxios.put(`${API_ENDPOINT.MANAGE_ORDER.ORDER.INDEX}/${id}`, rests)
+export const cancelOrderProductOfMe = async (id: string) => {
+  try {
+    const res = await instanceAxios.post(`${API_ENDPOINT.MANAGE_ORDER.ORDER.INDEX}/me/cancel/${id}`)
 
-//     return res.data
-//   } catch (err: any) {
-//     return err?.response?.data
-//   }
-// }
+    return res.data
+  } catch (err: any) {
+    return err?.response?.data
+  }
+}
 
 // export const deleteOrderProduct = async (id: string) => {
 //   try {

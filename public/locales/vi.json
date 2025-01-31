@@ -250,5 +250,15 @@
   "image": "Hình ảnh",
   "my-order": "Đơn hàng của tôi",
   "view_details": "Xem chi tiết",
-  "buy_again": "Mua lại"
+  "buy_again": "Mua lại",
+  "all": "Tất cả",
+  "wait_payment" : "Chờ thanh toán",
+  "wait_delivery": "Chờ giao hàng",
+  "done": "Hoàn thành",
+  "cancel_order": "Hủy đơn hàng",
+  "title_cancel_order": "Hủy đơn hàng",
+  "confirm_cancel_order": "Bạn có chắc muốn hủy đơn hàng này?",
+  "cancel_order_success": "Hủy đơn hàng thành công",
+  "cancel_order_error":"Hủy đơn hàng thất bại",
+  "my_order": "Đơn hàng của tôi"
 }

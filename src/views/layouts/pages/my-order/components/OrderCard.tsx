@@ -1,51 +1,27 @@
-'use client'
-
 // Import Next
 import { NextPage } from 'next'
 
 // Import Mui
-import {
-  Box,
-  Button,
-  useTheme,
-  Avatar,
-  IconButton,
-  TextField,
-  Typography,
-  Checkbox,
-  Tooltip,
-  Divider
-} from '@mui/material'
+import { Box, Button, useTheme, Avatar, Typography, Divider } from '@mui/material'
 
 // Import React
-import React, { Fragment, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 // i18n(translate)
 import { useTranslation } from 'react-i18next'
 
-// iconify
-import { Icon } from '@iconify/react/dist/iconify.js'
-
 // utils
-import { cloneDeep, convertUpdateProductToCart, formatNumberToLocal } from 'src/utils'
+import { formatNumberToLocal } from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
-
-// hooks
-import { useAuth } from 'src/hooks/useAuth'
 
 //  redux
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import { TItemOrderProduct, TItemOrderProductMe } from 'src/types/order-product'
-import { updateProductToCart } from 'src/stores/order-product'
+import { cancelOrderProductOfMeAsync } from 'src/stores/order-product/actions'
 
-// helpers
-import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
-import NoData from 'src/components/no-data'
-import { useRouter } from 'next/router'
-import { ROUTE_CONFIG } from 'src/configs/route'
-import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
-import { getAllOrderProductsByMeAsync } from 'src/stores/order-product/actions'
+// components
+import ConfirmationDialog from 'src/components/confirmation-dialog'
 
 type TProps = {
   dataOrder: TItemOrderProductMe
@@ -55,25 +31,45 @@ export const OrderCard: NextPage<TProps> = props => {
   // theme
   const theme = useTheme()
 
-  // auth
-  const { user } = useAuth()
-
   // translate
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
 
-  // router
-  const router = useRouter()
+  // redux
+  const { isSuccessCancelMe } = useSelector((state: RootState) => state.orderProduct)
+  const dispatch: AppDispatch = useDispatch()
 
   // props
   const { dataOrder } = props
 
   // react
+  const [openCancel, setOpenCancel] = useState(false)
 
   // handle
+  const handleConfirmCancel = () => {
+    dispatch(cancelOrderProductOfMeAsync(dataOrder?._id))
+  }
+
+  const handleCloseCancelDialog = () => {
+    setOpenCancel(false)
+  }
+
+  useEffect(() => {
+    if (isSuccessCancelMe) {
+      handleCloseCancelDialog()
+    }
+  }, [isSuccessCancelMe])
 
   return (
     <>
       {/* {(isLoading || loading) && <Spinner />} */}
+      <ConfirmationDialog
+        title={t('title_cancel_order')}
+        description={t('confirm_cancel_order')}
+        open={openCancel}
+        handleClose={handleCloseCancelDialog}
+        handleCancel={handleCloseCancelDialog}
+        handleConfirm={handleConfirmCancel}
+      />
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,
@@ -181,6 +177,23 @@ export const OrderCard: NextPage<TProps> = props => {
             mt: 6
           }}
         >
+          {[0, 1].includes(dataOrder?.status) && (
+            <Button
+              type='submit'
+              variant='outlined'
+              color='primary'
+              sx={{
+                height: '40px',
+                display: 'flex',
+                color: '#da251d',
+                border: '1px solid #da251d!important',
+                backgroundColor: 'transparent!important'
+              }}
+              onClick={() => setOpenCancel(true)}
+            >
+              {t('cancel_order')}
+            </Button>
+          )}
           <Button type='submit' variant='contained' color='primary' sx={{ height: '40px', display: 'flex' }}>
             {t('buy_again')}
           </Button>

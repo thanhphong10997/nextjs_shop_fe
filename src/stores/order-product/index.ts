@@ -2,13 +2,21 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 // ** actions
-import { createOrderProductAsync, getAllOrderProductsByMeAsync, serviceName } from './actions'
+import {
+  cancelOrderProductOfMeAsync,
+  createOrderProductAsync,
+  getAllOrderProductsByMeAsync,
+  serviceName
+} from './actions'
 
 const initialState = {
   isLoading: false,
   isSuccessCreate: false,
   isErrorCreate: false,
   messageErrorCreate: '',
+  isSuccessCancelMe: false,
+  isErrorCancelMe: false,
+  messageErrorCancelMe: '',
   typeError: '',
   orderItems: [],
   ordersOfMe: {
@@ -28,6 +36,9 @@ export const orderProductSlice = createSlice({
       state.isSuccessCreate = false
       state.isErrorCreate = false
       state.messageErrorCreate = ''
+      state.isSuccessCancelMe = false
+      state.isErrorCancelMe = false
+      state.messageErrorCancelMe = ''
     }
   },
   extraReducers: builder => {
@@ -61,6 +72,21 @@ export const orderProductSlice = createSlice({
       state.isSuccessCreate = !!action?.payload?.data?._id
       state.isErrorCreate = !action?.payload?.data?._id
       state.messageErrorCreate = action?.payload?.message
+      state.typeError = action?.payload?.typeError
+    })
+
+    // cancel product order of me
+    builder.addCase(cancelOrderProductOfMeAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+
+    // Still go to fullfilled (not rejected) even if the api return an error
+
+    builder.addCase(cancelOrderProductOfMeAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccessCancelMe = !!action?.payload?.data?._id
+      state.isErrorCancelMe = !action?.payload?.data?._id
+      state.messageErrorCancelMe = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
   }
