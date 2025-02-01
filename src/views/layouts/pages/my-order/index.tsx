@@ -164,7 +164,7 @@ export const MyOrderPage: NextPage<TProps> = () => {
       <Box>
         {ordersOfMe?.data?.length > 0 ? (
           <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '20px', margin: '1rem 0' }}>
-            {ordersOfMe?.data?.map((item: TItemOrderProductMe, index: number) => {
+            {ordersOfMe?.data?.map((item: TItemOrderProductMe) => {
               return <OrderCard key={item?._id} dataOrder={item} />
             })}
           </Box>

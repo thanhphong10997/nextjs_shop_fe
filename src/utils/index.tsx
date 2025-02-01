@@ -151,7 +151,8 @@ export const convertUpdateProductToCart = (orderItems: TItemOrderProduct[], addI
   try {
     let result = []
     const cloneOrderItems = cloneDeep(orderItems)
-    const findItems = cloneOrderItems.find((item: TItemOrderProduct) => item.product === addItem.product)
+    const findItems = cloneOrderItems.find((item: TItemOrderProduct) => item?.product?._id === addItem?.product?._id)
+    console.log('findItems', { findItems })
 
     // Item is already in cart, so just increase the quantity
     if (findItems) {
@@ -162,6 +163,32 @@ export const convertUpdateProductToCart = (orderItems: TItemOrderProduct[], addI
 
     // Remove the item which have the quantity = 0
     result = cloneOrderItems.filter((item: TItemOrderProduct) => item.amount)
+
+    return result
+  } catch (e) {
+    return orderItems
+  }
+}
+
+export const convertUpdateMultipleCartProduct = (orderItems: TItemOrderProduct[], addItems: TItemOrderProduct[]) => {
+  try {
+    let result = []
+    const cloneOrderItems = cloneDeep(orderItems)
+    addItems.forEach((addItem: TItemOrderProduct) => {
+      const findItems = cloneOrderItems.find((item: TItemOrderProduct) => item?.product?._id === addItem?.product?._id)
+      console.log('findItems', { findItems })
+
+      // Item is already in cart, so just increase the quantity
+      if (findItems) {
+        findItems.amount += addItem.amount
+      } else {
+        cloneOrderItems.push(addItem)
+      }
+    })
+
+    // Remove the item which have the quantity = 0
+    result = cloneOrderItems.filter((item: TItemOrderProduct) => item.amount)
+    console.log('result', { result })
 
     return result
   } catch (e) {
