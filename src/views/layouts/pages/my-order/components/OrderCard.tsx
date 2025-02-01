@@ -11,7 +11,7 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // utils
-import { formatNumberToLocal } from 'src/utils'
+import { convertUpdateMultipleCartProduct, convertUpdateProductToCart, formatNumberToLocal, isExpiry } from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 //  redux
@@ -22,6 +22,14 @@ import { cancelOrderProductOfMeAsync } from 'src/stores/order-product/actions'
 
 // components
 import ConfirmationDialog from 'src/components/confirmation-dialog'
+import { PRODUCT_ORDER_STATUS } from 'src/configs/orderProduct'
+import { Icon } from '@iconify/react/dist/iconify.js'
+import { TProduct } from 'src/types/product'
+import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
+import { useAuth } from 'src/hooks/useAuth'
+import { updateProductToCart } from 'src/stores/order-product'
+import { useRouter } from 'next/router'
+import { ROUTE_CONFIG } from 'src/configs/route'
 
 type TProps = {
   dataOrder: TItemOrderProductMe
@@ -35,11 +43,15 @@ export const OrderCard: NextPage<TProps> = props => {
   const { t } = useTranslation()
 
   // redux
-  const { isSuccessCancelMe } = useSelector((state: RootState) => state.orderProduct)
+  const { isSuccessCancelMe, orderItems } = useSelector((state: RootState) => state.orderProduct)
   const dispatch: AppDispatch = useDispatch()
 
   // props
   const { dataOrder } = props
+
+  // hooks
+  const { user } = useAuth()
+  const router = useRouter()
 
   // react
   const [openCancel, setOpenCancel] = useState(false)
@@ -51,6 +63,41 @@ export const OrderCard: NextPage<TProps> = props => {
 
   const handleCloseCancelDialog = () => {
     setOpenCancel(false)
+  }
+
+  const handleUpdateProductToCart = (items: TItemOrderProduct[]) => {
+    console.log('items', { items })
+    const productCart = getLocalProductCart()
+    const parseData = productCart ? JSON.parse(productCart) : {}
+    const listOrderItems = convertUpdateMultipleCartProduct(orderItems, items)
+
+    console.log('listOrderItems', { listOrderItems })
+
+    if (user?._id) {
+      dispatch(
+        updateProductToCart({
+          orderItems: listOrderItems
+        })
+      )
+      setLocalProductToCart({ ...parseData, [user?._id]: listOrderItems })
+    }
+  }
+
+  const handleBuyAgain = () => {
+    handleUpdateProductToCart(dataOrder?.orderItems)
+
+    // ROUTE_CONFIG.MY_CART is the custom URL so the cart page won't show the query on the router and the query data will be gone if the page reloads
+    router.push(
+      {
+        pathname: ROUTE_CONFIG.MY_CART,
+
+        query: {
+          selected: dataOrder?.orderItems?.map((item: TItemOrderProduct) => item?.product?._id)
+        }
+      },
+
+      ROUTE_CONFIG.MY_CART
+    )
   }
 
   useEffect(() => {
@@ -78,11 +125,26 @@ export const OrderCard: NextPage<TProps> = props => {
           borderRadius: '15px'
         }}
       >
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
+          {dataOrder?.status === 2 && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Icon icon='carbon:delivery' fontSize={20} />
+              <Typography>
+                <span style={{ color: theme.palette.success.main }}>{t('order_has_been_delivery')}</span>
+                <span>{' | '}</span>
+              </Typography>
+            </Box>
+          )}
+          <Typography sx={{ textTransform: 'uppercase', color: theme.palette.primary.main, fontWeight: 600 }}>
+            {t((PRODUCT_ORDER_STATUS as any)[dataOrder?.status].label)}
+          </Typography>
+        </Box>
+
         <Divider />
         <Box mt={4} mb={4} sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {dataOrder?.orderItems?.map((item: TItemOrderProduct) => {
             return (
-              <Box key={item.product} sx={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <Box key={item?.product?._id} sx={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
                 <Box sx={{ border: `1px solid ${theme.palette.customColors.main}33` }}>
                   <Avatar
                     sx={{
@@ -194,7 +256,13 @@ export const OrderCard: NextPage<TProps> = props => {
               {t('cancel_order')}
             </Button>
           )}
-          <Button type='submit' variant='contained' color='primary' sx={{ height: '40px', display: 'flex' }}>
+          <Button
+            type='submit'
+            variant='contained'
+            color='primary'
+            sx={{ height: '40px', display: 'flex' }}
+            onClick={handleBuyAgain}
+          >
             {t('buy_again')}
           </Button>
           <Button type='submit' variant='outlined' color='primary' sx={{ height: '40px', display: 'flex' }}>

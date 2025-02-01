@@ -44,6 +44,8 @@ import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 import NoData from 'src/components/no-data'
 import { useRouter } from 'next/router'
 import { ROUTE_CONFIG } from 'src/configs/route'
+import ItemCartProduct from './components/ItemCartProduct'
+import { isFulfilled } from '@reduxjs/toolkit'
 
 type TProps = {}
 
@@ -70,20 +72,27 @@ export const MyCartPage: NextPage<TProps> = () => {
 
   // memo
   const memoListAllProducts = useMemo(() => {
-    return orderItems.map((item: TItemOrderProduct) => item?.product)
+    return orderItems?.map((item: TItemOrderProduct) => item?.product?._id)
   }, [orderItems])
 
   const memoItemSelectedProduct = useMemo(() => {
-    return selectedRows.map((idSelected: string) => {
-      const findItem: any = orderItems.find((item: TItemOrderProduct) => item?.product === idSelected)
+    console.log('selected row', { selectedRows })
+    const result: TItemOrderProduct[] = []
+
+    selectedRows.forEach((idSelected: string) => {
+      console.log('orderItems', { orderItems })
+      const findItem: any = orderItems?.find((item: TItemOrderProduct) => item?.product?._id === idSelected)
       if (findItem) {
-        return findItem
+        result.push(findItem)
       }
     })
+
+    return result
   }, [selectedRows, orderItems])
 
   const memoTotalSelectedProduct = useMemo(() => {
-    const total = memoItemSelectedProduct.reduce((result, current) => {
+    console.log('memoItemSelectedProduct', memoItemSelectedProduct)
+    const total = memoItemSelectedProduct?.reduce((result, current) => {
       const currentPrice = current?.discount > 0 ? (current.price * (100 - current?.discount)) / 100 : current?.price
 
       return result + currentPrice * current?.amount
@@ -93,43 +102,6 @@ export const MyCartPage: NextPage<TProps> = () => {
   }, [memoItemSelectedProduct])
 
   // handle
-
-  const handleChangeAmountCart = (item: TItemOrderProduct, amount: number) => {
-    const productCart = getLocalProductCart()
-    const parseData = productCart ? JSON.parse(productCart) : {}
-    const listOrderItems = convertUpdateProductToCart(orderItems, {
-      name: item?.name,
-      amount: amount,
-      image: item?.image,
-      price: item?.price,
-      discount: item?.discount,
-      product: item?.product,
-      slug: item?.slug
-    })
-    if (user) {
-      dispatch(
-        updateProductToCart({
-          orderItems: listOrderItems
-        })
-      )
-      setLocalProductToCart({ ...parseData, [user?._id]: listOrderItems })
-    }
-  }
-
-  const handleDeleteProductCart = (id: string) => {
-    const productCart = getLocalProductCart()
-    const parseData = productCart ? JSON.parse(productCart) : {}
-    const cloneOrderItems = cloneDeep(orderItems)
-    const filteredItems = cloneOrderItems.filter((item: TItemOrderProduct) => item?.product !== id)
-    if (user) {
-      dispatch(
-        updateProductToCart({
-          orderItems: filteredItems
-        })
-      )
-      setLocalProductToCart({ ...parseData, [user?._id]: filteredItems })
-    }
-  }
 
   const handleChangeCheckbox = (value: string) => {
     const isChecked = selectedRows.includes(value)
@@ -155,7 +127,9 @@ export const MyCartPage: NextPage<TProps> = () => {
     const parseData = productCart ? JSON.parse(productCart) : {}
     const cloneOrderItems = cloneDeep(orderItems)
 
-    const filteredItems = cloneOrderItems.filter((item: TItemOrderProduct) => !selectedRows.includes(item?.product))
+    const filteredItems = cloneOrderItems.filter(
+      (item: TItemOrderProduct) => !selectedRows.includes(item?.product?._id)
+    )
 
     if (user) {
       dispatch(
@@ -170,7 +144,7 @@ export const MyCartPage: NextPage<TProps> = () => {
   const handleNavigateCheckOut = () => {
     // only pass id and amount of the product to the router
     const formatData = JSON.stringify(
-      memoItemSelectedProduct?.map(item => ({ product: item?.product, amount: item?.amount }))
+      memoItemSelectedProduct?.map(item => ({ product: item?.product?._id, amount: item?.amount }))
     )
     router.push({
       pathname: ROUTE_CONFIG.CHECKOUT_PRODUCT,
@@ -185,7 +159,11 @@ export const MyCartPage: NextPage<TProps> = () => {
   useEffect(() => {
     const selectedProduct: any = router?.query?.selected
     if (selectedProduct) {
-      setSelectedRows([selectedProduct])
+      if (typeof selectedProduct === 'string') {
+        setSelectedRows([selectedProduct])
+      } else {
+        setSelectedRows([...selectedProduct])
+      }
     }
   }, [router.query])
 
@@ -230,143 +208,13 @@ export const MyCartPage: NextPage<TProps> = () => {
             <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '10px' }}>
               {orderItems?.map((item: TItemOrderProduct, index: number) => {
                 return (
-                  <Fragment key={item.product}>
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: '8px', mt: '16px' }}>
-                      <Box sx={{ width: '5%' }}>
-                        <Checkbox
-                          checked={selectedRows.includes(item?.product)}
-                          value={item?.product}
-                          onChange={e => {
-                            handleChangeCheckbox(e.target.value)
-                          }}
-                        />
-                      </Box>
-                      <Avatar sx={{ width: '100px', height: '100px', borderRadius: 0 }} src={item?.image} />
-                      <Typography
-                        sx={{
-                          fontSize: '20px',
-                          flexBasis: '35%',
-                          maxWidth: '100%',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          display: 'block',
-                          mt: 2
-                        }}
-                      >
-                        {item?.name}
-                      </Typography>
-                      <Box sx={{ flexBasis: '20%' }}>
-                        <Typography
-                          variant='h6'
-                          mt={2}
-                          sx={{
-                            color: item?.discount ? theme.palette.error.main : theme.palette.primary.main,
-                            fontWeight: 'bold',
-                            textDecoration: item?.discount ? 'line-through' : 'normal',
-                            fontSize: '18px'
-                          }}
-                        >
-                          {formatNumberToLocal(item?.price)} VND
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flexBasis: '20%', display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {item.discount > 0 && (
-                          <Typography
-                            variant='h4'
-                            mt={2}
-                            sx={{ color: theme.palette.primary.main, fontWeight: 'bold', fontSize: '18px' }}
-                          >
-                            {formatNumberToLocal((item?.price * (100 - item.discount)) / 100)} VND
-                          </Typography>
-                        )}
-                        {item.discount > 0 && (
-                          <Box
-                            sx={{
-                              backgroundColor: hexToRGBA(theme.palette.error.main, 0.42),
-                              width: '32px',
-                              height: '14px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              borderRadius: '2px'
-                            }}
-                          >
-                            <Typography
-                              variant='h6'
-                              sx={{
-                                color: theme.palette.error.main,
-                                fontSize: '10px',
-                                whiteSpace: 'nowrap'
-                              }}
-                            >
-                              - {item?.discount}%
-                            </Typography>
-                          </Box>
-                        )}
-                      </Box>
-                      <Box sx={{ flexBasis: '10%', mt: 2, display: 'flex', alignItems: 'center' }}>
-                        <IconButton
-                          sx={{
-                            backgroundColor: `${theme.palette.primary.main}`,
-                            color: `${theme.palette.common.white}`,
-                            '&:hover': { backgroundColor: `${theme.palette.primary.main}!important` }
-                          }}
-                          onClick={() => handleChangeAmountCart(item, -1)}
-                        >
-                          <Icon icon='lucide:minus' fontSize={12} />
-                        </IconButton>
-                        <TextField
-                          type='number'
-                          value={item?.amount}
-                          sx={{
-                            '.MuiInputBase-root.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-                              borderColor: 'transparent'
-                            },
-                            '.MuiInputBase-input.MuiOutlinedInput-input': {
-                              width: '30px',
-                              padding: '4px 8px',
-                              textAlign: 'center'
-                            },
-                            '.MuiOutlinedInput-notchedOutline': {
-                              borderColor: 'transparent'
-                            },
-
-                            // Hide increase/decrease button
-                            '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                              display: 'none'
-                            },
-                            '& input[type=number]': {
-                              MozAppearance: 'textfield'
-                            }
-
-                            // Hide increase/decrease button
-                          }}
-                          inputProps={{
-                            inputMode: 'numeric',
-                            min: 1
-
-                            // max: dataProduct?.countInStock
-                          }}
-                        />
-                        <IconButton
-                          sx={{
-                            backgroundColor: `${theme.palette.primary.main}`,
-                            color: `${theme.palette.common.white}`,
-                            '&:hover': { backgroundColor: `${theme.palette.primary.main}!important` }
-                          }}
-                          onClick={() => handleChangeAmountCart(item, 1)}
-                        >
-                          <Icon icon='meteor-icons:plus' fontSize={12} />
-                        </IconButton>
-                      </Box>
-                      <Box sx={{ flexBasis: '5%', mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-                        <IconButton onClick={() => handleDeleteProductCart(item?.product)}>
-                          <Icon icon='ic:outline-delete' />
-                        </IconButton>
-                      </Box>
-                    </Box>
-                    {index !== orderItems.length - 1 && <Divider />}
-                  </Fragment>
+                  <ItemCartProduct
+                    key={item?.product?._id}
+                    item={item}
+                    index={index}
+                    selectedRows={selectedRows}
+                    handleChangeCheckbox={handleChangeCheckbox}
+                  />
                 )
               })}
             </Box>

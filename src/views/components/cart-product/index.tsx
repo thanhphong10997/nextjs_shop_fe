@@ -183,35 +183,43 @@ export default function CartProduct() {
             <Box sx={{ maxHeight: '400px', overflow: 'auto' }}>
               {orderItems.map((item: TItemOrderProduct) => {
                 return (
-                  <StyledMenuItem key={item?.product} onClick={() => handleNavigateDetailsProduct(item.slug)}>
+                  <StyledMenuItem
+                    key={item?.product?._id}
+                    onClick={() => handleNavigateDetailsProduct(item?.product?.slug)}
+                  >
                     <Avatar
                       variant='square'
                       src={item?.image}
                       sx={{ height: '60px!important', width: '60px!important' }}
                     />
-                    <Box>
+                    <Box sx={{ width: '100%' }}>
                       <Typography sx={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {item?.name}
                       </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        {item.discount > 0 && (
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          {item.discount > 0 && (
+                            <Typography
+                              variant='h6'
+                              sx={{
+                                color: theme.palette.error.main,
+                                fontWeight: 'bold',
+                                textDecoration: 'line-through',
+                                fontSize: '10px'
+                              }}
+                            >
+                              {formatNumberToLocal(item?.price)} VND
+                            </Typography>
+                          )}
                           <Typography
-                            variant='h6'
-                            sx={{
-                              color: theme.palette.error.main,
-                              fontWeight: 'bold',
-                              textDecoration: 'line-through',
-                              fontSize: '10px'
-                            }}
+                            variant='h4'
+                            sx={{ color: theme.palette.primary.main, fontWeight: 'bold', fontSize: '12px' }}
                           >
-                            {formatNumberToLocal(item?.price)} VND
+                            {formatNumberToLocal((item?.price * (100 - item.discount)) / 100)} VND
                           </Typography>
-                        )}
-                        <Typography
-                          variant='h4'
-                          sx={{ color: theme.palette.primary.main, fontWeight: 'bold', fontSize: '12px' }}
-                        >
-                          {formatNumberToLocal((item?.price * (100 - item.discount)) / 100)} VND
+                        </Box>
+                        <Typography>
+                          x <b>{item?.amount}</b>
                         </Typography>
                       </Box>
                     </Box>

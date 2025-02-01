@@ -11,8 +11,11 @@ export type TItemOrderProduct = {
   image: string
   price: number
   discount: number
-  product: string
-  slug: string
+  product: {
+    _id: string
+    slug: string
+    countInStock?: number
+  }
 }
 
 export type TParamsCreateOrderProduct = {

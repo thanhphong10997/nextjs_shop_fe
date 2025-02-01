@@ -260,5 +260,8 @@
   "confirm_cancel_order": "Bạn có chắc muốn hủy đơn hàng này?",
   "cancel_order_success": "Hủy đơn hàng thành công",
   "cancel_order_error":"Hủy đơn hàng thất bại",
-  "my_order": "Đơn hàng của tôi"
+  "my_order": "Đơn hàng của tôi",
+  "done_order": "Đã hoàn thành",
+  "canceled_order": "Đã hủy",
+  "order_has_been_delivery": "Đơn hàng đã được giao thành công"
 }
