@@ -221,19 +221,19 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
     const parseData = productCart ? JSON.parse(productCart) : {}
     const objectMap: Record<string, number> = {}
     items.forEach(item => {
-      objectMap[item?.product] = -item?.amount
+      objectMap[item?.product?._id] = -item?.amount
     })
     const listOrderItems: TItemOrderProduct[] = []
 
     // orderItems means every product which added to the cart
     orderItems.forEach((cartItem: TItemOrderProduct) => {
       // check if the selected product is existed in the objectMap
-      if (objectMap[cartItem?.product]) {
+      if (objectMap[cartItem?.product?._id]) {
         listOrderItems.push({
           ...cartItem,
 
           // amount of the product after place order will be calculated by the amount of the product in the cart minus the amount of the product in checkout step
-          amount: cartItem?.amount + objectMap[cartItem?.product]
+          amount: cartItem?.amount + objectMap[cartItem?.product?._id]
         })
       } else {
         listOrderItems.push(cartItem)
@@ -404,7 +404,7 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
             <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '10px' }}>
               {memoQueryProduct?.selectedProduct?.map((item: TItemOrderProduct, index: number) => {
                 return (
-                  <Fragment key={item.product}>
+                  <Fragment key={item?.product?._id}>
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: '8px', mt: '16px' }}>
                       <Avatar sx={{ width: '100px', height: '100px', borderRadius: 0 }} src={item?.image} />
                       <Typography
