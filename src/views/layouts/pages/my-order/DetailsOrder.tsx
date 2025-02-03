@@ -1,8 +1,9 @@
 // Import Next
 import { NextPage } from 'next'
+import { useRouter } from 'next/router'
 
 // Import Mui
-import { Box, Button, useTheme, Avatar, Typography, Divider } from '@mui/material'
+import { Box, useTheme, Typography, Divider, Avatar, Button } from '@mui/material'
 
 // Import React
 import React, { useEffect, useMemo, useState } from 'react'
@@ -10,51 +11,57 @@ import React, { useEffect, useMemo, useState } from 'react'
 // i18n(translate)
 import { useTranslation } from 'react-i18next'
 
-// utils
-import { convertUpdateMultipleCartProduct, convertUpdateProductToCart, formatNumberToLocal, isExpiry } from 'src/utils'
-import { hexToRGBA } from 'src/utils/hex-to-rgba'
+// hooks
+import { useAuth } from 'src/hooks/useAuth'
 
 //  redux
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
-import { TItemOrderProduct, TItemOrderProductMe } from 'src/types/order-product'
 import { cancelOrderProductOfMeAsync } from 'src/stores/order-product/actions'
+import { resetInitialState, updateProductToCart } from 'src/stores/order-product'
 
 // components
-import ConfirmationDialog from 'src/components/confirmation-dialog'
-import { PRODUCT_ORDER_STATUS } from 'src/configs/orderProduct'
+import Spinner from 'src/components/spinner'
+
+// others
+import { TItemOrderProduct, TItemOrderProductMe } from 'src/types/order-product'
+import toast from 'react-hot-toast'
+
 import { Icon } from '@iconify/react/dist/iconify.js'
-import { TProduct } from 'src/types/product'
-import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
-import { useAuth } from 'src/hooks/useAuth'
-import { updateProductToCart } from 'src/stores/order-product'
-import { useRouter } from 'next/router'
+import { convertUpdateMultipleCartProduct, formatNumberToLocal } from 'src/utils'
+import { hexToRGBA } from 'src/utils/hex-to-rgba'
+import { getDetailsOrderProductsByMe } from 'src/services/order-product'
 import { ROUTE_CONFIG } from 'src/configs/route'
+import { PRODUCT_ORDER_STATUS } from 'src/configs/orderProduct'
+import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
+import ConfirmationDialog from 'src/components/confirmation-dialog'
 
-type TProps = {
-  dataOrder: TItemOrderProductMe
-}
+type TProps = {}
 
-export const OrderCard: NextPage<TProps> = props => {
+export const MyDetailsOrderPage: NextPage<TProps> = () => {
   // theme
   const theme = useTheme()
+
+  // auth
+  const { user } = useAuth()
 
   // translate
   const { t } = useTranslation()
 
-  // redux
-  const { isSuccessCancelMe, orderItems } = useSelector((state: RootState) => state.orderProduct)
-  const dispatch: AppDispatch = useDispatch()
-
-  // props
-  const { dataOrder } = props
-
-  // hooks
-  const { user } = useAuth()
+  // router
   const router = useRouter()
+  const orderId = router?.query?.orderId as string
 
   // react
+  const [loading, setLoading] = useState(false)
+  const [dataOrder, setDataOrder] = useState<TItemOrderProductMe>({} as any)
   const [openCancel, setOpenCancel] = useState(false)
+
+  // redux
+  const dispatch: AppDispatch = useDispatch()
+  const { isSuccessCancelMe, orderItems, isErrorCancelMe, messageErrorCancelMe } = useSelector(
+    (state: RootState) => state.orderProduct
+  )
 
   // handle
   const handleConfirmCancel = () => {
@@ -100,8 +107,13 @@ export const OrderCard: NextPage<TProps> = props => {
     )
   }
 
-  const handleNavigateDetailsOrder = () => {
-    router.push(`${ROUTE_CONFIG.MY_ORDER}/${dataOrder?._id}`)
+  // fetch API
+  const handleGetDetailsOrdersOfMe = async () => {
+    setLoading(true)
+    await getDetailsOrderProductsByMe(orderId).then(res => {
+      setDataOrder(res?.data)
+      setLoading(false)
+    })
   }
 
   // memo
@@ -109,15 +121,34 @@ export const OrderCard: NextPage<TProps> = props => {
     return dataOrder?.orderItems?.some(item => !item?.product?.countInStock)
   }, [dataOrder?.orderItems])
 
+  // side Effects
+
   useEffect(() => {
     if (isSuccessCancelMe) {
       handleCloseCancelDialog()
     }
   }, [isSuccessCancelMe])
 
+  useEffect(() => {
+    if (orderId) {
+      handleGetDetailsOrdersOfMe()
+    }
+  }, [orderId])
+
+  useEffect(() => {
+    if (isSuccessCancelMe) {
+      toast.success(t('cancel_order_success'))
+      dispatch(resetInitialState())
+      handleGetDetailsOrdersOfMe()
+    } else if (isErrorCancelMe && messageErrorCancelMe) {
+      toast.error(t('cancel_order_error'))
+      dispatch(resetInitialState())
+    }
+  }, [isSuccessCancelMe, isErrorCancelMe, messageErrorCancelMe])
+
   return (
     <>
-      {/* {(isLoading || loading) && <Spinner />} */}
+      {loading && <Spinner />}
       <ConfirmationDialog
         title={t('title_cancel_order')}
         description={t('confirm_cancel_order')}
@@ -134,7 +165,10 @@ export const OrderCard: NextPage<TProps> = props => {
           borderRadius: '15px'
         }}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, gap: 2 }}>
+          <Button startIcon={<Icon icon='ic:baseline-arrow-back' />} onClick={() => router.back()}>
+            {t('back')}
+          </Button>
           {dataOrder?.status === 2 && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Icon icon='carbon:delivery' fontSize={20} />
@@ -145,17 +179,12 @@ export const OrderCard: NextPage<TProps> = props => {
             </Box>
           )}
           <Typography sx={{ textTransform: 'uppercase', color: theme.palette.primary.main, fontWeight: 600 }}>
-            {t((PRODUCT_ORDER_STATUS as any)[dataOrder?.status].label)}
+            {t((PRODUCT_ORDER_STATUS as any)[dataOrder?.status]?.label)}
           </Typography>
         </Box>
 
         <Divider />
-        <Box
-          mt={4}
-          mb={4}
-          sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}
-          onClick={handleNavigateDetailsOrder}
-        >
+        <Box mt={4} mb={4} sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {dataOrder?.orderItems?.map((item: TItemOrderProduct) => {
             return (
               <Box key={item?.product?._id} sx={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
@@ -238,11 +267,47 @@ export const OrderCard: NextPage<TProps> = props => {
           })}
         </Box>
         <Divider />
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
-          <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>{t('sum_money')}:</Typography>
-          <Typography sx={{ fontSize: '18px', fontWeight: 600, color: theme.palette.primary.main }}>
-            {formatNumberToLocal(dataOrder?.totalPrice)} VND
-          </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
+              <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>{t('shipping_address')}:</Typography>
+              <Typography sx={{ fontSize: '18px', fontWeight: 600, color: theme.palette.primary.main }}>
+                {dataOrder?.shippingAddress?.address} {dataOrder?.shippingAddress?.city?.name}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
+              <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>{t('phone_number')}:</Typography>
+              <Typography sx={{ fontSize: '18px', fontWeight: 600, color: theme.palette.primary.main }}>
+                {dataOrder?.shippingAddress?.phone}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
+              <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>{t('order_user_name')}:</Typography>
+              <Typography sx={{ fontSize: '18px', fontWeight: 600, color: theme.palette.primary.main }}>
+                {dataOrder?.shippingAddress?.fullName}
+              </Typography>
+            </Box>
+          </Box>
+          <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
+              <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>{t('item_price')}:</Typography>
+              <Typography sx={{ fontSize: '18px', fontWeight: 600, color: theme.palette.primary.main }}>
+                {formatNumberToLocal(dataOrder?.itemsPrice)} VND
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
+              <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>{t('shipping_price')}:</Typography>
+              <Typography sx={{ fontSize: '18px', fontWeight: 600, color: theme.palette.primary.main }}>
+                {formatNumberToLocal(dataOrder?.shippingPrice)} VND
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
+              <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>{t('sum_money')}:</Typography>
+              <Typography sx={{ fontSize: '18px', fontWeight: 600, color: theme.palette.primary.main }}>
+                {formatNumberToLocal(dataOrder?.totalPrice)} VND
+              </Typography>
+            </Box>
+          </Box>
         </Box>
         <Box
           sx={{
@@ -275,13 +340,10 @@ export const OrderCard: NextPage<TProps> = props => {
             variant='contained'
             color='primary'
             sx={{ height: '40px', display: 'flex' }}
-            onClick={handleBuyAgain}
             disabled={memoDisabledBuyAgain}
+            onClick={handleBuyAgain}
           >
             {t('buy_again')}
-          </Button>
-          <Button type='submit' variant='outlined' color='primary' sx={{ height: '40px', display: 'flex' }}>
-            {t('view_details')}
           </Button>
         </Box>
       </Box>
@@ -289,4 +351,4 @@ export const OrderCard: NextPage<TProps> = props => {
   )
 }
 
-export default OrderCard
+export default MyDetailsOrderPage

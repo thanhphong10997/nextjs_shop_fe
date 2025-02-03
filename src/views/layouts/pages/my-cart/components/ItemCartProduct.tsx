@@ -115,6 +115,7 @@ const ItemCartProduct = ({ item, index, selectedRows, handleChangeCheckbox }: TP
       <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: '8px', mt: '16px' }}>
         <Box sx={{ width: '5%' }}>
           <Checkbox
+            disabled={!itemState?.product?.countInStock}
             checked={selectedRows.includes(itemState?.product?._id)}
             value={itemState?.product?._id}
             onChange={e => {
@@ -192,6 +193,7 @@ const ItemCartProduct = ({ item, index, selectedRows, handleChangeCheckbox }: TP
         </Box>
         <Box sx={{ flexBasis: '10%', mt: 2, display: 'flex', alignItems: 'center' }}>
           <IconButton
+            disabled={!itemState?.product?.countInStock}
             sx={{
               backgroundColor: `${theme.palette.primary.main}`,
               color: `${theme.palette.common.white}`,
@@ -202,6 +204,7 @@ const ItemCartProduct = ({ item, index, selectedRows, handleChangeCheckbox }: TP
             <Icon icon='lucide:minus' fontSize={12} />
           </IconButton>
           <TextField
+            disabled={!itemState?.product?.countInStock}
             type='number'
             value={itemState?.amount}
             sx={{
@@ -235,6 +238,7 @@ const ItemCartProduct = ({ item, index, selectedRows, handleChangeCheckbox }: TP
             }}
           />
           <IconButton
+            disabled={!itemState?.product?.countInStock}
             sx={{
               backgroundColor: `${theme.palette.primary.main}`,
               color: `${theme.palette.common.white}`,

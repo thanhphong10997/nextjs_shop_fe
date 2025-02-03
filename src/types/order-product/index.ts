@@ -32,12 +32,23 @@ export type TParamsCreateOrderProduct = {
   user: string
 }
 
+// export interface TParamsEditOrderProduct extends TParamsCreateOrderProduct {
+//   id: string
+// }
+
+export type TParamsEditOrderProduct = TParamsCreateOrderProduct & {
+  id: string
+}
+
 export type TItemOrderProductMe = {
   _id: string
   shippingAddress: {
     fullName: string
     address: string
-    city: string
+    city: {
+      _id: string
+      name: string
+    }
     phone: string
   }
   orderItems: TItemOrderProduct[]
@@ -52,6 +63,8 @@ export type TItemOrderProductMe = {
     price: number
   }
   totalPrice: number
+  shippingPrice: number
+  itemsPrice: number
   user: {
     _id: string
     firstName: string

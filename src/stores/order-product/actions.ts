@@ -1,13 +1,21 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
 // services
-import { cancelOrderProductOfMe, createOrderProduct, getAllOrderProductsByMe } from 'src/services/order-product'
+import {
+  cancelOrderProductOfMe,
+  createOrderProduct,
+  deleteOrderProduct,
+  getAllOrderProducts,
+  getAllOrderProductsByMe,
+  updateOrderProduct
+} from 'src/services/order-product'
 
 // types
-import { TParamsCreateOrderProduct, TParamsGetOrderProducts } from 'src/types/order-product'
+import { TParamsCreateOrderProduct, TParamsEditOrderProduct, TParamsGetOrderProducts } from 'src/types/order-product'
 
 export const serviceName = 'order-product'
 
+// order-products by me
 export const createOrderProductAsync = createAsyncThunk(
   `${serviceName}/create`,
   async (data: TParamsCreateOrderProduct) => {
@@ -28,6 +36,32 @@ export const getAllOrderProductsByMeAsync = createAsyncThunk(
 
 export const cancelOrderProductOfMeAsync = createAsyncThunk(`${serviceName}/cancel-order-of-me`, async (id: string) => {
   const response = await cancelOrderProductOfMe(id)
+
+  return response
+})
+
+// order-products
+
+export const getAllOrderProductsAsync = createAsyncThunk(
+  `${serviceName}/get-all-order-product`,
+  async (data: { params: TParamsGetOrderProducts }) => {
+    const response = await getAllOrderProducts(data)
+
+    return response
+  }
+)
+
+export const updateOrderProductAsync = createAsyncThunk(
+  `${serviceName}/update-order-product`,
+  async (data: TParamsEditOrderProduct) => {
+    const response = await updateOrderProduct(data)
+
+    return response
+  }
+)
+
+export const deleteOrderProductAsync = createAsyncThunk(`${serviceName}/delete-order-product`, async (id: string) => {
+  const response = await deleteOrderProduct(id)
 
   return response
 })
