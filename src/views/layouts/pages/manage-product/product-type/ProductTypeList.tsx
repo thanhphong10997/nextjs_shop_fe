@@ -113,7 +113,7 @@ export const ProductTypeListPage: NextPage<TProps> = () => {
       field: 'name',
       headerName: t('Name'),
       flex: 1,
-      maxWidth: 200,
+      minWidth: 200,
       renderCell: params => {
         const { row } = params
 
