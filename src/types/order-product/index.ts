@@ -36,8 +36,16 @@ export type TParamsCreateOrderProduct = {
 //   id: string
 // }
 
-export type TParamsEditOrderProduct = TParamsCreateOrderProduct & {
+export type TParamsEditOrderProduct = {
   id: string
+  shippingAddress: {
+    fullName: string
+    phone: string
+    city: string
+    address: string
+  }
+  isPaid: boolean
+  isDelivered: boolean
 }
 
 export type TItemOrderProductMe = {

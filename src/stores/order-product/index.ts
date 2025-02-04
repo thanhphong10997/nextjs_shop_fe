@@ -46,12 +46,20 @@ export const orderProductSlice = createSlice({
       state.orderItems = action?.payload?.orderItems
     },
     resetInitialState: state => {
+      state.isLoading = false
+      state.typeError = ''
       state.isSuccessCreate = false
       state.isErrorCreate = false
       state.messageErrorCreate = ''
+      state.isSuccessEdit = false
+      state.isErrorEdit = false
+      state.messageErrorEdit = ''
       state.isSuccessCancelMe = false
       state.isErrorCancelMe = false
       state.messageErrorCancelMe = ''
+      state.isSuccessDelete = false
+      state.isErrorDelete = false
+      state.messageErrorDelete = ''
     }
   },
   extraReducers: builder => {

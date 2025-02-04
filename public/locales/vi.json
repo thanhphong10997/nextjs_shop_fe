@@ -263,5 +263,13 @@
   "my_order": "Đơn hàng của tôi",
   "done_order": "Đã hoàn thành",
   "canceled_order": "Đã hủy",
-  "order_has_been_delivery": "Đơn hàng đã được giao thành công"
+  "order_has_been_delivery": "Đơn hàng đã được giao thành công",
+  "update_order_product_success": "Cập nhật đơn hàng thành công",
+  "delete_order_product_success": "Xóa đơn hàng thành công",
+  "update_order_product_error": "Cập nhật đơn hàng thất bại",
+  "delete_order_product_error": "Xóa đơn hàng thất bại",
+  "product_items": "Sản phẩm",
+  "total_price": "Tổng tiền",
+  "title_delete_order_product": "Bạn có chắc muốn xóa đơn hàng này?",
+  "confirm_delete_order_product": "Xác nhận xóa đơn hàng"
 }
