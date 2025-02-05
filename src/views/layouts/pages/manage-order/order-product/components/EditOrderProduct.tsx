@@ -292,7 +292,6 @@ const EditOrderProduct = (props: TEditProduct) => {
                             return (
                               <TextField
                                 required
-                                disabled
                                 label={t('address')}
                                 placeholder={t('enter_address')}
                                 variant='filled'
@@ -318,7 +317,6 @@ const EditOrderProduct = (props: TEditProduct) => {
                             return (
                               <TextField
                                 required
-                                disabled
                                 label={t('phone_number')}
                                 placeholder={t('enter_phone')}
                                 variant='filled'
@@ -326,8 +324,17 @@ const EditOrderProduct = (props: TEditProduct) => {
                                 value={value}
                                 error={Boolean(errors?.phone)}
                                 helperText={errors?.phone?.message}
-                                onChange={onChange}
+                                inputProps={{
+                                  inputMode: 'numeric',
+                                  pattern: '[0-9]*',
+                                  minLength: 8
+                                }}
                                 onBlur={onBlur}
+                                onChange={e => {
+                                  // replace all of characters into empty string, only accept numbers
+                                  const numberValue = e.target.value.replace(/\D/g, '')
+                                  onChange(numberValue)
+                                }}
                               />
                             )
                           }}

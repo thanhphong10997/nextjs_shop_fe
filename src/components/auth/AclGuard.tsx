@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // ** React Imports
-import { ReactNode } from 'react'
+import { ReactNode, useEffect } from 'react'
 
 // ** Types
 import { buildAbilityFor, ACLObj, AppAbility } from 'src/configs/acl'
@@ -10,6 +10,7 @@ import { useAuth } from 'src/hooks/useAuth'
 import { useRouter } from 'next/router'
 import { AbilityContext } from '../acl/Can'
 import { PERMISSIONS } from 'src/configs/permission'
+import { ROUTE_CONFIG } from 'src/configs/route'
 
 interface AclGuardProps {
   children: ReactNode
@@ -34,6 +35,14 @@ const AclGuard = (props: AclGuardProps) => {
   if (auth.user && !ability) {
     ability = buildAbilityFor(permissionUser, permission)
   }
+
+  //
+  useEffect(() => {
+    // redirect the router to the home page because every page including auth-guard or guest-guard will goes through here
+    if (router.route === '/') {
+      router.push(ROUTE_CONFIG.HOME)
+    }
+  }, [router])
 
   // if guest guard or no guard or error pages
   if (guestGuard || router.route === '/500' || router.route === '/404' || !authGuard) {

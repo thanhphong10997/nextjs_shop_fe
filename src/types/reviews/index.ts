@@ -5,8 +5,10 @@ export type TParamsAddReview = {
   star: number
 }
 
-export type TParamsUpdateReview = TParamsAddReview & {
+export type TParamsUpdateReview = {
   id: string
+  content: string
+  star: number
 }
 
 export type TParamsDeleteMultipleReview = {
@@ -18,4 +20,23 @@ export type TParamsGetReviews = {
   page?: number
   search?: string
   order?: string
+  isPublic?: boolean
+}
+
+export type TParamsReviewItem = {
+  _id: string
+  user: {
+    _id: string
+    firstName: string
+    middleName: string
+    lastName: string
+    avatar: string
+  }
+  product: {
+    id: string
+    name: string
+  }
+  content: string
+  star: number
+  updatedAt: Date
 }

@@ -44,7 +44,7 @@ const AxiosInterceptor: FC<TAxiosInterceptor> = ({ children }) => {
     const { accessToken, refreshToken } = getLocalUserData()
     const { temporaryToken } = getTemporaryToken()
     const isPublicApi = config?.params?.isPublic
-    if (accessToken || temporaryToken || isPublicApi) {
+    if (accessToken || temporaryToken) {
       let decodedAccessToken: any = {}
       if (accessToken) {
         decodedAccessToken = jwtDecode(accessToken)
@@ -86,6 +86,7 @@ const AxiosInterceptor: FC<TAxiosInterceptor> = ({ children }) => {
             handleRedirectLogin(router, setUser)
           }
         } else {
+          console.log('pass')
           handleRedirectLogin(router, setUser)
         }
       }

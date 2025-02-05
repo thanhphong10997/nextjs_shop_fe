@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import { cancelOrderProductOfMeAsync } from 'src/stores/order-product/actions'
 import { resetInitialState, updateProductToCart } from 'src/stores/order-product'
+import { resetInitialState as resetInitialReview } from 'src/stores/reviews'
 
 // components
 import Spinner from 'src/components/spinner'
@@ -35,6 +36,7 @@ import { ROUTE_CONFIG } from 'src/configs/route'
 import { PRODUCT_ORDER_STATUS } from 'src/configs/orderProduct'
 import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 import ConfirmationDialog from 'src/components/confirmation-dialog'
+import WriteReviewModal from './components/WriteReviewModal'
 
 type TProps = {}
 
@@ -56,12 +58,24 @@ export const MyDetailsOrderPage: NextPage<TProps> = () => {
   const [loading, setLoading] = useState(false)
   const [dataOrder, setDataOrder] = useState<TItemOrderProductMe>({} as any)
   const [openCancel, setOpenCancel] = useState(false)
+  const [openReview, setOpenReview] = useState({
+    open: false,
+    userId: '',
+    productId: ''
+  })
 
   // redux
   const dispatch: AppDispatch = useDispatch()
   const { isSuccessCancelMe, orderItems, isErrorCancelMe, messageErrorCancelMe } = useSelector(
     (state: RootState) => state.orderProduct
   )
+  const {
+    isSuccessCreate,
+    isErrorCreate,
+    messageErrorCreate,
+    typeError,
+    isLoading: loadingReview
+  } = useSelector((state: RootState) => state.review)
 
   // handle
   const handleConfirmCancel = () => {
@@ -107,6 +121,15 @@ export const MyDetailsOrderPage: NextPage<TProps> = () => {
     )
   }
 
+  // handle
+  const handleCloseReview = () => {
+    setOpenReview({
+      open: false,
+      productId: '',
+      userId: ''
+    })
+  }
+
   // fetch API
   const handleGetDetailsOrdersOfMe = async () => {
     setLoading(true)
@@ -146,9 +169,26 @@ export const MyDetailsOrderPage: NextPage<TProps> = () => {
     }
   }, [isSuccessCancelMe, isErrorCancelMe, messageErrorCancelMe])
 
+  useEffect(() => {
+    if (isSuccessCreate) {
+      toast.success(t('write_review_success'))
+      dispatch(resetInitialReview())
+      handleCloseReview()
+    } else if (isErrorCreate && messageErrorCreate) {
+      toast.error(t('write_review_error'))
+      dispatch(resetInitialReview())
+    }
+  }, [isSuccessCreate, isErrorCreate, messageErrorCreate])
+
   return (
     <>
       {loading && <Spinner />}
+      <WriteReviewModal
+        open={openReview?.open}
+        productId={openReview?.productId}
+        userId={openReview?.userId}
+        onClose={handleCloseReview}
+      />
       <ConfirmationDialog
         title={t('title_cancel_order')}
         description={t('confirm_cancel_order')}
@@ -169,18 +209,20 @@ export const MyDetailsOrderPage: NextPage<TProps> = () => {
           <Button startIcon={<Icon icon='ic:baseline-arrow-back' />} onClick={() => router.back()}>
             {t('back')}
           </Button>
-          {dataOrder?.status === 2 && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Icon icon='carbon:delivery' fontSize={20} />
-              <Typography>
-                <span style={{ color: theme.palette.success.main }}>{t('order_has_been_delivery')}</span>
-                <span>{' | '}</span>
-              </Typography>
-            </Box>
-          )}
-          <Typography sx={{ textTransform: 'uppercase', color: theme.palette.primary.main, fontWeight: 600 }}>
-            {t((PRODUCT_ORDER_STATUS as any)[dataOrder?.status]?.label)}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {dataOrder?.status === +PRODUCT_ORDER_STATUS[2]?.value && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Icon icon='carbon:delivery' fontSize={20} />
+                <Typography>
+                  <span style={{ color: theme.palette.success.main }}>{t('order_has_been_delivery')}</span>
+                  <span>{' | '}</span>
+                </Typography>
+              </Box>
+            )}
+            <Typography sx={{ textTransform: 'uppercase', color: theme.palette.primary.main, fontWeight: 600 }}>
+              {t((PRODUCT_ORDER_STATUS as any)[dataOrder?.status]?.label)}
+            </Typography>
+          </Box>
         </Box>
 
         <Divider />
@@ -200,17 +242,31 @@ export const MyDetailsOrderPage: NextPage<TProps> = () => {
                   />
                 </Box>
                 <Box>
-                  <Typography
-                    sx={{
-                      fontSize: '18px',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      display: 'block'
-                    }}
-                  >
-                    {item?.name}
-                  </Typography>
-
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <Typography
+                      sx={{
+                        fontSize: '18px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: 'block'
+                      }}
+                    >
+                      {item?.name}
+                    </Typography>
+                    {dataOrder?.status === +PRODUCT_ORDER_STATUS[2]?.value && (
+                      <Button
+                        onClick={() =>
+                          setOpenReview({
+                            open: true,
+                            productId: item?.product?._id,
+                            userId: user ? user?._id : ' '
+                          })
+                        }
+                      >
+                        {t('review')}
+                      </Button>
+                    )}
+                  </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Typography
                       variant='h6'
