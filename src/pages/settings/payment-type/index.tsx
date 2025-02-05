@@ -8,5 +8,4 @@ type TProps = {}
 export const Index: NextPage<TProps> = () => {
   return <PaymentTypeListPage />
 }
-Index.permission = [PERMISSIONS.SETTING.PAYMENT_TYPE.VIEW]
 export default Index
