@@ -208,7 +208,7 @@ export const RoleListPage: NextPage<TProps> = () => {
             setSelectedPermission(getAllObjectValues(PERMISSIONS, [PERMISSIONS.ADMIN, PERMISSIONS.BASIC]))
           } else if (res?.data?.permissions.includes(PERMISSIONS.BASIC)) {
             setIsDisabledPermission(true)
-            setSelectedPermission([PERMISSIONS?.DASHBOARD])
+            setSelectedPermission((PERMISSIONS as any)?.DASHBOARD)
           } else {
             setIsDisabledPermission(false)
             setSelectedPermission(res.data?.permissions || [])

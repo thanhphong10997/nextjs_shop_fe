@@ -13,4 +13,5 @@ export const Index: NextPage<TProps> = () => {
   return <DeliveryTypeListPage />
 }
 
+// Index.permission = [PERMISSIONS.SETTING.DELIVERY_TYPE.VIEW]
 export default Index

@@ -31,18 +31,17 @@ const AclGuard = (props: AclGuardProps) => {
       ? [PERMISSIONS.DASHBOARD]
       : auth?.user?.role?.permissions
     : []
-  let ability: AppAbility
-  if (auth.user && !ability) {
-    ability = buildAbilityFor(permissionUser, permission)
-  }
-
-  //
   useEffect(() => {
     // redirect the router to the home page because every page including auth-guard or guest-guard will goes through here
     if (router.route === '/') {
       router.push(ROUTE_CONFIG.HOME)
     }
   }, [router])
+
+  let ability: AppAbility
+  if (auth.user && !ability) {
+    ability = buildAbilityFor(permissionUser, permission)
+  }
 
   // if guest guard or no guard or error pages
   if (guestGuard || router.route === '/500' || router.route === '/404' || !authGuard) {

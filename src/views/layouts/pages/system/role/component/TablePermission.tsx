@@ -46,7 +46,7 @@ const TablePermission = (props: TTablePermission) => {
   // optional parameter must be placed after other parameters
   const getValuePermission = (value: string, mode: string, parentValue?: string) => {
     try {
-      return parentValue ? PERMISSIONS[parentValue]?.[value][mode] : PERMISSIONS[value]
+      return parentValue ? (PERMISSIONS as any)[parentValue]?.[value][mode] : (PERMISSIONS as any)[value]
     } catch {
       return ''
     }
@@ -65,8 +65,8 @@ const TablePermission = (props: TTablePermission) => {
 
   const handleIsChecked = (value: string, parentValue?: string) => {
     const allValue = parentValue
-      ? getAllObjectValues(PERMISSIONS[parentValue][value])
-      : getAllObjectValues(PERMISSIONS[value])
+      ? getAllObjectValues((PERMISSIONS as any)[parentValue][value])
+      : getAllObjectValues((PERMISSIONS as any)[value])
     const isCheckedAll = allValue.every((item: any) => selectedPermission.includes(item))
 
     return {
