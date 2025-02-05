@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 import { AppDispatch, RootState } from 'src/stores'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateProductToCart } from 'src/stores/order-product'
+import { ROUTE_CONFIG } from 'src/configs/route'
 
 // ** Defaults
 const defaultProvider: AuthValuesType = {
@@ -115,11 +116,11 @@ const AuthProvider = ({ children }: Props) => {
       if (!LIST_PAGE_PUBLIC?.some(item => router?.asPath?.startsWith(item))) {
         if (router.asPath !== '/') {
           router.replace({
-            pathname: '/login',
+            pathname: ROUTE_CONFIG.LOGIN,
             query: { returnUrl: router.asPath }
           })
         } else {
-          router.replace('/login')
+          router.replace(ROUTE_CONFIG.LOGIN)
         }
       }
 

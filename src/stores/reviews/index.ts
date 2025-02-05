@@ -66,7 +66,7 @@ export const orderProductSlice = createSlice({
 
     builder.addCase(getAllReviewsAsync.fulfilled, (state, action) => {
       state.isLoading = false
-      state.reviews.data = action?.payload?.data?.orders || []
+      state.reviews.data = action?.payload?.data?.reviews || []
       state.reviews.total = action?.payload?.data?.totalCount
     })
     builder.addCase(getAllReviewsAsync.rejected, (state, action) => {

@@ -13,5 +13,4 @@ export const Index: NextPage<TProps> = () => {
   return <ProductTypeListPage />
 }
 
-Index.permission = [PERMISSIONS.MANAGE_PRODUCT.PRODUCT_TYPE.VIEW]
 export default Index

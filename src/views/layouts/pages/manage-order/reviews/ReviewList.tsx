@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // Import Mui
-import { Avatar, AvatarGroup, Box, Chip, ChipProps, Grid, styled, Typography, useTheme } from '@mui/material'
+import { Box, ChipProps, Grid, Tooltip, Typography, useTheme } from '@mui/material'
 import { GridColDef, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
@@ -12,12 +12,12 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import { resetInitialState } from 'src/stores/order-product'
+import { deleteReviewAsync, getAllReviewsAsync } from 'src/stores/reviews/actions'
 
 // translate
 import { useTranslation } from 'react-i18next'
 
 // config
-// import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 
 // Components
 import GridEdit from 'src/components/grid-edit'
@@ -27,6 +27,8 @@ import CustomDataGrid from 'src/components/custom-data-grid'
 import InputSearch from 'src/components/input-search'
 import Spinner from 'src/components/spinner'
 import ConfirmationDialog from 'src/components/confirmation-dialog'
+import EditReview from './components/EditReview'
+import CustomSelect from 'src/components/custom-select'
 
 // react toast
 import toast from 'react-hot-toast'
@@ -34,63 +36,22 @@ import toast from 'react-hot-toast'
 // config
 import { OBJECT_TYPE_ERROR_USER } from 'src/configs/error'
 import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
-
-// services
+import { FILTER_REVIEW_CMS } from 'src/configs/reviews'
 
 // utils
 import { formatFilter, toFullName } from 'src/utils'
 
 // hooks
 import { usePermission } from 'src/hooks/usePermission'
-import CustomSelect from 'src/components/custom-select'
-import { getAllCities } from 'src/services/city'
-import { deleteOrderProductAsync, getAllOrderProductsAsync } from 'src/stores/order-product/actions'
-import { PRODUCT_ORDER_STATUS } from 'src/configs/orderProduct'
-import { TItemOrderProduct } from 'src/types/order-product'
-import EditOrderProduct from './components/EditOrderProduct'
 
 type TProps = {}
 
-type StatusOrderChip = ChipProps & {
-  background: string
-}
-
-const OrderStatusStyled = styled(Chip)<StatusOrderChip>(({ theme, background }) => {
-  return {
-    backgroundColor: background,
-    color: theme.palette.common.white,
-    fontSize: '14px',
-    fontWeight: 400,
-    padding: '8px 4px'
-  }
-})
-
-export const OrderProductListPage: NextPage<TProps> = () => {
+export const ReviewListPage: NextPage<TProps> = () => {
   // theme
   const theme = useTheme()
 
   // translate
   const { t, i18n } = useTranslation()
-
-  // CONST
-  const PRODUCT_ORDER_STATUS_STYLE = {
-    0: {
-      label: 'wait_payment',
-      background: theme.palette.warning.main
-    },
-    1: {
-      label: 'wait_delivery',
-      background: theme.palette.secondary.main
-    },
-    2: {
-      label: 'done_order',
-      background: theme.palette.success.main
-    },
-    3: {
-      label: 'canceled_order',
-      background: theme.palette.error.main
-    }
-  }
 
   // state
   const [page, setPage] = useState(1)
@@ -99,24 +60,22 @@ export const OrderProductListPage: NextPage<TProps> = () => {
     open: false,
     id: ''
   })
-  const [openConfirmationDeleteOrderProduct, setOpenConfirmationDeleteOrderProduct] = useState({
+  const [openConfirmationDeleteReview, setOpenConfirmationDeleteReview] = useState({
     open: false,
     id: ''
   })
   const [sortBy, setSortBy] = useState('createdAt desc')
   const [searchBy, setSearchBy] = useState('')
   const [loading, setLoading] = useState(false)
-  const [citiesOption, setCitiesOption] = useState<{ label: string; value: string }[]>([])
   const [filterBy, setFilterBy] = useState<Record<string, string | string[]>>({})
-  const [citySelected, setCitySelected] = useState<string[]>([])
-  const [statusSelected, setStatusSelected] = useState<string[]>([])
+  const [starSelected, setStarSelected] = useState<string[]>([])
 
   // hooks
   const { VIEW, UPDATE, DELETE } = usePermission('SYSTEM.MANAGE_ORDER.ORDER', ['VIEW', 'UPDATE', 'DELETE'])
 
   // redux
   const {
-    orderProducts,
+    reviews,
     isLoading,
     isSuccessEdit,
     isErrorEdit,
@@ -126,105 +85,81 @@ export const OrderProductListPage: NextPage<TProps> = () => {
     messageErrorDelete,
 
     typeError
-  } = useSelector((state: RootState) => state.orderProduct)
+  } = useSelector((state: RootState) => state.review)
 
   // redux
   const dispatch: AppDispatch = useDispatch()
 
   const columns: GridColDef[] = [
     {
-      field: 'items',
-      headerName: t('product_items'),
-      hideSortIcons: true,
-      flex: 1,
-      minWidth: 200,
-      renderCell: params => {
-        const { row } = params
-
-        return (
-          <AvatarGroup max={1} total={row?.orderItems?.length}>
-            {row?.orderItems?.map((item: TItemOrderProduct) => {
-              return <Avatar key={item?.product?._id} alt={item?.product?.slug} src={item?.image} />
-            })}
-          </AvatarGroup>
-        )
-      }
-    },
-    {
       field: 'full_name',
       headerName: t('Full_name'),
-      minWidth: 200,
-      maxWidth: 200,
+      minWidth: 300,
+      maxWidth: 300,
       renderCell: params => {
         const { row } = params
 
-        return <Typography>{row?.shippingAddress?.fullName}</Typography>
-      }
-    },
-    {
-      field: 'totalPrice',
-      headerName: t('total_price'),
-      minWidth: 200,
-      maxWidth: 200,
-      renderCell: params => {
-        const { row } = params
-
-        return <Typography>{row?.totalPrice}</Typography>
-      }
-    },
-    {
-      field: 'phoneNumber',
-      headerName: t('phone_number'),
-      minWidth: 200,
-      maxWidth: 200,
-      renderCell: params => {
-        const { row } = params
-
-        return <Typography>{row?.shippingAddress?.phone}</Typography>
-      }
-    },
-    {
-      field: 'city',
-      headerName: t('city'),
-      hideSortIcons: true,
-      minWidth: 200,
-      maxWidth: 200,
-      renderCell: params => {
-        const { row } = params
-
-        return <Typography>{row?.shippingAddress?.city?.name}</Typography>
-      }
-    },
-
-    {
-      field: 'status',
-      headerName: t('Status'),
-      minWidth: 180,
-      maxWidth: 180,
-      renderCell: params => {
-        const { row } = params
-        console.log('row', { row })
+        const fullName = toFullName(
+          row?.user?.lastName || '',
+          row?.user?.middleName || '',
+          row?.user?.firstName || '',
+          i18n.language
+        )
 
         return (
-          <>
-            {
-              <OrderStatusStyled
-                background={(PRODUCT_ORDER_STATUS_STYLE as any)[row?.status]?.background}
-                label={t((PRODUCT_ORDER_STATUS_STYLE as any)[row?.status]?.label)}
-              />
-            }
-          </>
+          <Tooltip title={fullName}>
+            <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{fullName}</Typography>
+          </Tooltip>
         )
       }
     },
+    {
+      field: 'product_name',
+      headerName: t('product_name'),
+      minWidth: 300,
+      maxWidth: 300,
+      renderCell: params => {
+        const { row } = params
+
+        return (
+          <Tooltip title={row?.product?.name}>
+            <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>
+              {row?.product?.name}
+            </Typography>
+          </Tooltip>
+        )
+      }
+    },
+    {
+      field: 'content',
+      headerName: t('content'),
+      minWidth: 400,
+      maxWidth: 400,
+      renderCell: params => {
+        const { row } = params
+
+        return <Typography>{row?.content}</Typography>
+      }
+    },
+    {
+      field: 'star',
+      headerName: t('star'),
+      hideSortIcons: true,
+      minWidth: 100,
+      maxWidth: 100,
+      renderCell: params => {
+        const { row } = params
+
+        return <Typography>{row?.star}</Typography>
+      }
+    },
+
     {
       field: 'action',
       headerName: t('Actions'),
       width: 150,
       sortable: false,
       renderCell: params => {
-        const { row } = params
-
         return (
           <Box sx={{ width: '100%' }}>
             <Box>
@@ -240,7 +175,7 @@ export const OrderProductListPage: NextPage<TProps> = () => {
               <GridDelete
                 disabled={!DELETE}
                 onClick={() => {
-                  setOpenConfirmationDeleteOrderProduct({
+                  setOpenConfirmationDeleteReview({
                     open: true,
                     id: String(params.id)
                   })
@@ -260,7 +195,7 @@ export const OrderProductListPage: NextPage<TProps> = () => {
       <CustomPagination
         pageSize={pageSize}
         page={page}
-        rowLength={orderProducts.total}
+        rowLength={reviews.total}
         pageSizeOptions={PAGE_SIZE_OPTION}
         onChangePagination={handleOnChangePagination}
       />
@@ -270,11 +205,11 @@ export const OrderProductListPage: NextPage<TProps> = () => {
   // ****** Custom pagination
 
   // fetch API
-  const handleGetListOrderProduct = () => {
+  const handleGetListReview = () => {
     const query = {
       params: { limit: pageSize, page: page, search: searchBy, order: sortBy, ...formatFilter(filterBy) }
     }
-    dispatch(getAllOrderProductsAsync(query))
+    dispatch(getAllReviewsAsync(query))
   }
 
   // Handle
@@ -283,15 +218,15 @@ export const OrderProductListPage: NextPage<TProps> = () => {
     setPageSize(pageSize)
   }
 
-  const handleCloseConfirmDeleteOrderProduct = () => {
-    setOpenConfirmationDeleteOrderProduct({
+  const handleCloseConfirmDeleteReview = () => {
+    setOpenConfirmationDeleteReview({
       open: false,
       id: ''
     })
   }
 
-  const handleDeleteOrderProduct = () => {
-    dispatch(deleteOrderProductAsync(openConfirmationDeleteOrderProduct.id))
+  const handleDeleteReview = () => {
+    dispatch(deleteReviewAsync(openConfirmationDeleteReview.id))
   }
 
   const handleCloseEdit = () => {
@@ -312,29 +247,8 @@ export const OrderProductListPage: NextPage<TProps> = () => {
 
   // fetch api
 
-  const fetchAllCities = async () => {
-    await getAllCities({ params: { limit: -1, page: -1 } })
-      .then(res => {
-        const data = res?.data?.cities
-        if (data) {
-          setCitiesOption(
-            data?.map((item: { name: string; _id: string }) => {
-              return {
-                label: item?.name,
-                value: item?._id
-              }
-            })
-          )
-        }
-        setLoading(false)
-      })
-      .catch(() => {
-        setLoading(false)
-      })
-  }
-
-  const memoStatusOption = useMemo(() => {
-    return Object.values(PRODUCT_ORDER_STATUS)?.map(item => ({
+  const memoStarOption = useMemo(() => {
+    return Object.values(FILTER_REVIEW_CMS)?.map(item => ({
       label: t(item?.label),
       value: item?.value
     }))
@@ -343,21 +257,17 @@ export const OrderProductListPage: NextPage<TProps> = () => {
   // side effects
 
   useEffect(() => {
-    fetchAllCities()
-  }, [])
+    setFilterBy({ minStar: starSelected })
+  }, [starSelected])
 
   useEffect(() => {
-    setFilterBy({ status: statusSelected, cityId: citySelected })
-  }, [statusSelected, citySelected])
-
-  useEffect(() => {
-    handleGetListOrderProduct()
+    handleGetListReview()
   }, [sortBy, searchBy, i18n.language, page, pageSize, filterBy])
 
   useEffect(() => {
     if (isSuccessEdit) {
-      toast.success(t('update_order_product_success'))
-      handleGetListOrderProduct()
+      toast.success(t('update_review_success'))
+      handleGetListReview()
       handleCloseEdit()
       dispatch(resetInitialState())
     } else if (isErrorEdit && messageErrorEdit && typeError) {
@@ -365,7 +275,7 @@ export const OrderProductListPage: NextPage<TProps> = () => {
       if (errorConfig) {
         toast.error(t(errorConfig))
       } else {
-        toast.error(t('update_order_product_error'))
+        toast.error(t('update_review_error'))
       }
       dispatch(resetInitialState())
     }
@@ -373,12 +283,12 @@ export const OrderProductListPage: NextPage<TProps> = () => {
 
   useEffect(() => {
     if (isSuccessDelete) {
-      toast.success(t('delete_order_product_success'))
-      handleGetListOrderProduct()
+      toast.success(t('delete_review_success'))
+      handleGetListReview()
       dispatch(resetInitialState())
-      handleCloseConfirmDeleteOrderProduct()
+      handleCloseConfirmDeleteReview()
     } else if (isErrorDelete && messageErrorDelete) {
-      toast.error(t('delete_order_product_error'))
+      toast.error(t('delete_review_error'))
       dispatch(resetInitialState())
     }
   }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
@@ -387,15 +297,15 @@ export const OrderProductListPage: NextPage<TProps> = () => {
     <>
       {loading && <Spinner />}
       <ConfirmationDialog
-        title={t('title_delete_order_product')}
-        description={t('confirm_delete_order_product')}
-        open={openConfirmationDeleteOrderProduct.open}
-        handleClose={handleCloseConfirmDeleteOrderProduct}
-        handleCancel={handleCloseConfirmDeleteOrderProduct}
-        handleConfirm={handleDeleteOrderProduct}
+        title={t('title_delete_review')}
+        description={t('confirm_delete_review')}
+        open={openConfirmationDeleteReview.open}
+        handleClose={handleCloseConfirmDeleteReview}
+        handleCancel={handleCloseConfirmDeleteReview}
+        handleConfirm={handleDeleteReview}
       />
 
-      <EditOrderProduct open={openEdit.open} onClose={handleCloseEdit} orderId={openEdit.id} />
+      <EditReview open={openEdit.open} onClose={handleCloseEdit} reviewId={openEdit.id} />
       {isLoading && <Spinner />}
       <Box
         sx={{
@@ -411,25 +321,13 @@ export const OrderProductListPage: NextPage<TProps> = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mb: 4, width: '100%', gap: 4 }}>
             <Box sx={{ width: '200px' }}>
               <CustomSelect
-                value={citySelected}
-                options={citiesOption}
-                placeholder={t('City')}
-                fullWidth
-                multiple
-                onChange={e => {
-                  setCitySelected(e.target.value as string[])
-                }}
-              />
-            </Box>
-            <Box sx={{ width: '200px' }}>
-              <CustomSelect
-                value={statusSelected}
-                options={memoStatusOption}
+                value={starSelected}
+                options={memoStarOption}
                 placeholder={t('Status')}
                 fullWidth
                 multiple
                 onChange={e => {
-                  setStatusSelected(e.target.value as string[])
+                  setStarSelected(e.target.value as string[])
                 }}
               />
             </Box>
@@ -447,7 +345,7 @@ export const OrderProductListPage: NextPage<TProps> = () => {
                 // }
               }
             }
-            rows={orderProducts.data}
+            rows={reviews.data}
             columns={columns}
             autoHeight
             getRowId={row => row._id}
@@ -468,4 +366,4 @@ export const OrderProductListPage: NextPage<TProps> = () => {
   )
 }
 
-export default OrderProductListPage
+export default ReviewListPage
