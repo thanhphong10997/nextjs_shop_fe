@@ -13,5 +13,4 @@ export const Index: NextPage<TProps> = () => {
   return <CityListPage />
 }
 
-Index.permission = [PERMISSIONS.SETTING.CITY.VIEW]
 export default Index
