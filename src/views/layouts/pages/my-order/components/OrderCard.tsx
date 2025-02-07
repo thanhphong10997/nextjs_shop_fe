@@ -337,7 +337,13 @@ export const OrderCard: NextPage<TProps> = props => {
           >
             {t('buy_again')}
           </Button>
-          <Button type='submit' variant='outlined' color='primary' sx={{ height: '40px', display: 'flex' }}>
+          <Button
+            type='submit'
+            variant='outlined'
+            color='primary'
+            sx={{ height: '40px', display: 'flex' }}
+            onClick={handleNavigateDetailsOrder}
+          >
             {t('view_details')}
           </Button>
         </Box>
