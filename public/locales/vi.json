@@ -284,5 +284,12 @@
   "write_review_success": "Đánh giá thành công",
   "write_review_error": "Đánh giá thất bại",
   "review": "Đánh giá",
-  "product_reviews": "Đánh giá sản phẩm"
+  "product_reviews": "Đánh giá sản phẩm",
+  "payment": "Thanh toán",
+  "payment_success": "Thanh toán thành công",
+  "payment_error": "Thanh toán lỗi",
+  "home": "Trang chủ",
+  "order_has_been_paid": "Đơn hàng đã được thanh toán",
+  "order_has_not_been_paid": "Đơn hàng chưa được thanh toán",
+  "order_has_not_been_delivery": "Đơn hàng chưa được giao"
 }

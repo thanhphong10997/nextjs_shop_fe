@@ -78,12 +78,12 @@ const ConfirmationDialog = (props: TConfirmationDialog) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
+          <Button color='error' variant='outlined' onClick={handleCancel}>
+            {t('cancel')}
+          </Button>
           <Button variant='contained' onClick={handleConfirm}>
             {' '}
             {t('confirm')}
-          </Button>
-          <Button color='error' variant='outlined' onClick={handleCancel}>
-            {t('cancel')}
           </Button>
         </DialogActions>
       </StyledDialog>

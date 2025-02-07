@@ -38,7 +38,7 @@ import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 // services
 
 // utils
-import { formatFilter, toFullName } from 'src/utils'
+import { formatFilter, formatNumberToLocal, toFullName } from 'src/utils'
 
 // hooks
 import { usePermission } from 'src/hooks/usePermission'
@@ -169,7 +169,7 @@ export const OrderProductListPage: NextPage<TProps> = () => {
       renderCell: params => {
         const { row } = params
 
-        return <Typography>{row?.totalPrice}</Typography>
+        return <Typography>{formatNumberToLocal(row?.totalPrice)} VND</Typography>
       }
     },
     {

@@ -24,12 +24,14 @@ import { cancelOrderProductOfMeAsync } from 'src/stores/order-product/actions'
 import ConfirmationDialog from 'src/components/confirmation-dialog'
 import { PRODUCT_ORDER_STATUS } from 'src/configs/orderProduct'
 import { Icon } from '@iconify/react/dist/iconify.js'
-import { TProduct } from 'src/types/product'
 import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 import { useAuth } from 'src/hooks/useAuth'
 import { updateProductToCart } from 'src/stores/order-product'
 import { useRouter } from 'next/router'
 import { ROUTE_CONFIG } from 'src/configs/route'
+import { PAYMENT_TYPES } from 'src/configs/payment'
+import { createURLPaymentVNPay } from 'src/services/payment'
+import Spinner from 'src/components/spinner'
 
 type TProps = {
   dataOrder: TItemOrderProductMe
@@ -40,7 +42,7 @@ export const OrderCard: NextPage<TProps> = props => {
   const theme = useTheme()
 
   // translate
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   // redux
   const { isSuccessCancelMe, orderItems } = useSelector((state: RootState) => state.orderProduct)
@@ -53,8 +55,12 @@ export const OrderCard: NextPage<TProps> = props => {
   const { user } = useAuth()
   const router = useRouter()
 
+  // const
+  const PAYMENT_DATA = PAYMENT_TYPES()
+
   // react
   const [openCancel, setOpenCancel] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   // handle
   const handleConfirmCancel = () => {
@@ -66,12 +72,9 @@ export const OrderCard: NextPage<TProps> = props => {
   }
 
   const handleUpdateProductToCart = (items: TItemOrderProduct[]) => {
-    console.log('items', { items })
     const productCart = getLocalProductCart()
     const parseData = productCart ? JSON.parse(productCart) : {}
     const listOrderItems = convertUpdateMultipleCartProduct(orderItems, items)
-
-    console.log('listOrderItems', { listOrderItems })
 
     if (user?._id) {
       dispatch(
@@ -104,6 +107,36 @@ export const OrderCard: NextPage<TProps> = props => {
     router.push(`${ROUTE_CONFIG.MY_ORDER}/${dataOrder?._id}`)
   }
 
+  const handlePaymentTypeOrder = (type: string) => {
+    switch (type) {
+      case PAYMENT_DATA?.VN_PAYMENT?.value: {
+        handlePaymentVNPay()
+        break
+      }
+      default:
+        break
+    }
+  }
+
+  const handlePaymentVNPay = async () => {
+    setLoading(true)
+    await createURLPaymentVNPay({
+      totalPrice: dataOrder?.totalPrice,
+      orderId: dataOrder?._id,
+      language: i18n.language === 'vi' ? 'vn' : i18n.language
+    })
+      .then(response => {
+        console.log('response', { response })
+        if (response?.data) {
+          window.open(response?.data, '_blank')
+        }
+        setLoading(false)
+      })
+      .catch(e => {
+        setLoading(false)
+      })
+  }
+
   // memo
   const memoDisabledBuyAgain = useMemo(() => {
     return dataOrder?.orderItems?.some(item => !item?.product?.countInStock)
@@ -117,7 +150,7 @@ export const OrderCard: NextPage<TProps> = props => {
 
   return (
     <>
-      {/* {(isLoading || loading) && <Spinner />} */}
+      {loading && <Spinner />}
       <ConfirmationDialog
         title={t('title_cancel_order')}
         description={t('confirm_cancel_order')}
@@ -135,11 +168,20 @@ export const OrderCard: NextPage<TProps> = props => {
         }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
-          {dataOrder?.status === 2 && (
+          {!!dataOrder?.isDelivered && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Icon icon='carbon:delivery' fontSize={20} />
               <Typography>
                 <span style={{ color: theme.palette.success.main }}>{t('order_has_been_delivery')}</span>
+                <span>{' | '}</span>
+              </Typography>
+            </Box>
+          )}
+          {!!dataOrder?.isPaid && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Icon icon='hugeicons:payment-02' fontSize={20} />
+              <Typography>
+                <span style={{ color: theme.palette.success.main }}>{t('order_has_been_paid')}</span>
                 <span>{' | '}</span>
               </Typography>
             </Box>
@@ -253,6 +295,21 @@ export const OrderCard: NextPage<TProps> = props => {
             mt: 6
           }}
         >
+          {[0].includes(dataOrder?.status) && dataOrder?.paymentMethod?.type !== PAYMENT_DATA?.PAYMENT_LATER?.value && (
+            <Button
+              type='submit'
+              variant='outlined'
+              color='primary'
+              sx={{
+                height: '40px',
+                display: 'flex',
+                backgroundColor: 'transparent!important'
+              }}
+              onClick={() => handlePaymentTypeOrder(dataOrder?.paymentMethod?.type)}
+            >
+              {t('payment')}
+            </Button>
+          )}
           {[0, 1].includes(dataOrder?.status) && (
             <Button
               type='submit'

@@ -53,6 +53,9 @@ import ModalWarning from './components/ModalWarning'
 // alert
 import Swal from 'sweetalert2'
 import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
+import { ROUTE_CONFIG } from 'src/configs/route'
+import { PAYMENT_TYPES } from 'src/configs/payment'
+import { createURLPaymentVNPay } from 'src/services/payment'
 
 type TProps = {}
 
@@ -71,7 +74,7 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
 
   // react
   const [loading, setLoading] = useState(false)
-  const [paymentOptions, setPaymentOptions] = useState<{ label: string; value: string }[]>([])
+  const [paymentOptions, setPaymentOptions] = useState<{ label: string; value: string; type: string }[]>([])
   const [deliveryOptions, setDeliveryOptions] = useState<{ label: string; value: string; price: string }[]>([])
   const [paymentSelected, setPaymentSelected] = useState('')
   const [deliverySelected, setDeliverySelected] = useState('')
@@ -84,6 +87,9 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
   const { isLoading, isSuccessCreate, isErrorCreate, messageErrorCreate, orderItems } = useSelector(
     (state: RootState) => state.orderProduct
   )
+
+  // const
+  const PAYMENT_DATA = PAYMENT_TYPES()
 
   // memo
   const memoDefaultAddress = useMemo(() => {
@@ -152,10 +158,11 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
       .then(res => {
         if (res?.data) {
           setPaymentOptions(
-            res?.data?.paymentTypes?.map((item: { name: string; _id: string }) => {
+            res?.data?.paymentTypes?.map((item: { name: string; _id: string; type: string }) => {
               return {
                 label: item?.name,
-                value: item?._id
+                value: item?._id,
+                type: item?.type
               }
             })
           )
@@ -213,7 +220,15 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
         shippingPrice: memoShippingPrice,
         totalPrice: totalPrice
       })
-    )
+    ).then(res => {
+      const paymentMethodId = res?.payload?.data?.paymentMethod
+      const orderId = res?.payload?.data?._id
+      const totalPrice = res?.payload?.data?.totalPrice
+      const findPayment = paymentOptions?.find(item => item?.value === paymentMethodId)
+      if (findPayment) {
+        handlePaymentTypeOrder(findPayment?.type, { totalPrice, orderId })
+      }
+    })
   }
 
   const handleChangeAmountCart = (items: TItemOrderProduct[]) => {
@@ -251,6 +266,35 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
       )
       setLocalProductToCart({ ...parseData, [user?._id]: filterOrderList })
     }
+  }
+
+  const handlePaymentTypeOrder = (type: string, data: { orderId: string; totalPrice: number }) => {
+    switch (type) {
+      case PAYMENT_DATA?.VN_PAYMENT?.value: {
+        handlePaymentVNPay(data)
+        break
+      }
+      default:
+        break
+    }
+  }
+
+  const handlePaymentVNPay = async (data: { orderId: string; totalPrice: number }) => {
+    setLoading(true)
+    await createURLPaymentVNPay({
+      totalPrice: data?.totalPrice,
+      orderId: data?.orderId,
+      language: i18n.language === 'vi' ? 'vn' : i18n.language
+    })
+      .then(response => {
+        if (response?.data) {
+          window.open(response?.data, '_blank')
+        }
+        setLoading(false)
+      })
+      .catch(e => {
+        setLoading(false)
+      })
   }
 
   // fetch api
@@ -291,7 +335,8 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
         background: theme.palette.background.paper,
         color: `${theme.palette.customColors.main}c7`
       }).then(result => {
-        if (result.isConfirmed) {
+        if (result?.isConfirmed) {
+          router.push(ROUTE_CONFIG.MY_ORDER)
         }
       })
 
