@@ -46,7 +46,7 @@ import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 import { usePermission } from 'src/hooks/usePermission'
 
 // utils
-import { formatDate } from 'src/utils'
+import { formatDate } from 'src/utils/date'
 
 type TProps = {}
 

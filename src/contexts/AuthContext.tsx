@@ -113,6 +113,8 @@ const AuthProvider = ({ children }: Props) => {
     logoutAuth().then(res => {
       setUser(null)
       clearLocalUserData()
+
+      // check if the page is not public then redirect to the login page
       if (!LIST_PAGE_PUBLIC?.some(item => router?.asPath?.startsWith(item))) {
         if (router.asPath !== '/') {
           router.replace({

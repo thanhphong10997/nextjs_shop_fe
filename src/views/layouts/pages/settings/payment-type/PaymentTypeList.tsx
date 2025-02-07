@@ -44,6 +44,7 @@ import toast from 'react-hot-toast'
 // config
 import { OBJECT_TYPE_ERROR_PAYMENT } from 'src/configs/error'
 import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
+import { PAYMENT_TYPES } from 'src/configs/payment'
 
 // services
 
@@ -51,8 +52,7 @@ import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 import { usePermission } from 'src/hooks/usePermission'
 
 // utils
-import { formatDate } from 'src/utils'
-import { PAYMENT_TYPES } from 'src/configs/payment'
+import { formatDate } from 'src/utils/date'
 
 type TProps = {}
 

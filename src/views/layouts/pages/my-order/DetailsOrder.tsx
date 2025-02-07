@@ -37,6 +37,9 @@ import { PRODUCT_ORDER_STATUS } from 'src/configs/orderProduct'
 import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 import ConfirmationDialog from 'src/components/confirmation-dialog'
 import WriteReviewModal from './components/WriteReviewModal'
+import { PAYMENT_TYPES } from 'src/configs/payment'
+import { createURLPaymentVNPay } from 'src/services/payment'
+import { formatDate } from 'src/utils/date'
 
 type TProps = {}
 
@@ -48,7 +51,10 @@ export const MyDetailsOrderPage: NextPage<TProps> = () => {
   const { user } = useAuth()
 
   // translate
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+
+  // const
+  const PAYMENT_DATA = PAYMENT_TYPES()
 
   // router
   const router = useRouter()
@@ -87,12 +93,9 @@ export const MyDetailsOrderPage: NextPage<TProps> = () => {
   }
 
   const handleUpdateProductToCart = (items: TItemOrderProduct[]) => {
-    console.log('items', { items })
     const productCart = getLocalProductCart()
     const parseData = productCart ? JSON.parse(productCart) : {}
     const listOrderItems = convertUpdateMultipleCartProduct(orderItems, items)
-
-    console.log('listOrderItems', { listOrderItems })
 
     if (user?._id) {
       dispatch(
@@ -128,6 +131,35 @@ export const MyDetailsOrderPage: NextPage<TProps> = () => {
       productId: '',
       userId: ''
     })
+  }
+
+  const handlePaymentTypeOrder = (type: string) => {
+    switch (type) {
+      case PAYMENT_DATA?.VN_PAYMENT?.value: {
+        handlePaymentVNPay()
+        break
+      }
+      default:
+        break
+    }
+  }
+
+  const handlePaymentVNPay = async () => {
+    setLoading(true)
+    await createURLPaymentVNPay({
+      totalPrice: dataOrder?.totalPrice,
+      orderId: dataOrder?._id,
+      language: i18n.language === 'vi' ? 'vn' : i18n.language
+    })
+      .then(response => {
+        if (response?.data) {
+          window.open(response?.data, '_blank')
+        }
+        setLoading(false)
+      })
+      .catch(e => {
+        setLoading(false)
+      })
   }
 
   // fetch API
@@ -365,6 +397,46 @@ export const MyDetailsOrderPage: NextPage<TProps> = () => {
             </Box>
           </Box>
         </Box>
+
+        <Box mt={2} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Icon icon='carbon:delivery' fontSize={20} />
+            <Typography>
+              {!!dataOrder?.isDelivered ? (
+                <>
+                  <span style={{ color: theme.palette.success.main, fontSize: '16px' }}>
+                    {' '}
+                    {t('order_has_been_delivery')}
+                  </span>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{formatDate(dataOrder?.deliveryAt)}</span>
+                </>
+              ) : (
+                <span style={{ color: theme.palette.error.main, fontSize: '16px' }}>
+                  {t('order_has_not_been_delivery')}
+                </span>
+              )}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Icon icon='hugeicons:payment-02' fontSize={20} />
+            <Typography>
+              {!!dataOrder?.isPaid ? (
+                <>
+                  <span style={{ color: theme.palette.success.main, fontSize: '16px' }}>
+                    {' '}
+                    {t('order_has_been_paid')}
+                  </span>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}> {formatDate(dataOrder?.paidAt)}</span>
+                </>
+              ) : (
+                <span style={{ color: theme.palette.error.main, fontSize: '16px' }}>
+                  {t('order_has_not_been_paid')}
+                </span>
+              )}
+            </Typography>
+          </Box>
+        </Box>
+
         <Box
           sx={{
             display: 'flex',
@@ -374,6 +446,21 @@ export const MyDetailsOrderPage: NextPage<TProps> = () => {
             mt: 6
           }}
         >
+          {[0].includes(dataOrder?.status) && dataOrder?.paymentMethod?.type !== PAYMENT_DATA?.PAYMENT_LATER?.value && (
+            <Button
+              type='submit'
+              variant='outlined'
+              color='primary'
+              sx={{
+                height: '40px',
+                display: 'flex',
+                backgroundColor: 'transparent!important'
+              }}
+              onClick={() => handlePaymentTypeOrder(dataOrder?.paymentMethod?.type)}
+            >
+              {t('payment')}
+            </Button>
+          )}
           {[0, 1].includes(dataOrder?.status) && (
             <Button
               type='submit'

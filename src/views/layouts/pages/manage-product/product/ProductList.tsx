@@ -45,10 +45,11 @@ import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 import { usePermission } from 'src/hooks/usePermission'
 
 // utils
-import { formatDate, formatFilter, formatNumberToLocal } from 'src/utils'
+import { formatFilter, formatNumberToLocal } from 'src/utils'
 import CustomSelect from 'src/components/custom-select'
 import { OBJECT_STATUS_PRODUCT } from 'src/configs/product'
 import { getAllProductTypes } from 'src/services/product-type'
+import { formatDate } from 'src/utils/date'
 
 type TProps = {}
 
