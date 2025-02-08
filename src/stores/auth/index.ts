@@ -5,6 +5,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import {
   ChangePasswordMeAsync,
   registerAuthAsync,
+  registerAuthFacebookAsync,
   registerAuthGoogleAsync,
   serviceName,
   updateAuthMeAsync
@@ -99,6 +100,28 @@ export const authSlice = createSlice({
       state.typeError = action?.payload?.typeError
     })
     builder.addCase(registerAuthGoogleAsync.rejected, (state, action) => {
+      state.isLoading = false
+      state.isSuccess = false
+      state.isError = true
+      state.message = ''
+      state.typeError = ''
+    })
+
+    // Auth Facebook Register
+    builder.addCase(registerAuthFacebookAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+
+    // Still go to fullfilled (not rejected) even if the api return an error
+
+    builder.addCase(registerAuthFacebookAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccess = !!action?.payload?.data?.email
+      state.isError = !action?.payload?.data?.email
+      state.message = action?.payload?.message
+      state.typeError = action?.payload?.typeError
+    })
+    builder.addCase(registerAuthFacebookAsync.rejected, (state, action) => {
       state.isLoading = false
       state.isSuccess = false
       state.isError = true
