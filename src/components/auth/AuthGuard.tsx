@@ -4,7 +4,12 @@ import { useRouter } from 'next/router'
 import { ReactNode, ReactElement, useEffect } from 'react'
 import { API_ENDPOINT } from 'src/configs/api'
 import { ACCESS_TOKEN, USER_DATA } from 'src/configs/auth'
-import { clearLocalUserData, clearTemporaryToken, getTemporaryToken } from 'src/helpers/storage'
+import {
+  clearLocalRememberLoginAuthSocial,
+  clearLocalUserData,
+  clearTemporaryToken,
+  getTemporaryToken
+} from 'src/helpers/storage'
 import { useAuth } from 'src/hooks/useAuth'
 
 interface AuthGuardProps {
@@ -43,6 +48,8 @@ const AuthGuard = (props: AuthGuardProps) => {
     // remove temporary token when reloading page
     const handleUnload = () => {
       clearTemporaryToken()
+
+      // clearLocalRememberLoginAuthSocial()
     }
     window.addEventListener('beforeunload', handleUnload)
 

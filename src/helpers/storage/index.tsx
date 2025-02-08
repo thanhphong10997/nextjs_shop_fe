@@ -1,6 +1,12 @@
-import { ACCESS_TOKEN, PRE_GOOGLE_TOKEN, REFRESH_TOKEN, TEMPORARY_TOKEN, USER_DATA } from 'src/configs/auth'
+import {
+  ACCESS_TOKEN,
+  PRE_AUTH_TOKEN,
+  REFRESH_TOKEN,
+  REMEMBER_AUTH_TOKEN,
+  TEMPORARY_TOKEN,
+  USER_DATA
+} from 'src/configs/auth'
 import { LOCAL_PRODUCT_CART } from 'src/configs/product'
-import { UserDataType } from 'src/contexts/types'
 import { TItemOrderProduct } from 'src/types/order-product'
 
 // Access token, refresh token and user data
@@ -76,23 +82,44 @@ export const getLocalProductCart = () => {
   return ''
 }
 
-// google token
-export const setLocalPreTokenGoogle = (token: string) => {
+// third party apps token
+export const setLocalPreTokenSocial = (token: string) => {
   if (typeof window !== 'undefined') {
-    window.localStorage.setItem(PRE_GOOGLE_TOKEN, token)
+    window.localStorage.setItem(PRE_AUTH_TOKEN, token)
   }
 }
 
-export const getLocalPreTokenGoogle = () => {
+export const getLocalPreTokenSocial = () => {
   if (typeof window !== 'undefined') {
-    return window.localStorage.getItem(PRE_GOOGLE_TOKEN)
+    return window.localStorage.getItem(PRE_AUTH_TOKEN)
   }
 
   return ''
 }
 
-export const clearLocalPreTokenGoogle = () => {
+export const clearLocalPreTokenSocial = () => {
   if (typeof window !== 'undefined') {
-    window.localStorage.removeItem(PRE_GOOGLE_TOKEN)
+    window.localStorage.removeItem(PRE_AUTH_TOKEN)
+  }
+}
+
+// remember-me local storage
+export const setLocalRememberLoginAuthSocial = (token: string) => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(REMEMBER_AUTH_TOKEN, token)
+  }
+}
+
+export const getLocalRememberLoginAuthSocial = () => {
+  if (typeof window !== 'undefined') {
+    return window.localStorage.getItem(REMEMBER_AUTH_TOKEN)
+  }
+
+  return ''
+}
+
+export const clearLocalRememberLoginAuthSocial = () => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.removeItem(REMEMBER_AUTH_TOKEN)
   }
 }
