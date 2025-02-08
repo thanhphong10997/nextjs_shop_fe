@@ -29,7 +29,7 @@ import React, { useEffect, useState } from 'react'
 // Import icons
 import IconifyIcon from 'src/components/Icon'
 import { useDispatch, useSelector } from 'react-redux'
-import { registerAuthAsync } from 'src/stores/auth/actions'
+import { registerAuthAsync, registerAuthGoogleAsync } from 'src/stores/auth/actions'
 import { AppDispatch, RootState } from 'src/stores'
 import toast from 'react-hot-toast'
 import FallbackSpinner from 'src/components/fall-back'
@@ -37,6 +37,8 @@ import { resetInitialState } from 'src/stores/auth'
 import { useRouter } from 'next/router'
 import { ROUTE_CONFIG } from 'src/configs/route'
 import { useTranslation } from 'react-i18next'
+import { signIn, useSession } from 'next-auth/react'
+import { clearLocalPreTokenGoogle, getLocalPreTokenGoogle, setLocalPreTokenGoogle } from 'src/helpers/storage'
 
 type TProps = {}
 type Inputs = {
@@ -44,28 +46,6 @@ type Inputs = {
   password: string
   confirmPassword: string
 }
-
-const useStyles = makeStyles((theme: any) => {
-  return {
-    paper: {
-      marginTop: '32px',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center'
-    },
-    avatar: {
-      margin: '4px',
-      backgroundColor: '#333'
-    },
-    form: {
-      width: '100%', // Fix IE 11 issue.
-      marginTop: '4px'
-    },
-    submit: {
-      margin: '8px'
-    }
-  }
-})
 
 export const RegisterPage: NextPage<TProps> = () => {
   // theme
@@ -76,6 +56,12 @@ export const RegisterPage: NextPage<TProps> = () => {
 
   // translate
   const { t } = useTranslation()
+
+  // auth
+  const { data: session } = useSession()
+
+  // local storage
+  const prevLocalGoogleToken = getLocalPreTokenGoogle()
 
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -114,22 +100,41 @@ export const RegisterPage: NextPage<TProps> = () => {
   const onSubmit: SubmitHandler<Inputs> = data => {
     const { email, password } = data
     dispatch(registerAuthAsync({ email, password }))
-    console.log(data)
   }
 
+  // handle
+  const handleSignupGoogle = () => {
+    signIn('google')
+    clearLocalPreTokenGoogle()
+  }
+
+  // side effects
   useEffect(() => {
     if (message) {
       if (isError) {
         toast.error(message)
+
+        // Reset the state
+        dispatch(resetInitialState())
       } else if (isSuccess) {
         toast.success(message)
+
+        // Reset the state
+        dispatch(resetInitialState())
         router.push(ROUTE_CONFIG.LOGIN)
       }
-
-      // Reset the state
-      dispatch(resetInitialState())
     }
   }, [isError, isSuccess, message])
+
+  // check auth register google
+  useEffect(() => {
+    // the condition to fix the issue that every time the page reloads then the register of Google will be dispatched and push the toast message
+    console.log('session', { session })
+    if ((session as any)?.accessToken && (session as any)?.accessToken !== prevLocalGoogleToken) {
+      dispatch(registerAuthGoogleAsync((session as any)?.accessToken))
+      setLocalPreTokenGoogle((session as any)?.accessToken)
+    }
+  }, [(session as any)?.accessToken])
 
   return (
     <>
@@ -297,7 +302,7 @@ export const RegisterPage: NextPage<TProps> = () => {
           </form>
           <Typography sx={{ my: 2 }}>{t('or')}</Typography>
           <Box>
-            <IconButton sx={{ color: theme.palette.error.main }}>
+            <IconButton sx={{ color: theme.palette.error.main }} onClick={handleSignupGoogle}>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 role='img'

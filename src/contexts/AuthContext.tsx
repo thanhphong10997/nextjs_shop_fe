@@ -11,8 +11,8 @@ import axios from 'axios'
 import authConfig, { LIST_PAGE_PUBLIC } from 'src/configs/auth'
 
 // ** Types
-import { AuthValuesType, LoginParams, ErrCallbackType, UserDataType } from './types'
-import { loginAuth, logoutAuth } from 'src/services/auth'
+import { AuthValuesType, LoginParams, ErrCallbackType, UserDataType, LoginGoogleParams } from './types'
+import { loginAuth, loginAuthGoogle, logoutAuth } from 'src/services/auth'
 import { API_ENDPOINT } from 'src/configs/api'
 import { clearLocalUserData, setLocalUserData, setTemporaryToken } from 'src/helpers/storage'
 import instanceAxios from 'src/helpers/axios'
@@ -22,6 +22,7 @@ import { AppDispatch, RootState } from 'src/stores'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateProductToCart } from 'src/stores/order-product'
 import { ROUTE_CONFIG } from 'src/configs/route'
+import { signOut } from 'next-auth/react'
 
 // ** Defaults
 const defaultProvider: AuthValuesType = {
@@ -30,7 +31,8 @@ const defaultProvider: AuthValuesType = {
   setUser: () => null,
   setLoading: () => Boolean,
   login: () => Promise.resolve(),
-  logout: () => Promise.resolve()
+  logout: () => Promise.resolve(),
+  loginGoogle: () => Promise.resolve()
 }
 
 const AuthContext = createContext(defaultProvider)
@@ -108,11 +110,40 @@ const AuthProvider = ({ children }: Props) => {
       })
   }
 
+  // Login google
+  const handleLoginGoogle = (params: LoginGoogleParams, errorCallback?: ErrCallbackType) => {
+    // axios
+    //   .post(authConfig.loginEndpoint, params)
+    loginAuthGoogle(params?.tokenId)
+      .then(async response => {
+        if (params.rememberMe) {
+          setLocalUserData(JSON.stringify(response.data.user), response.data.access_token, response.data.refresh_token)
+        } else {
+          setTemporaryToken(response?.data?.access_token)
+        }
+        const returnUrl = router.query.returnUrl
+
+        setUser({ ...response.data.user })
+        toast.success(t('login_success'))
+
+        const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+
+        router.replace(redirectURL as string)
+      })
+
+      .catch(err => {
+        if (errorCallback) errorCallback(err)
+      })
+  }
+
   const handleLogout = () => {
     setLoading(true)
     logoutAuth().then(res => {
       setUser(null)
       clearLocalUserData()
+
+      // sign out google account
+      // signOut()
 
       // check if the page is not public then redirect to the login page
       if (!LIST_PAGE_PUBLIC?.some(item => router?.asPath?.startsWith(item))) {
@@ -140,7 +171,8 @@ const AuthProvider = ({ children }: Props) => {
     setUser,
     setLoading,
     login: handleLogin,
-    logout: handleLogout
+    logout: handleLogout,
+    loginGoogle: handleLoginGoogle
   }
 
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>

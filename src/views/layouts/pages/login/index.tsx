@@ -35,7 +35,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 
 // Import React
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 // Import icons
 import IconifyIcon from 'src/components/Icon'
@@ -45,6 +45,8 @@ import { useAuth } from 'src/hooks/useAuth'
 import { error } from 'console'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { signIn, useSession } from 'next-auth/react'
+import { clearLocalPreTokenGoogle, getLocalPreTokenGoogle, setLocalPreTokenGoogle } from 'src/helpers/storage'
 
 type TProps = {}
 type Inputs = {
@@ -82,10 +84,18 @@ export const LoginPage: NextPage<TProps> = () => {
   const { t } = useTranslation()
 
   // context
-  const { login } = useAuth()
+  const { login, loginGoogle } = useAuth()
 
+  // local storage
+  const prevLocalGoogleToken = getLocalPreTokenGoogle()
+
+  // state
   const [showPassword, setShowPassword] = useState(false)
   const [isRemember, setIsRemember] = useState(false)
+
+  const { data: session } = useSession()
+
+  // yup form
   const schema = yup
     .object()
     .shape({
@@ -117,6 +127,25 @@ export const LoginPage: NextPage<TProps> = () => {
       })
     }
   }
+
+  // handle
+  const handleSignInGoogle = () => {
+    signIn('google')
+    clearLocalPreTokenGoogle()
+  }
+
+  // check auth sign in google
+  useEffect(() => {
+    if ((session as any)?.accessToken && (session as any)?.accessToken !== prevLocalGoogleToken) {
+      loginGoogle({ tokenId: (session as any)?.accessToken, rememberMe: isRemember }, err => {
+        if (err?.response?.data?.typeError === 'INVALID') {
+          toast.error(t('the_email_or_password_is_wrong'))
+        }
+        setError('email', { type: 'invalid', message: t('the_email_or_password_is_wrong') })
+      })
+      setLocalPreTokenGoogle((session as any)?.accessToken)
+    }
+  }, [(session as any)?.accessToken])
 
   return (
     <Box
@@ -265,7 +294,7 @@ export const LoginPage: NextPage<TProps> = () => {
         </form>
         <Typography sx={{ my: 2 }}>{t('or')}</Typography>
         <Box>
-          <IconButton sx={{ color: theme.palette.error.main }}>
+          <IconButton sx={{ color: theme.palette.error.main }} onClick={handleSignInGoogle}>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               role='img'
