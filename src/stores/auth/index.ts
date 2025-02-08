@@ -2,7 +2,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 // ** Axios Imports
-import { ChangePasswordMeAsync, registerAuthAsync, serviceName, updateAuthMeAsync } from './actions'
+import {
+  ChangePasswordMeAsync,
+  registerAuthAsync,
+  registerAuthGoogleAsync,
+  serviceName,
+  updateAuthMeAsync
+} from './actions'
 
 // Type
 import { UserDataType } from 'src/contexts/types'
@@ -71,6 +77,28 @@ export const authSlice = createSlice({
       state.typeError = action?.payload?.typeError
     })
     builder.addCase(registerAuthAsync.rejected, (state, action) => {
+      state.isLoading = false
+      state.isSuccess = false
+      state.isError = true
+      state.message = ''
+      state.typeError = ''
+    })
+
+    // Auth Google Register
+    builder.addCase(registerAuthGoogleAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+
+    // Still go to fullfilled (not rejected) even if the api return an error
+
+    builder.addCase(registerAuthGoogleAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccess = !!action?.payload?.data?.email
+      state.isError = !action?.payload?.data?.email
+      state.message = action?.payload?.message
+      state.typeError = action?.payload?.typeError
+    })
+    builder.addCase(registerAuthGoogleAsync.rejected, (state, action) => {
       state.isLoading = false
       state.isSuccess = false
       state.isError = true
