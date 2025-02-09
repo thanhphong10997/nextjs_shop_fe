@@ -11,10 +11,22 @@ import axios from 'axios'
 import authConfig, { LIST_PAGE_PUBLIC } from 'src/configs/auth'
 
 // ** Types
-import { AuthValuesType, LoginParams, ErrCallbackType, UserDataType, LoginGoogleParams } from './types'
-import { loginAuth, loginAuthGoogle, logoutAuth } from 'src/services/auth'
+import {
+  AuthValuesType,
+  LoginParams,
+  ErrCallbackType,
+  UserDataType,
+  LoginGoogleParams,
+  LoginFacebookParams
+} from './types'
+import { loginAuth, loginAuthFacebook, loginAuthGoogle, logoutAuth } from 'src/services/auth'
 import { API_ENDPOINT } from 'src/configs/api'
-import { clearLocalUserData, setLocalUserData, setTemporaryToken } from 'src/helpers/storage'
+import {
+  clearLocalRememberLoginAuthSocial,
+  clearLocalUserData,
+  setLocalUserData,
+  setTemporaryToken
+} from 'src/helpers/storage'
 import instanceAxios from 'src/helpers/axios'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -32,7 +44,8 @@ const defaultProvider: AuthValuesType = {
   setLoading: () => Boolean,
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
-  loginGoogle: () => Promise.resolve()
+  loginGoogle: () => Promise.resolve(),
+  loginFacebook: () => Promise.resolve()
 }
 
 const AuthContext = createContext(defaultProvider)
@@ -136,11 +149,38 @@ const AuthProvider = ({ children }: Props) => {
       })
   }
 
+  // Login facebook
+  const handleLoginFacebook = (params: LoginFacebookParams, errorCallback?: ErrCallbackType) => {
+    // axios
+    //   .post(authConfig.loginEndpoint, params)
+    loginAuthFacebook(params?.tokenId)
+      .then(async response => {
+        if (params.rememberMe) {
+          setLocalUserData(JSON.stringify(response.data.user), response.data.access_token, response.data.refresh_token)
+        } else {
+          setTemporaryToken(response?.data?.access_token)
+        }
+        const returnUrl = router.query.returnUrl
+
+        setUser({ ...response.data.user })
+        toast.success(t('login_success'))
+
+        const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+
+        router.replace(redirectURL as string)
+      })
+
+      .catch(err => {
+        if (errorCallback) errorCallback(err)
+      })
+  }
+
   const handleLogout = () => {
     setLoading(true)
     logoutAuth().then(res => {
       setUser(null)
       clearLocalUserData()
+      clearLocalRememberLoginAuthSocial()
 
       // sign out google account
       // signOut()
@@ -172,7 +212,8 @@ const AuthProvider = ({ children }: Props) => {
     setLoading,
     login: handleLogin,
     logout: handleLogout,
-    loginGoogle: handleLoginGoogle
+    loginGoogle: handleLoginGoogle,
+    loginFacebook: handleLoginFacebook
   }
 
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>

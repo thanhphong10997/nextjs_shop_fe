@@ -29,7 +29,7 @@ import React, { useEffect, useState } from 'react'
 // Import icons
 import IconifyIcon from 'src/components/Icon'
 import { useDispatch, useSelector } from 'react-redux'
-import { registerAuthAsync, registerAuthGoogleAsync } from 'src/stores/auth/actions'
+import { registerAuthAsync, registerAuthFacebookAsync, registerAuthGoogleAsync } from 'src/stores/auth/actions'
 import { AppDispatch, RootState } from 'src/stores'
 import toast from 'react-hot-toast'
 import FallbackSpinner from 'src/components/fall-back'
@@ -38,7 +38,7 @@ import { useRouter } from 'next/router'
 import { ROUTE_CONFIG } from 'src/configs/route'
 import { useTranslation } from 'react-i18next'
 import { signIn, useSession } from 'next-auth/react'
-import { clearLocalPreTokenGoogle, getLocalPreTokenGoogle, setLocalPreTokenGoogle } from 'src/helpers/storage'
+import { clearLocalPreTokenSocial, getLocalPreTokenSocial, setLocalPreTokenSocial } from 'src/helpers/storage'
 
 type TProps = {}
 type Inputs = {
@@ -61,7 +61,7 @@ export const RegisterPage: NextPage<TProps> = () => {
   const { data: session } = useSession()
 
   // local storage
-  const prevLocalGoogleToken = getLocalPreTokenGoogle()
+  const prevLocalSocialToken = getLocalPreTokenSocial()
 
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -105,7 +105,12 @@ export const RegisterPage: NextPage<TProps> = () => {
   // handle
   const handleSignupGoogle = () => {
     signIn('google')
-    clearLocalPreTokenGoogle()
+    clearLocalPreTokenSocial()
+  }
+
+  const handleSignupFacebook = () => {
+    signIn('facebook')
+    clearLocalPreTokenSocial()
   }
 
   // side effects
@@ -130,9 +135,13 @@ export const RegisterPage: NextPage<TProps> = () => {
   useEffect(() => {
     // the condition to fix the issue that every time the page reloads then the register of Google will be dispatched and push the toast message
     console.log('session', { session })
-    if ((session as any)?.accessToken && (session as any)?.accessToken !== prevLocalGoogleToken) {
-      dispatch(registerAuthGoogleAsync((session as any)?.accessToken))
-      setLocalPreTokenGoogle((session as any)?.accessToken)
+    if ((session as any)?.accessToken && (session as any)?.accessToken !== prevLocalSocialToken) {
+      if ((session as any)?.provider === 'facebook') {
+        dispatch(registerAuthFacebookAsync((session as any)?.accessToken))
+      } else {
+        dispatch(registerAuthGoogleAsync((session as any)?.accessToken))
+      }
+      setLocalPreTokenSocial((session as any)?.accessToken)
     }
   }, [(session as any)?.accessToken])
 
@@ -318,7 +327,7 @@ export const RegisterPage: NextPage<TProps> = () => {
                 ></path>
               </svg>
             </IconButton>
-            <IconButton sx={{ color: '#497ce2' }}>
+            <IconButton sx={{ color: '#497ce2' }} onClick={handleSignupFacebook}>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 role='img'
