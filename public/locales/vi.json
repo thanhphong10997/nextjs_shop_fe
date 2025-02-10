@@ -291,5 +291,15 @@
   "home": "Trang chủ",
   "order_has_been_paid": "Đơn hàng đã được thanh toán",
   "order_has_not_been_paid": "Đơn hàng chưa được thanh toán",
-  "order_has_not_been_delivery": "Đơn hàng chưa được giao"
+  "order_has_not_been_delivery": "Đơn hàng chưa được giao",
+  "send_request": "Gửi yêu cầu",
+  "back_login": "Quay lại trang đăng nhập",
+  "reset_password": "Đặt lại mật khẩu",
+  "reset_password_success":"Khôi phục mật khẩu thành công",
+  "reset_password_error":"Khôi phục mật khẩu thất bại",
+  "forgot_password_success":"Gửi yêu cầu thành công",
+  "forgot_password_error":"Gửi yêu cầu thất bại",
+  "not_sell_product": "Chưa bán sản phẩm",
+  "sort_new_create": "Sắp xếp mới nhất",
+  "sort_best_sold": "Bán chạy nhất"
 }

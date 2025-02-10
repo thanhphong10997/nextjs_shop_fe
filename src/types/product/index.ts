@@ -48,7 +48,7 @@ export type TProduct = {
   _id: string
   averageRating: number
   countInStock: number
-  totalReview: number
+  totalReviews: number
   createdAt: Date | null
   image: string
   sold: number

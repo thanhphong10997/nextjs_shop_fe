@@ -6,12 +6,12 @@ import { ReactNode } from 'react'
 
 // views
 import BlankLayout from 'src/views/layouts/BlankLayout'
-import LoginPage from 'src/views/layouts/pages/login'
+import ResetPasswordPage from 'src/views/layouts/pages/reset-password'
 
 type TProps = {}
 
 export const Index: NextPage<TProps> = () => {
-  return <LoginPage />
+  return <ResetPasswordPage />
 }
 
 export default Index

@@ -37,6 +37,7 @@ import toast from 'react-hot-toast'
 import { resetInitialState } from 'src/stores/product'
 import { OBJECT_TYPE_ERROR_PRODUCT } from 'src/configs/error'
 import NoData from 'src/components/no-data'
+import CustomSelect from 'src/components/custom-select'
 
 type TProps = {}
 
@@ -247,12 +248,35 @@ export const HomePage: NextPage<TProps> = () => {
           })}
         </StyledTabs>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
-          <Box sx={{ width: '240px' }}>
-            <InputSearch
-              placeholder={t('search_product_name')}
-              value={searchBy}
-              onChange={(value: string) => setSearchBy(value)}
-            />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <Box sx={{ width: '240px' }}>
+              <CustomSelect
+                label={t('sort')}
+                value={sortBy}
+                onChange={e => {
+                  setSortBy(e.target.value as string)
+                }}
+                options={[
+                  {
+                    label: t('sort_best_sold'),
+                    value: 'sold desc'
+                  },
+                  {
+                    label: t('sort_new_create'),
+                    value: 'createdAt desc'
+                  }
+                ]}
+                placeholder={t('sort_by')}
+                fullWidth
+              />
+            </Box>
+            <Box sx={{ width: '240px' }}>
+              <InputSearch
+                placeholder={t('search_product_name')}
+                value={searchBy}
+                onChange={(value: string) => setSearchBy(value)}
+              />
+            </Box>
           </Box>
         </Box>
         <Box sx={{ height: '100%', width: '100%', mt: 4, mb: 8 }}>
