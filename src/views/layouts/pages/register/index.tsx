@@ -134,7 +134,6 @@ export const RegisterPage: NextPage<TProps> = () => {
   // check auth register google
   useEffect(() => {
     // the condition to fix the issue that every time the page reloads then the register of Google will be dispatched and push the toast message
-    console.log('session', { session })
     if ((session as any)?.accessToken && (session as any)?.accessToken !== prevLocalSocialToken) {
       if ((session as any)?.provider === 'facebook') {
         dispatch(registerAuthFacebookAsync((session as any)?.accessToken))

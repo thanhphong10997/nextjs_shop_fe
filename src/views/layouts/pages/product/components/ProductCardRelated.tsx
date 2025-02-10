@@ -131,7 +131,9 @@ const ProductCardRelated = (props: TProductCardRelated) => {
             )}
           </Box>
           {item.countInStock > 0 ? (
-            <>{t('count_in_stock_product', { count: item.countInStock })}</>
+            <>
+              {t('remain')} <b>{item?.countInStock}</b> {t('stock_product')}
+            </>
           ) : (
             <Box
               sx={{
@@ -159,12 +161,16 @@ const ProductCardRelated = (props: TProductCardRelated) => {
             </Box>
           )}
 
-          {item.sold > 0 && (
+          {item.sold > 0 ? (
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Typography variant='body2' sx={{ color: 'text.secondary' }}>
                 {t('sold')} <b>{item?.sold}</b> {t('product')}
               </Typography>
             </Box>
+          ) : (
+            <Typography variant='body2' sx={{ color: 'text.secondary' }}>
+              {t('not_sell_product')}
+            </Typography>
           )}
           {item?.location?.name && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
@@ -184,9 +190,8 @@ const ProductCardRelated = (props: TProductCardRelated) => {
 
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              {!!item.averageRating && (
+              {!!item.averageRating ? (
                 <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-                  <b>{item.averageRating}</b>
                   <Rating
                     sx={{ fontSize: '16px' }}
                     name='read-only'
@@ -195,9 +200,17 @@ const ProductCardRelated = (props: TProductCardRelated) => {
                     readOnly
                   />
                 </Typography>
+              ) : (
+                <Rating
+                  sx={{ fontSize: '16px' }}
+                  name='read-only'
+                  defaultValue={item?.averageRating}
+                  precision={0.5}
+                  readOnly
+                />
               )}
               <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-                {!!item.totalReview ? <b>{item.totalReview}</b> : <span>{t('not_review')}</span>}
+                {!!item.totalReviews ? <b>{item?.totalReviews}</b> : <span>{t('not_review')}</span>}
               </Typography>
             </Box>
           </Box>

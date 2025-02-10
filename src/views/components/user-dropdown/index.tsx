@@ -205,7 +205,8 @@ export default function UserDropdown() {
 
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Typography component='span'>
-              {toFullName(user?.lastName || '', user?.middleName || '', user?.firstName || '', i18n.language)}
+              {toFullName(user?.lastName || '', user?.middleName || '', user?.firstName || '', i18n.language) ||
+                user?.email}
             </Typography>
             <Typography component='span'>{user?.role?.name}</Typography>
           </Box>

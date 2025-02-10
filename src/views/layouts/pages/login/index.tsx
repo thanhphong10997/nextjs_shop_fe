@@ -42,7 +42,6 @@ import IconifyIcon from 'src/components/Icon'
 
 // Hooks
 import { useAuth } from 'src/hooks/useAuth'
-import { error } from 'console'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { signIn, useSession } from 'next-auth/react'
@@ -54,6 +53,7 @@ import {
   setLocalRememberLoginAuthSocial
 } from 'src/helpers/storage'
 import FallbackSpinner from 'src/components/fall-back'
+import { ROUTE_CONFIG } from 'src/configs/route'
 
 type TProps = {}
 type Inputs = {
@@ -124,11 +124,9 @@ export const LoginPage: NextPage<TProps> = () => {
     clearLocalPreTokenSocial()
   }
   const localRemember = getLocalRememberLoginAuthSocial()
-  console.log('localRemember', { localRemember })
 
   // check auth sign in google
   useEffect(() => {
-    console.log('pass')
     if ((session as any)?.accessToken && (session as any)?.accessToken !== prevLocalSocialToken) {
       const localRemember = getLocalRememberLoginAuthSocial()
       if ((session as any)?.provider === 'facebook') {
@@ -285,24 +283,14 @@ export const LoginPage: NextPage<TProps> = () => {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link
-                  style={{
-                    color: `rgb(${theme.palette.mode === 'light' ? theme.palette.customColors.light : theme.palette.customColors.dark})`
-                  }}
-                  href='#'
-                >
+                <Typography variant='body2' component={Link} href={`${ROUTE_CONFIG.FORGOT_PASSWORD}`}>
                   {t('forgot_password')}
-                </Link>
+                </Typography>
               </Grid>
               <Grid item>
-                <Link
-                  style={{
-                    color: `rgb(${theme.palette.mode === 'light' ? theme.palette.customColors.light : theme.palette.customColors.dark})`
-                  }}
-                  href='/register'
-                >
+                <Typography variant='body2' component={Link} href={`${ROUTE_CONFIG.REGISTER}`}>
                   {`${t('do_not_have_account')} ${t('register')}`}
-                </Link>
+                </Typography>
               </Grid>
             </Grid>
           </form>

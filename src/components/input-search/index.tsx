@@ -1,5 +1,5 @@
 // Import Mui
-import { IconButton, InputBase, styled, Tooltip, useTheme } from '@mui/material'
+import { InputBase, styled } from '@mui/material'
 
 // Import React
 import React, { useEffect, useState } from 'react'
@@ -69,9 +69,9 @@ const InputSearch = (props: TInputSearch) => {
   // hooks
   const debounceSearch = useDebounce(search, 500)
 
-  useEffect(() => {
-    onChange(debounceSearch)
-  }, [debounceSearch])
+  // useEffect(() => {
+  //   onChange(debounceSearch)
+  // }, [debounceSearch])
 
   useEffect(() => {
     setSearch(value)
@@ -86,8 +86,18 @@ const InputSearch = (props: TInputSearch) => {
         placeholder={placeholder}
         inputProps={{ 'aria-label': 'search' }}
         value={search}
+        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+          if (e.key === 'Enter' && (e as any).target.value) {
+            onChange((e as any).target.value)
+          }
+        }}
         onChange={e => {
           setSearch(e.target.value)
+
+          // set default empty string for search input when remove values of the input search
+          if (!e.target.value) {
+            onChange(e.target.value)
+          }
         }}
       />
     </Search>

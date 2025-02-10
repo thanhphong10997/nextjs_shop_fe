@@ -14,6 +14,9 @@ const StyledSelect = styled(Select)<SelectProps>(({ theme }) => {
     //   // height: '38px',
     //   boxSizing: 'border-box'
     // },
+    '& .MuiSelect-select.MuiSelect-outlined.MuiInputBase-input': {
+      backgroundColor: theme.palette.background.paper
+    },
     legend: {
       height: '14px!important',
       lineHeight: 1.2
@@ -34,7 +37,8 @@ const CustomPlaceholder = styled(InputLabel)<InputLabelProps>(({ theme }) => {
     position: 'absolute',
     top: '50%',
     transform: 'translateY(-50%)',
-    left: '18px'
+    left: '18px',
+    zIndex: 2
   }
 })
 
