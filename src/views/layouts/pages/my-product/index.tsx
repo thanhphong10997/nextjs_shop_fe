@@ -32,6 +32,7 @@ import { OBJECT_TYPE_ERROR_PRODUCT } from 'src/configs/error'
 
 // types
 import { TProduct } from 'src/types/product'
+import SkeletonCard from '../product/components/SkeletonCard'
 
 type TProps = {}
 
@@ -196,36 +197,60 @@ export const MyProductPage: NextPage<TProps> = () => {
           </Box>
           {tabActive === TYPE_VALUE.liked && (
             <Box sx={{ heigh: '100%', width: '100%', mt: 6 }}>
-              <Grid container item md={12} xs={12} spacing={6} sx={{ width: '100%' }}>
-                {likedProducts?.data?.length > 0 ? (
-                  likedProducts?.data.map((product: TProduct) => (
-                    <Grid item key={product._id} md={3} sm={6} xs={12}>
-                      <ProductCard item={product} />
-                    </Grid>
-                  ))
-                ) : (
-                  <Box sx={{ width: '100%', mt: 10 }}>
-                    <NoData widthImage='60px' heightImage='60px' textNodata={t('no_product')} />
-                  </Box>
-                )}
-              </Grid>
+              {isLoading ? (
+                <Grid container item md={12} xs={12} spacing={6} sx={{ width: '100%' }}>
+                  {Array.from({ length: 6 }).map((_, index) => {
+                    return (
+                      <Grid item key={index} md={3} sm={6} xs={12}>
+                        <SkeletonCard />
+                      </Grid>
+                    )
+                  })}
+                </Grid>
+              ) : (
+                <Grid container item md={12} xs={12} spacing={6} sx={{ width: '100%' }}>
+                  {likedProducts?.data?.length > 0 ? (
+                    likedProducts?.data.map((product: TProduct) => (
+                      <Grid item key={product._id} md={3} sm={6} xs={12}>
+                        <ProductCard item={product} />
+                      </Grid>
+                    ))
+                  ) : (
+                    <Box sx={{ width: '100%', mt: 10 }}>
+                      <NoData widthImage='60px' heightImage='60px' textNodata={t('no_product')} />
+                    </Box>
+                  )}
+                </Grid>
+              )}
             </Box>
           )}
           {tabActive === TYPE_VALUE.viewed && (
             <Box sx={{ heigh: '100%', width: '100%', mt: 6 }}>
-              <Grid container item md={12} xs={12} spacing={6}>
-                {viewedProducts?.data?.length > 0 ? (
-                  viewedProducts?.data.map((product: TProduct) => (
-                    <Grid item key={product._id} md={3} sm={6} xs={12}>
-                      <ProductCard item={product} />
-                    </Grid>
-                  ))
-                ) : (
-                  <Box sx={{ width: '100%', mt: 10 }}>
-                    <NoData widthImage='60px' heightImage='60px' textNodata={t('no_product')} />
-                  </Box>
-                )}
-              </Grid>
+              {isLoading ? (
+                <Grid container item md={12} xs={12} spacing={6} sx={{ width: '100%' }}>
+                  {Array.from({ length: 6 }).map((_, index) => {
+                    return (
+                      <Grid item key={index} md={3} sm={6} xs={12}>
+                        <SkeletonCard />
+                      </Grid>
+                    )
+                  })}
+                </Grid>
+              ) : (
+                <Grid container item md={12} xs={12} spacing={6}>
+                  {viewedProducts?.data?.length > 0 ? (
+                    viewedProducts?.data.map((product: TProduct) => (
+                      <Grid item key={product._id} md={3} sm={6} xs={12}>
+                        <ProductCard item={product} />
+                      </Grid>
+                    ))
+                  ) : (
+                    <Box sx={{ width: '100%', mt: 10 }}>
+                      <NoData widthImage='60px' heightImage='60px' textNodata={t('no_product')} />
+                    </Box>
+                  )}
+                </Grid>
+              )}
             </Box>
           )}
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mt: 8 }}>

@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // Import Mui
-import { Box, Grid, styled, Tab, Tabs, TabsProps, Typography, useTheme } from '@mui/material'
+import { Box, Grid, Skeleton, styled, Tab, Tabs, TabsProps, Typography, useTheme } from '@mui/material'
 
 // Import React
 import React, { useEffect, useRef, useState } from 'react'
@@ -38,6 +38,7 @@ import { resetInitialState } from 'src/stores/product'
 import { OBJECT_TYPE_ERROR_PRODUCT } from 'src/configs/error'
 import NoData from 'src/components/no-data'
 import CustomSelect from 'src/components/custom-select'
+import SkeletonCard from '../product/components/SkeletonCard'
 
 type TProps = {}
 
@@ -299,25 +300,43 @@ export const HomePage: NextPage<TProps> = () => {
               </Box>
             </Grid>
             <Grid item md={9} xs={12}>
-              <Grid
-                container
-                spacing={{
-                  md: 6,
-                  xs: 4
-                }}
-              >
-                {productsPublic?.data?.length > 0 ? (
-                  productsPublic?.data.map((product: TProduct) => (
-                    <Grid item key={product._id} md={4} sm={6} xs={12}>
-                      <ProductCard item={product} />
-                    </Grid>
-                  ))
-                ) : (
-                  <Box sx={{ width: '100%', mt: 10 }}>
-                    <NoData widthImage='60px' heightImage='60px' textNodata={t('no_product')} />
-                  </Box>
-                )}
-              </Grid>
+              {loading ? (
+                <Grid
+                  container
+                  spacing={{
+                    md: 6,
+                    xs: 4
+                  }}
+                >
+                  {Array.from({ length: 6 }).map((_, index) => {
+                    return (
+                      <Grid item key={index} md={4} sm={6} xs={12}>
+                        <SkeletonCard />
+                      </Grid>
+                    )
+                  })}
+                </Grid>
+              ) : (
+                <Grid
+                  container
+                  spacing={{
+                    md: 6,
+                    xs: 4
+                  }}
+                >
+                  {productsPublic?.data?.length > 0 ? (
+                    productsPublic?.data.map((product: TProduct) => (
+                      <Grid item key={product._id} md={4} sm={6} xs={12}>
+                        <ProductCard item={product} />
+                      </Grid>
+                    ))
+                  ) : (
+                    <Box sx={{ width: '100%', mt: 10 }}>
+                      <NoData widthImage='60px' heightImage='60px' textNodata={t('no_product')} />
+                    </Box>
+                  )}
+                </Grid>
+              )}
             </Grid>
           </Grid>
         </Box>

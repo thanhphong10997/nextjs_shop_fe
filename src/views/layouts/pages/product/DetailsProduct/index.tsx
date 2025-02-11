@@ -45,6 +45,7 @@ import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 import { ROUTE_CONFIG } from 'src/configs/route'
 import { OBJECT_TYPE_ERROR_REVIEW } from 'src/configs/error'
 import toast from 'react-hot-toast'
+import SkeletonCardRelated from '../components/SkeletonCardRelated'
 
 type TProps = {}
 
@@ -643,16 +644,26 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                     padding: '8px'
                   }}
                 >
-                  {listRelatedProduct?.length > 0 ? (
+                  {loading ? (
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                      {listRelatedProduct?.map(item => {
-                        return <ProductCardRelated key={item._id} item={item} />
+                      {Array.from({ length: 6 }).map((_, index) => {
+                        return <SkeletonCardRelated key={index} />
                       })}
                     </Box>
                   ) : (
-                    <Box sx={{ width: '100%', mt: 10 }}>
-                      <NoData widthImage='60px' heightImage='60px' textNodata={t('no_product')} />
-                    </Box>
+                    <>
+                      {listRelatedProduct?.length > 0 ? (
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          {listRelatedProduct?.map(item => {
+                            return <ProductCardRelated key={item._id} item={item} />
+                          })}
+                        </Box>
+                      ) : (
+                        <Box sx={{ width: '100%', mt: 10 }}>
+                          <NoData widthImage='60px' heightImage='60px' textNodata={t('no_product')} />
+                        </Box>
+                      )}
+                    </>
                   )}
                 </Box>
               </Box>
