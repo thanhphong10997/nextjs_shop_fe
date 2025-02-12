@@ -287,6 +287,7 @@ export const MyDetailsOrderPage: NextPage<TProps> = () => {
                     </Typography>
                     {dataOrder?.status === +PRODUCT_ORDER_STATUS[2]?.value && (
                       <Button
+                        variant='contained'
                         onClick={() =>
                           setOpenReview({
                             open: true,

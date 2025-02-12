@@ -46,7 +46,6 @@ import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 import { ROUTE_CONFIG } from 'src/configs/route'
 import { OBJECT_TYPE_ERROR_REVIEW } from 'src/configs/error'
 import toast from 'react-hot-toast'
-import Carousel from 'react-multi-carousel'
 import CustomCarousel from 'src/components/custom-carousel'
 
 type TProps = {}
@@ -323,12 +322,12 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                           fontSize: '16px'
                         }}
                       >
-                        {dataProduct?.averageRating}
+                        {Math.ceil(dataProduct?.averageRating)}
                       </Typography>
                       <Rating
                         sx={{ fontSize: '16px' }}
                         name='read-only'
-                        defaultValue={dataProduct?.averageRating}
+                        defaultValue={Math.ceil(dataProduct?.averageRating)}
                         precision={0.5}
                         readOnly
                       />
@@ -613,7 +612,7 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                       }}
                     >
                       {reviewList?.length > 0 &&
-                        reviewList.concat(reviewList)?.map((item: TParamsReviewItem) => {
+                        reviewList?.map((item: TParamsReviewItem) => {
                           return (
                             <Box key={item?._id} sx={{ margin: '0 10px' }}>
                               <ReviewCard item={item} />
