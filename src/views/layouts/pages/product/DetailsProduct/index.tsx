@@ -7,6 +7,7 @@ import Spinner from 'src/components/spinner'
 import NoData from 'src/components/no-data'
 import ProductCardRelated from '../components/ProductCardRelated'
 import ReviewCard from '../components/ReviewCard'
+import SkeletonCardRelated from '../components/SkeletonCardRelated'
 
 // Import Mui
 import { Box, Button, Grid, useTheme, Typography, Rating, IconButton, TextField } from '@mui/material'
@@ -45,7 +46,8 @@ import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 import { ROUTE_CONFIG } from 'src/configs/route'
 import { OBJECT_TYPE_ERROR_REVIEW } from 'src/configs/error'
 import toast from 'react-hot-toast'
-import SkeletonCardRelated from '../components/SkeletonCardRelated'
+import Carousel from 'react-multi-carousel'
+import CustomCarousel from 'src/components/custom-carousel'
 
 type TProps = {}
 
@@ -587,16 +589,39 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                     {reviewList?.length > 0 && reviewList?.length}
                     {' )'}
                   </Typography>
-                  <Grid container spacing={8} mt={2}>
-                    {reviewList?.length > 0 &&
-                      reviewList?.map((item: TParamsReviewItem) => {
-                        return (
-                          <Grid key={item?._id} item md={4} xs={12}>
-                            <ReviewCard item={item} />
-                          </Grid>
-                        )
-                      })}
-                  </Grid>
+                  <Box sx={{ width: '100%' }}>
+                    <CustomCarousel
+                      arrows
+                      showDots={true}
+                      ssr={true}
+                      responsive={{
+                        desktop: {
+                          breakpoint: { max: 3000, min: 1024 },
+                          items: 3,
+                          slidesToSlide: 3 // optional, default to 1.
+                        },
+                        tablet: {
+                          breakpoint: { max: 1024, min: 464 },
+                          items: 2,
+                          slidesToSlide: 2 // optional, default to 1.
+                        },
+                        mobile: {
+                          breakpoint: { max: 464, min: 0 },
+                          items: 1,
+                          slidesToSlide: 1 // optional, default to 1.
+                        }
+                      }}
+                    >
+                      {reviewList?.length > 0 &&
+                        reviewList.concat(reviewList)?.map((item: TParamsReviewItem) => {
+                          return (
+                            <Box key={item?._id} sx={{ margin: '0 10px' }}>
+                              <ReviewCard item={item} />
+                            </Box>
+                          )
+                        })}
+                    </CustomCarousel>
+                  </Box>
                 </Box>
 
                 {/* Review on PC*/}
