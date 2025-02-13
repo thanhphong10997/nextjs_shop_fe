@@ -20,6 +20,7 @@ import { AppDispatch } from 'src/stores'
 import { createRoleAsync, updateRoleAsync } from 'src/stores/role/actions'
 import { getDetailsRole } from 'src/services/role'
 import Spinner from 'src/components/spinner'
+import { PERMISSIONS } from 'src/configs/permission'
 
 type TCreateEditRole = {
   open: boolean
@@ -60,7 +61,7 @@ const CreateEditRole = (props: TCreateEditRole) => {
         // update
         dispatch(updateRoleAsync({ name: data?.name, id: roleId }))
       } else {
-        dispatch(createRoleAsync({ name: data?.name }))
+        dispatch(createRoleAsync({ name: data?.name, permissions: [PERMISSIONS.DASHBOARD] }))
       }
     }
   }
