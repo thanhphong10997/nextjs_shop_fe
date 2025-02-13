@@ -301,5 +301,21 @@
   "forgot_password_error":"Gửi yêu cầu thất bại",
   "not_sell_product": "Chưa bán sản phẩm",
   "sort_new_create": "Sắp xếp mới nhất",
-  "sort_best_sold": "Bán chạy nhất"
+  "sort_best_sold": "Bán chạy nhất",
+  "Comment": "Bình luận", 
+  "edit_comment": "Chỉnh sửa bình luận",
+  "title_delete_comment": "Xác nhận xóa bình luận",
+  "confirm_delete_comment": "Bạn có chắc muốn xóa bình luận này?",
+  "update_comment_success": "Cập nhật bình luận thành công",
+  "update_comment_error": "Cập nhật bình luận thất bại",
+  "delete_comment_success": "Xóa bình luận thành công",
+  "delete_comment_error":"Xóa bình luận thất bại",
+  "title_delete_multiple_comment": "Xác nhận xóa những bình luận này?",
+  "confirm_delete_multiple_comment": "Bạn có chắc muốn xóa những bình luận này?",
+  "delete_multiple_comment_success": "Xóa nhiều bình luận thành công",
+  "delete_multiple_comment_error":"Xóa nhiều bình luận thất bại",
+  "title_delete_multiple_review":"Xác nhận xóa những đánh giá này?",
+  "confirm_delete_multiple_review": "Bạn có chắc muốn xóa những đánh giá này?",
+  "delete_multiple_review_success": "Xóa nhiều đánh giá thành công",
+  "delete_multiple_review_error":"Xóa nhiều đánh giá thất bại"
 }

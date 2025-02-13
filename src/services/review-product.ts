@@ -68,7 +68,16 @@ export const deleteMultipleReview = async (data: TParamsDeleteMultipleReview) =>
   try {
     const res = await instanceAxios.delete(`${API_ENDPOINT.MANAGE_ORDER.REVIEW.INDEX}/delete-many`, { data })
 
-    return res.data
+    // If API did not return the data, we need to return the data by ourselves based on the status
+    if (res?.data?.status === 'Success') {
+      return {
+        data: []
+      }
+    }
+
+    return {
+      data: null
+    }
   } catch (err: any) {
     return err?.response?.data
   }

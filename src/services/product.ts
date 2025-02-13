@@ -68,6 +68,8 @@ export const deleteProduct = async (id: string) => {
 export const deleteMultipleProduct = async (data: TParamsDeleteMultipleProduct) => {
   try {
     const res = await instanceAxios.delete(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT.INDEX}/delete-many`, { data })
+
+    // If API did not return the data, we need to return the data by ourselves based on the status
     if (res?.data?.status === 'Success') {
       return {
         data: []

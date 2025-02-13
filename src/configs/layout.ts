@@ -56,6 +56,11 @@ export const VerticalItems = () => {
           title: t('Type_product'),
           icon: 'fluent-mdl2:product-variant',
           path: ROUTE_CONFIG.MANAGE_PRODUCT.MANAGE_TYPE_PRODUCT
+        },
+        {
+          title: t('Comment'),
+          icon: 'material-symbols-light:comment',
+          path: ROUTE_CONFIG.MANAGE_PRODUCT.COMMENT
         }
       ]
     },

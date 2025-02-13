@@ -35,7 +35,7 @@ const initialState = {
   }
 }
 
-export const orderProductSlice = createSlice({
+export const reviewSlice = createSlice({
   name: serviceName,
   initialState,
   reducers: {
@@ -159,13 +159,13 @@ export const orderProductSlice = createSlice({
 
     builder.addCase(deleteMultipleReviewAsync.fulfilled, (state, action) => {
       state.isLoading = false
-      state.isSuccessMultipleDelete = !!action?.payload?.data?._id
-      state.isErrorMultipleDelete = !action?.payload?.data?._id
+      state.isSuccessMultipleDelete = !!action?.payload?.data
+      state.isErrorMultipleDelete = !action?.payload?.data
       state.messageErrorMultipleDelete = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
   }
 })
 
-export default orderProductSlice.reducer
-export const { resetInitialState } = orderProductSlice.actions
+export default reviewSlice.reducer
+export const { resetInitialState } = reviewSlice.actions

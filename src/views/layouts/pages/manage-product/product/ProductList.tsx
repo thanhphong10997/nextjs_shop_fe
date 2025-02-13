@@ -468,9 +468,11 @@ export const ProductListPage: NextPage<TProps> = () => {
                   }}
                 />
               </Box>
-              <Box sx={{ width: '200px' }}>
-                <InputSearch value={searchBy} onChange={(value: string) => setSearchBy(value)} />
-              </Box>
+              {!selectedRow?.length && (
+                <Box sx={{ width: '200px' }}>
+                  <InputSearch value={searchBy} onChange={(value: string) => setSearchBy(value)} />
+                </Box>
+              )}
               <GridCreate
                 disabled={!CREATE}
                 onClick={() => {

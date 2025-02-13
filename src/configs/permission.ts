@@ -13,12 +13,11 @@ export const PERMISSIONS = {
       CREATE: 'MANAGE_PRODUCT.PRODUCT_TYPE.CREATE',
       UPDATE: 'MANAGE_PRODUCT.PRODUCT_TYPE.UPDATE',
       DELETE: 'MANAGE_PRODUCT.PRODUCT_TYPE.DELETE'
+    },
+    COMMENT: {
+      UPDATE: 'MANAGE_PRODUCT.COMMENT.UPDATE',
+      DELETE: 'MANAGE_PRODUCT.COMMENT.DELETE'
     }
-
-    // COMMENT: {
-    //   UPDATE: 'MANAGE_PRODUCT.COMMENT.UPDATE',
-    //   DELETE: 'MANAGE_PRODUCT.COMMENT.DELETE'
-    // }
   },
   SYSTEM: {
     USER: {
@@ -96,6 +95,15 @@ export const LIST_DATA_PERMISSIONS: any = [
     value: 'PRODUCT_TYPE',
     parentValue: 'MANAGE_PRODUCT',
     isHideView: true
+  },
+  {
+    id: 15,
+    name: 'Comment',
+    isParent: false,
+    value: 'COMMENT',
+    parentValue: 'MANAGE_PRODUCT',
+    isHideView: true,
+    isHideCreate: true
   },
   {
     id: 4,

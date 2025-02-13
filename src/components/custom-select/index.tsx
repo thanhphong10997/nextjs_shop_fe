@@ -15,8 +15,10 @@ const StyledSelect = styled(Select)<SelectProps>(({ theme }) => {
     //   boxSizing: 'border-box'
     // },
     '& .MuiSelect-select.MuiSelect-outlined.MuiInputBase-input': {
-      backgroundColor: theme.palette.background.paper
+      backgroundColor: theme.palette.background.paper,
+      padding: '9px 32px'
     },
+
     legend: {
       height: '14px!important',
       lineHeight: 1.2
@@ -47,7 +49,7 @@ const CustomSelect = (props: TCustomSelect) => {
   const { t } = useTranslation()
 
   return (
-    <Box sx={{ width: '100%', height: '57px', position: 'relative' }}>
+    <Box sx={{ width: '100%', height: '39px', position: 'relative' }}>
       {((Array.isArray(value) && !value.length) || !value) && <CustomPlaceholder>{placeholder}</CustomPlaceholder>}
       {/* <CustomPlaceholder>{placeholder}</CustomPlaceholder> */}
       <StyledSelect fullWidth={fullWidth} value={value} label={label} onChange={onChange} {...rests}>
