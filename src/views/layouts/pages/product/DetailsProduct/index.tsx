@@ -37,6 +37,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import { updateProductToCart } from 'src/stores/order-product'
 import { resetInitialState } from 'src/stores/reviews'
+import { resetInitialState as resetInitialStateComment } from 'src/stores/comments'
 
 // others
 import { Icon } from '@iconify/react/dist/iconify.js'
@@ -47,6 +48,11 @@ import { ROUTE_CONFIG } from 'src/configs/route'
 import { OBJECT_TYPE_ERROR_REVIEW } from 'src/configs/error'
 import toast from 'react-hot-toast'
 import CustomCarousel from 'src/components/custom-carousel'
+import CommentItem from '../components/CommentItem'
+import CommentInput from '../components/CommentInput'
+import { getAllPublicComments } from 'src/services/comment-product'
+import { TCommentItemProduct } from 'src/types/comment'
+import { createCommentAsync } from 'src/stores/comments/actions'
 
 type TProps = {}
 
@@ -63,6 +69,10 @@ export const DetailsProductPage: NextPage<TProps> = () => {
   const [amountProduct, setAmountProduct] = useState(1)
   const [listRelatedProduct, setRelatedProduct] = useState<TProduct[]>([])
   const [reviewList, setReviewList] = useState<TParamsReviewItem[]>([])
+  const [listComment, setListComment] = useState<{ data: TCommentItemProduct[]; total: number }>({
+    data: [],
+    total: 0
+  })
 
   // router
   const router = useRouter()
@@ -85,11 +95,43 @@ export const DetailsProductPage: NextPage<TProps> = () => {
 
     typeError
   } = useSelector((state: RootState) => state.review)
+  const {
+    isSuccessCreate: isSuccessCreateComment,
+    isErrorCreate: isErrorCreateComment,
+    messageErrorCreate: messageErrorCreateComment,
+    isSuccessReply,
+    isErrorReply,
+    messageErrorReply,
+    isSuccessDelete: isSuccessDeleteComment,
+    isErrorDelete: isErrorDeleteComment,
+    messageErrorDelete: messageErrorDeleteComment,
+    isSuccessEdit: isSuccessEditComment,
+    isErrorEdit: isErrorEditComment,
+    messageErrorEdit: messageErrorEditComment
+  } = useSelector((state: RootState) => state.comments)
   const dispatch: AppDispatch = useDispatch()
 
   const memoIsExpiry = React.useMemo(() => {
     return isExpiry(dataProduct?.discountStartDate, dataProduct?.discountEndDate)
   }, [dataProduct])
+
+  // recursive comment items
+  const renderCommentItems = (item: TCommentItemProduct, level: number) => {
+    level += 1
+
+    return (
+      <Box sx={{ marginLeft: `${40 * level}px`, my: 4 }}>
+        <CommentItem item={item} />
+        {item?.replies && item?.replies?.length > 0 && (
+          <>
+            {item?.replies?.map((reply: TCommentItemProduct) => {
+              return <>{renderCommentItems(reply, level)}</>
+            })}
+          </>
+        )}
+      </Box>
+    )
+  }
 
   // fetch api
   const fetchGetDetailsProduct = async (slug: string) => {
@@ -137,6 +179,27 @@ export const DetailsProductPage: NextPage<TProps> = () => {
         const data = res?.data?.reviews
         if (data) {
           setReviewList(data)
+        }
+        setLoading(false)
+      })
+      .catch(() => {
+        setLoading(false)
+      })
+  }
+
+  const fetchListCommentProduct = async () => {
+    setLoading(true)
+    await getAllPublicComments({
+      params: { limit: -1, page: -1, order: 'createdAt desc', isPublic: true, productId: dataProduct?._id }
+    })
+      .then(async res => {
+        const data = res?.data
+        console.log('data', { data })
+        if (data) {
+          setListComment({
+            data: data?.comments,
+            total: data?.totalCount
+          })
         }
         setLoading(false)
       })
@@ -194,11 +257,33 @@ export const DetailsProductPage: NextPage<TProps> = () => {
     )
   }
 
+  const handleCancelComment = () => {}
+
+  const handleComment = (comment: string) => {
+    if (comment) {
+      if (user) {
+        dispatch(
+          createCommentAsync({
+            user: user?._id,
+            product: dataProduct?._id,
+            content: comment
+          })
+        )
+      } else {
+        router.replace({
+          pathname: ROUTE_CONFIG.LOGIN,
+          query: { returnUrl: router.asPath }
+        })
+      }
+    }
+  }
+
   // side effects
   useEffect(() => {
     if (productId) {
       fetchGetDetailsProduct(productId)
       fetchListRelatedProduct(productId)
+      fetchListCommentProduct()
     }
   }, [productId])
 
@@ -208,32 +293,90 @@ export const DetailsProductPage: NextPage<TProps> = () => {
     }
   }, [dataProduct?._id])
 
+  // review
   useEffect(() => {
-    if (isSuccessEdit) {
-      toast.success(t('update_review_success'))
-      fetchGetAllReviewListByProduct(dataProduct?._id)
-      dispatch(resetInitialState())
-    } else if (isErrorEdit && messageErrorEdit && typeError) {
-      const errorConfig = OBJECT_TYPE_ERROR_REVIEW[typeError]
-      if (errorConfig) {
-        toast.error(t(errorConfig))
-      } else {
-        toast.error(t('update_review_error'))
+    if (messageErrorEdit) {
+      if (isSuccessEdit) {
+        toast.success(t('update_review_success'))
+        fetchGetAllReviewListByProduct(dataProduct?._id)
+        dispatch(resetInitialState())
+      } else if (isErrorEdit && typeError) {
+        const errorConfig = OBJECT_TYPE_ERROR_REVIEW[typeError]
+        if (errorConfig) {
+          toast.error(t(errorConfig))
+        } else {
+          toast.error(t('update_review_error'))
+        }
+        dispatch(resetInitialState())
       }
-      dispatch(resetInitialState())
     }
   }, [isSuccessEdit, isErrorEdit, messageErrorEdit, typeError])
 
   useEffect(() => {
-    if (isSuccessDelete) {
-      toast.success(t('delete_review_success'))
-      fetchGetAllReviewListByProduct(dataProduct?._id)
-      dispatch(resetInitialState())
-    } else if (isErrorDelete && messageErrorDelete) {
-      toast.error(t('delete_review_error'))
-      dispatch(resetInitialState())
+    if (messageErrorDelete) {
+      if (isSuccessDelete) {
+        toast.success(t('delete_review_success'))
+        fetchGetAllReviewListByProduct(dataProduct?._id)
+        dispatch(resetInitialState())
+      } else if (isErrorDelete) {
+        toast.error(t('delete_review_error'))
+        dispatch(resetInitialState())
+      }
     }
   }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
+
+  // comment
+  useEffect(() => {
+    if (messageErrorCreateComment) {
+      if (isSuccessCreateComment) {
+        toast.success(t('create_comment_success'))
+        fetchListCommentProduct()
+        dispatch(resetInitialStateComment())
+      } else if (isErrorCreateComment) {
+        toast.error(t('create_comment_error'))
+        dispatch(resetInitialStateComment())
+      }
+    }
+  }, [isSuccessCreateComment, isErrorCreateComment, messageErrorCreateComment])
+
+  useEffect(() => {
+    if (messageErrorReply) {
+      if (isSuccessReply) {
+        toast.success(t('reply_comment_success'))
+        fetchListCommentProduct()
+        dispatch(resetInitialStateComment())
+      } else if (isErrorReply) {
+        toast.error(t('reply_comment_error'))
+        dispatch(resetInitialStateComment())
+      }
+    }
+  }, [isSuccessReply, isErrorReply, messageErrorReply])
+
+  useEffect(() => {
+    if (messageErrorDeleteComment) {
+      if (isSuccessDeleteComment) {
+        toast.success(t('delete_comment_success'))
+        fetchListCommentProduct()
+        dispatch(resetInitialStateComment())
+      } else if (isErrorDeleteComment) {
+        toast.error(t('delete_comment_error'))
+        dispatch(resetInitialStateComment())
+      }
+    }
+  }, [isSuccessDeleteComment, isErrorDeleteComment, messageErrorDeleteComment])
+
+  useEffect(() => {
+    if (messageErrorEditComment) {
+      if (isSuccessEditComment) {
+        toast.success(t('update_comment_success'))
+        fetchListCommentProduct()
+        dispatch(resetInitialStateComment())
+      } else if (isErrorEditComment) {
+        toast.error(t('update_comment_error'))
+        dispatch(resetInitialStateComment())
+      }
+    }
+  }, [isSuccessEditComment, isErrorEditComment, messageErrorEditComment])
 
   return (
     <>
@@ -588,7 +731,7 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                     {reviewList?.length > 0 && reviewList?.length}
                     {' )'}
                   </Typography>
-                  <Box sx={{ width: '100%' }}>
+                  <Box sx={{ width: '100%', mt: 4 }}>
                     <CustomCarousel
                       arrows
                       showDots={true}
@@ -624,6 +767,38 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                 </Box>
 
                 {/* Review on PC*/}
+
+                {/* Comment on PC */}
+
+                <Box
+                  sx={{
+                    backgroundColor: theme.palette.background.paper,
+                    borderRadius: '15px',
+                    py: '20px',
+                    px: 4
+                  }}
+                  display={{ md: 'block', xs: 'none' }}
+                  marginTop={{ md: 5, xs: 5 }}
+                >
+                  <Typography fontSize={16} fontWeight={600}>
+                    {t('comment_product')} <b style={{ color: theme.palette.primary.main }}> {reviewList?.length}</b>{' '}
+                    {t('comments')}
+                  </Typography>
+                  <Box sx={{ width: '100%' }}>
+                    <CommentInput onApply={handleComment} onCancel={handleCancelComment} />
+
+                    {/* list comments */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: '20px' }}>
+                      {listComment?.data?.map((comment: TCommentItemProduct) => {
+                        const level: number = -1
+
+                        return <>{renderCommentItems(comment, level)}</>
+                      })}
+                    </Box>
+                  </Box>
+                </Box>
+
+                {/* Comment on PC */}
               </Box>
             </Grid>
 
@@ -699,6 +874,7 @@ export const DetailsProductPage: NextPage<TProps> = () => {
               sx={{
                 backgroundColor: theme.palette.background.paper,
                 borderRadius: '15px',
+                width: '100%',
                 py: '20px',
                 px: 4
               }}
@@ -711,19 +887,74 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                 {reviewList?.length > 0 && reviewList?.length}
                 {' )'}
               </Typography>
-              <Grid container spacing={8} mt={2}>
-                {reviewList?.length > 0 &&
-                  reviewList?.map((item: TParamsReviewItem) => {
-                    return (
-                      <Grid key={item?._id} item md={4} xs={12}>
-                        <ReviewCard item={item} />
-                      </Grid>
-                    )
-                  })}
-              </Grid>
+              <Box sx={{ width: '100%', mt: 4 }}>
+                <CustomCarousel
+                  arrows={false}
+                  showDots={true}
+                  ssr={true}
+                  responsive={{
+                    desktop: {
+                      breakpoint: { max: 3000, min: 1024 },
+                      items: 3,
+                      slidesToSlide: 3 // optional, default to 1.
+                    },
+                    tablet: {
+                      breakpoint: { max: 1024, min: 464 },
+                      items: 2,
+                      slidesToSlide: 2 // optional, default to 1.
+                    },
+                    mobile: {
+                      breakpoint: { max: 464, min: 0 },
+                      items: 1,
+                      slidesToSlide: 1 // optional, default to 1.
+                    }
+                  }}
+                >
+                  {reviewList?.length > 0 &&
+                    reviewList?.map((item: TParamsReviewItem) => {
+                      return (
+                        <Box key={item?._id} sx={{ margin: '0 10px' }}>
+                          <ReviewCard item={item} />
+                        </Box>
+                      )
+                    })}
+                </CustomCarousel>
+              </Box>
             </Box>
 
             {/* Review on mobile*/}
+
+            {/* comment on mobile */}
+            <Box
+              sx={{
+                backgroundColor: theme.palette.background.paper,
+                borderRadius: '15px',
+                width: '100%',
+                py: '20px',
+                px: 4
+              }}
+              display={{ md: 'none', xs: 'block' }}
+              marginTop={{ md: 5, xs: 5 }}
+            >
+              <Typography fontSize={16} fontWeight={600}>
+                {t('comment_product')} <b style={{ color: theme.palette.primary.main }}> {reviewList?.length}</b>{' '}
+                {t('comments')}
+              </Typography>
+              <Box sx={{ width: '100%' }}>
+                <CommentInput onApply={handleComment} onCancel={handleCancelComment} />
+
+                {/* comment */}
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: '20px' }}>
+                  {listComment?.data?.map((comment: TCommentItemProduct) => {
+                    const level: number = -1
+
+                    return <>{renderCommentItems(comment, level)}</>
+                  })}
+                </Box>
+              </Box>
+            </Box>
+
+            {/* comment on mobile */}
           </Grid>
         </Grid>
       </Grid>

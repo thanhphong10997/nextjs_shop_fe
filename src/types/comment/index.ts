@@ -4,6 +4,13 @@ export type TParamsAddComment = {
   content: string
 }
 
+export type TParamsReplyComment = {
+  product: string
+  user: string
+  content: string
+  parent: string
+}
+
 export type TParamsUpdateComment = {
   id: string
   content: string
@@ -18,13 +25,14 @@ export type TParamsGetComments = {
   page?: number
   search?: string
   order?: string
+  productId?: string
   isPublic?: boolean
 }
 
 export type TParamsCommentItem = {
   _id: string
   user: {
-    _id: string
+    id: string
     firstName: string
     middleName: string
     lastName: string
@@ -34,6 +42,11 @@ export type TParamsCommentItem = {
     id: string
     name: string
   }
+  parent?: string
   content: string
-  updatedAt: Date
+  createdAt: Date
+}
+
+export interface TCommentItemProduct extends TParamsCommentItem {
+  replies?: TParamsCommentItem[]
 }

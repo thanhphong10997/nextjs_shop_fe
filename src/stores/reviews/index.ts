@@ -18,7 +18,6 @@ const initialState = {
   isSuccessCreate: false,
   isErrorCreate: false,
   messageErrorCreate: '',
-
   isSuccessEdit: false,
   isErrorEdit: false,
   messageErrorEdit: '',

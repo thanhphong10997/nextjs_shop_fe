@@ -9,12 +9,23 @@ import {
   TParamsAddComment,
   TParamsDeleteMultipleComment,
   TParamsGetComments,
+  TParamsReplyComment,
   TParamsUpdateComment
 } from 'src/types/comment'
 
 export const addComment = async (data: TParamsAddComment) => {
   try {
     const res = await instanceAxios.post(`${API_ENDPOINT.MANAGE_PRODUCT.COMMENT.INDEX}`, data)
+
+    return res.data
+  } catch (err) {
+    return err
+  }
+}
+
+export const replyComment = async (data: TParamsReplyComment) => {
+  try {
+    const res = await instanceAxios.post(`${API_ENDPOINT.MANAGE_PRODUCT.COMMENT.INDEX}/reply`, data)
 
     return res.data
   } catch (err) {
@@ -85,6 +96,16 @@ export const deleteMultipleComment = async (data: TParamsDeleteMultipleComment) 
 export const getAllComments = async (data: { params: TParamsGetComments }) => {
   try {
     const res = await instanceAxios.get(`${API_ENDPOINT.MANAGE_PRODUCT.COMMENT.INDEX}`, data)
+
+    return res.data
+  } catch (err) {
+    return err
+  }
+}
+
+export const getAllPublicComments = async (data: { params: TParamsGetComments }) => {
+  try {
+    const res = await instanceAxios.get(`${API_ENDPOINT.MANAGE_PRODUCT.COMMENT.INDEX}/public`, data)
 
     return res.data
   } catch (err) {

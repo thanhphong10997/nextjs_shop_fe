@@ -7,7 +7,11 @@ import {
   deleteCommentAsync,
   getAllCommentsCMSAsync,
   serviceName,
-  updateCommentAsync
+  updateCommentAsync,
+  createCommentAsync,
+  replyCommentAsync,
+  deleteMyCommentAsync,
+  updateMyCommentAsync
 
   // createReviewAsync,
   // deleteMyCommentAsync,
@@ -17,10 +21,12 @@ import {
 const initialState = {
   isLoading: false,
 
-  // isSuccessCreate: false,
-  // isErrorCreate: false,
-  // messageErrorCreate: '',
-
+  isSuccessCreate: false,
+  isErrorCreate: false,
+  messageErrorCreate: '',
+  isSuccessReply: false,
+  isErrorReply: false,
+  messageErrorReply: '',
   isSuccessEdit: false,
   isErrorEdit: false,
   messageErrorEdit: '',
@@ -44,10 +50,12 @@ export const commentSlice = createSlice({
     resetInitialState: state => {
       state.isLoading = false
       state.typeError = ''
-
-      // state.isSuccessCreate = false
-      // state.isErrorCreate = false
-      // state.messageErrorCreate = ''
+      state.isSuccessCreate = false
+      state.isErrorCreate = false
+      state.messageErrorCreate = ''
+      state.isSuccessReply = false
+      state.isErrorReply = false
+      state.messageErrorReply = ''
       state.isSuccessEdit = false
       state.isErrorEdit = false
       state.messageErrorEdit = ''
@@ -78,22 +86,37 @@ export const commentSlice = createSlice({
       state.comments.total = 0
     })
 
-    // create review
-    // builder.addCase(createReviewAsync.pending, (state, action) => {
-    //   state.isLoading = true
-    // })
+    // create comment
+    builder.addCase(createCommentAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
 
-    // // Still go to fullfilled (not rejected) even if the api return an error
+    // Still go to fullfilled (not rejected) even if the api return an error
 
-    // builder.addCase(createReviewAsync.fulfilled, (state, action) => {
-    //   state.isLoading = false
-    //   state.isSuccessCreate = !!action?.payload?.data?._id
-    //   state.isErrorCreate = !action?.payload?.data?._id
-    //   state.messageErrorCreate = action?.payload?.message
-    //   state.typeError = action?.payload?.typeError
-    // })
+    builder.addCase(createCommentAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccessCreate = !!action?.payload?.data?._id
+      state.isErrorCreate = !action?.payload?.data?._id
+      state.messageErrorCreate = action?.payload?.message
+      state.typeError = action?.payload?.typeError
+    })
 
-    // Update review
+    // reply comment
+    builder.addCase(replyCommentAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+
+    // Still go to fullfilled (not rejected) even if the api return an error
+
+    builder.addCase(replyCommentAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccessReply = !!action?.payload?.data?._id
+      state.isErrorReply = !action?.payload?.data?._id
+      state.messageErrorReply = action?.payload?.message
+      state.typeError = action?.payload?.typeError
+    })
+
+    // Update comment
     builder.addCase(updateCommentAsync.pending, (state, action) => {
       state.isLoading = true
     })
@@ -108,20 +131,20 @@ export const commentSlice = createSlice({
       state.typeError = action?.payload?.typeError
     })
 
-    // Update my review
-    // builder.addCase(updateMyReviewAsync.pending, (state, action) => {
-    //   state.isLoading = true
-    // })
+    // Update my comment
+    builder.addCase(updateMyCommentAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
 
     // Still go to fullfilled (not rejected) even if the api return an error
 
-    // builder.addCase(updateMyReviewAsync.fulfilled, (state, action) => {
-    //   state.isLoading = false
-    //   state.isSuccessEdit = !!action?.payload?.data?._id
-    //   state.isErrorEdit = !action?.payload?.data?._id
-    //   state.messageErrorEdit = action?.payload?.message
-    //   state.typeError = action?.payload?.typeError
-    // })
+    builder.addCase(updateMyCommentAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccessEdit = !!action?.payload?.data?._id
+      state.isErrorEdit = !action?.payload?.data?._id
+      state.messageErrorEdit = action?.payload?.message
+      state.typeError = action?.payload?.typeError
+    })
 
     // Delete comment
     builder.addCase(deleteCommentAsync.pending, (state, action) => {
@@ -138,22 +161,22 @@ export const commentSlice = createSlice({
       state.typeError = action?.payload?.typeError
     })
 
-    // Delete my review
-    // builder.addCase(deleteMyReviewAsync.pending, (state, action) => {
-    //   state.isLoading = true
-    // })
+    // Delete my comment
+    builder.addCase(deleteMyCommentAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
 
     // Still go to fullfilled (not rejected) even if the api return an error
 
-    // builder.addCase(deleteMyReviewAsync.fulfilled, (state, action) => {
-    //   state.isLoading = false
-    //   state.isSuccessDelete = !!action?.payload?.data?._id
-    //   state.isErrorDelete = !action?.payload?.data?._id
-    //   state.messageErrorDelete = action?.payload?.message
-    //   state.typeError = action?.payload?.typeError
-    // })
+    builder.addCase(deleteMyCommentAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccessDelete = !!action?.payload?.data?._id
+      state.isErrorDelete = !action?.payload?.data?._id
+      state.messageErrorDelete = action?.payload?.message
+      state.typeError = action?.payload?.typeError
+    })
 
-    // Delete multiple review
+    // Delete multiple comment
     builder.addCase(deleteMultipleCommentAsync.pending, (state, action) => {
       state.isLoading = true
     })
