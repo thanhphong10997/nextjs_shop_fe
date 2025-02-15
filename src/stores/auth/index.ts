@@ -39,7 +39,7 @@ type TInitialState = {
 
 const initialState: TInitialState = {
   isLoading: false,
-  isSuccess: true,
+  isSuccess: false,
   isError: false,
   message: '',
   typeError: '',
@@ -65,7 +65,7 @@ export const authSlice = createSlice({
     resetInitialState: state => {
       state.isLoading = false
       state.isSuccess = false
-      state.isError = true
+      state.isError = false
       state.message = ''
       state.typeError = ''
       state.isSuccessUpdateMe = false

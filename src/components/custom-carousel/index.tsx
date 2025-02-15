@@ -9,7 +9,8 @@ interface TProps extends CarouselProps {
 const StyledCarousel = styled(Carousel)<TProps>(({ theme }) => {
   return {
     '.react-multiple-carousel__arrow': {
-      background: `${theme.palette.primary.main}!important`
+      background: `${theme.palette.primary.main}!important`,
+      opacity: 0.5
     },
     '.react-multi-carousel-dot': {
       button: {
