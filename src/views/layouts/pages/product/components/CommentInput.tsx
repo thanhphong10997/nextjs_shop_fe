@@ -43,6 +43,7 @@ const StyledWrapper = styled(Box)<BoxProps>(({ theme }) => {
 interface TCommentInput {
   item?: TCommentItemProduct
   isEdit?: boolean
+  isReply?: boolean
   onApply: (comment: string, isEdit: boolean, item?: TCommentItemProduct) => void
   onCancel?: () => void
 }
@@ -103,7 +104,7 @@ const CommentInput = (props: TCommentInput) => {
           onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setInputComment(e.target.value)}
         />
 
-        {isFocus && (
+        {(isFocus || props?.item) && (
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1 }}>
             <Box sx={{ position: 'relative' }}>
               <IconButton onClick={() => setIsVisible(!isVisible)}>
@@ -122,7 +123,7 @@ const CommentInput = (props: TCommentInput) => {
                 {t('cancel')}
               </Button>
               <Button variant='contained' onClick={handleApply}>
-                {props?.isEdit ? t('update') : t('comment')}
+                {props?.isEdit ? t('update') : props?.isReply ? t('reply') : t('comment')}
               </Button>
             </Box>
           </Box>

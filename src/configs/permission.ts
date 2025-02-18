@@ -40,7 +40,8 @@ export const PERMISSIONS = {
     },
     ORDER: {
       VIEW: 'MANAGE_ORDER.ORDER.VIEW',
-      CREATE: 'MANAGE_ORDER.ORDER.CREATE',
+
+      // CREATE: 'MANAGE_ORDER.ORDER.CREATE',
       UPDATE: 'MANAGE_ORDER.ORDER.UPDATE',
       DELETE: 'MANAGE_ORDER.ORDER.DELETE'
     }
@@ -145,7 +146,8 @@ export const LIST_DATA_PERMISSIONS: any = [
     name: 'Order',
     isParent: false,
     value: 'ORDER',
-    parentValue: 'MANAGE_ORDER'
+    parentValue: 'MANAGE_ORDER',
+    isHideCreate: true
   },
   {
     id: 10,
