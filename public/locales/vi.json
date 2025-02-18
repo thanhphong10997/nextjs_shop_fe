@@ -317,5 +317,7 @@
   "title_delete_multiple_review":"Xác nhận xóa những đánh giá này?",
   "confirm_delete_multiple_review": "Bạn có chắc muốn xóa những đánh giá này?",
   "delete_multiple_review_success": "Xóa nhiều đánh giá thành công",
-  "delete_multiple_review_error":"Xóa nhiều đánh giá thất bại"
+  "delete_multiple_review_error":"Xóa nhiều đánh giá thất bại",
+  "reply": "Trả lời",
+  "comment": "Bình luận"
 }

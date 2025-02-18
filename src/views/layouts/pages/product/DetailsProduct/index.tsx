@@ -19,7 +19,14 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // utils
-import { convertUpdateProductToCart, formatFilter, formatNumberToLocal, isExpiry, toFullName } from 'src/utils'
+import {
+  cloneDeep,
+  convertUpdateProductToCart,
+  formatFilter,
+  formatNumberToLocal,
+  isExpiry,
+  toFullName
+} from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 // router
@@ -53,6 +60,9 @@ import CommentInput from '../components/CommentInput'
 import { getAllPublicComments } from 'src/services/comment-product'
 import { TCommentItemProduct } from 'src/types/comment'
 import { createCommentAsync } from 'src/stores/comments/actions'
+import connectSocketIO from 'src/helpers/socket'
+import { ACTION_SOCKET_COMMENT } from 'src/configs/socket'
+import { TItemOrderProduct } from 'src/types/order-product'
 
 type TProps = {}
 
@@ -194,7 +204,6 @@ export const DetailsProductPage: NextPage<TProps> = () => {
     })
       .then(async res => {
         const data = res?.data
-        console.log('data', { data })
         if (data) {
           setListComment({
             data: data?.comments,
@@ -278,6 +287,64 @@ export const DetailsProductPage: NextPage<TProps> = () => {
     }
   }
 
+  // Recursive
+  const findCommentByIdRecursive = (
+    listComment: TCommentItemProduct[],
+    id: string
+  ): undefined | TCommentItemProduct => {
+    for (const comment of listComment) {
+      if (comment?._id === id) {
+        return comment
+      }
+      if (comment?.replies && comment?.replies?.length > 0) {
+        const replyComment: undefined | TCommentItemProduct = findCommentByIdRecursive(comment.replies, id)
+        if (replyComment) return replyComment
+      }
+    }
+
+    return undefined
+  }
+
+  const deleteCommentByIdRecursive = (
+    listComment: TCommentItemProduct[],
+    id: string
+  ): undefined | TCommentItemProduct => {
+    const commentIndex = listComment?.findIndex((comment: TCommentItemProduct) => comment?._id === id)
+    if (commentIndex !== -1) {
+      const commentItem = listComment[commentIndex]
+      listComment.splice(commentIndex, 1)
+
+      return commentItem
+    }
+    for (const comment of listComment) {
+      if (comment?.replies && comment?.replies?.length > 0) {
+        const deleteReplyComment: undefined | TCommentItemProduct = deleteCommentByIdRecursive(comment.replies, id)
+        if (deleteReplyComment) return deleteReplyComment
+      }
+    }
+
+    return undefined
+  }
+
+  const deleteManyCommentByIdRecursive = (listComment: TCommentItemProduct[], ids: string[]) => {
+    let deleteCount: number = 0
+    ids.forEach((id: string) => {
+      const commentIndex = listComment?.findIndex((comment: TCommentItemProduct) => comment?._id === id)
+      if (commentIndex !== -1) {
+        listComment.splice(commentIndex, 1)
+        console.log('deletedCountIn', { deleteCount })
+        deleteCount += 1
+      }
+    })
+    for (const comment of listComment) {
+      if (comment?.replies && comment?.replies?.length > 0) {
+        deleteManyCommentByIdRecursive(comment.replies, ids)
+      }
+    }
+
+    return deleteCount
+  }
+
   // side effects
   useEffect(() => {
     if (productId) {
@@ -292,6 +359,73 @@ export const DetailsProductPage: NextPage<TProps> = () => {
       fetchGetAllReviewListByProduct(dataProduct?._id)
     }
   }, [dataProduct?._id])
+
+  useEffect(() => {
+    const socket = connectSocketIO()
+    const cloneListComment = cloneDeep(listComment)
+    socket.on(ACTION_SOCKET_COMMENT.CREATE_COMMENT, data => {
+      const newListCommentData = cloneListComment?.data
+      newListCommentData?.unshift({ ...data })
+      setListComment({
+        data: newListCommentData,
+        total: cloneListComment?.total + 1
+      })
+    })
+
+    socket.on(ACTION_SOCKET_COMMENT.UPDATE_COMMENT, data => {
+      const newListCommentData = cloneListComment?.data
+      const findUpdateComment = findCommentByIdRecursive(newListCommentData, data?._id)
+      if (findUpdateComment) {
+        findUpdateComment.content = data?.content
+        setListComment(cloneListComment)
+      }
+    })
+
+    socket.on(ACTION_SOCKET_COMMENT.REPLY_COMMENT, data => {
+      const newListCommentData = cloneListComment?.data
+      const formatCommentList = newListCommentData?.map((comment: TCommentItemProduct) => {
+        if (comment?._id === data?.parent) {
+          comment?.replies?.push({ ...data })
+        }
+
+        return comment
+      })
+
+      setListComment({
+        data: formatCommentList,
+        total: cloneListComment?.total + 1
+      })
+    })
+
+    socket.on(ACTION_SOCKET_COMMENT.DELETE_COMMENT, data => {
+      const newListCommentData = cloneListComment?.data
+      const deleteComment = deleteCommentByIdRecursive(newListCommentData, data?._id)
+      if (deleteComment) {
+        const totalDeleteItems = (deleteComment?.replies?.length ? deleteComment.replies.length : 0) + 1
+        setListComment({
+          data: newListCommentData,
+          total: cloneListComment?.total - totalDeleteItems
+        })
+      }
+    })
+
+    socket.on(ACTION_SOCKET_COMMENT.DELETE_MULTIPLE_COMMENT, data => {
+      const deletedCount = deleteManyCommentByIdRecursive(cloneListComment?.data, data)
+      console.log('deletedCountOut', { deletedCount })
+
+      setListComment({
+        data: cloneListComment?.data,
+        total: cloneListComment?.total - deletedCount
+      })
+    })
+
+    // clean up
+    return () => {
+      socket.disconnect()
+    }
+  }, [listComment])
+
+  console.log('listComment', { listComment })
 
   // review
   useEffect(() => {
@@ -330,7 +464,8 @@ export const DetailsProductPage: NextPage<TProps> = () => {
     if (messageErrorCreateComment) {
       if (isSuccessCreateComment) {
         toast.success(t('create_comment_success'))
-        fetchListCommentProduct()
+
+        // fetchListCommentProduct()
         dispatch(resetInitialStateComment())
       } else if (isErrorCreateComment) {
         toast.error(t('create_comment_error'))
@@ -343,7 +478,8 @@ export const DetailsProductPage: NextPage<TProps> = () => {
     if (messageErrorReply) {
       if (isSuccessReply) {
         toast.success(t('reply_comment_success'))
-        fetchListCommentProduct()
+
+        // fetchListCommentProduct()
         dispatch(resetInitialStateComment())
       } else if (isErrorReply) {
         toast.error(t('reply_comment_error'))
@@ -356,7 +492,8 @@ export const DetailsProductPage: NextPage<TProps> = () => {
     if (messageErrorDeleteComment) {
       if (isSuccessDeleteComment) {
         toast.success(t('delete_comment_success'))
-        fetchListCommentProduct()
+
+        // fetchListCommentProduct()
         dispatch(resetInitialStateComment())
       } else if (isErrorDeleteComment) {
         toast.error(t('delete_comment_error'))
@@ -369,7 +506,8 @@ export const DetailsProductPage: NextPage<TProps> = () => {
     if (messageErrorEditComment) {
       if (isSuccessEditComment) {
         toast.success(t('update_comment_success'))
-        fetchListCommentProduct()
+
+        // fetchListCommentProduct()
         dispatch(resetInitialStateComment())
       } else if (isErrorEditComment) {
         toast.error(t('update_comment_error'))
@@ -382,6 +520,21 @@ export const DetailsProductPage: NextPage<TProps> = () => {
     <>
       {loading && <Spinner />}
       <Grid container>
+        <Box
+          sx={{
+            width: '100%',
+            borderRadius: '15px',
+            mt: '0!important',
+            py: '20px',
+            px: 4
+          }}
+          display={{ md: 'block', xs: 'none' }}
+          marginTop={{ md: 5, xs: 5 }}
+        >
+          <Typography sx={{ color: theme.palette.primary.main }}>
+            {t('details_product')} / {dataProduct?.type?.name} / {dataProduct?.name}
+          </Typography>
+        </Box>
         {/* First section */}
         <Grid
           container
@@ -781,14 +934,23 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                   marginTop={{ md: 5, xs: 5 }}
                 >
                   <Typography fontSize={16} fontWeight={600}>
-                    {t('comment_product')} <b style={{ color: theme.palette.primary.main }}> {reviewList?.length}</b>{' '}
+                    {t('comment_product')} <b style={{ color: theme.palette.primary.main }}> {listComment?.total}</b>{' '}
                     {t('comments')}
                   </Typography>
                   <Box sx={{ width: '100%' }}>
                     <CommentInput onApply={handleComment} onCancel={handleCancelComment} />
 
                     {/* list comments */}
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: '20px' }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                        mt: '20px',
+                        maxHeight: '500px',
+                        overflow: 'auto'
+                      }}
+                    >
                       {listComment?.data?.map((comment: TCommentItemProduct) => {
                         const level: number = -1
 
@@ -937,14 +1099,23 @@ export const DetailsProductPage: NextPage<TProps> = () => {
               marginTop={{ md: 5, xs: 5 }}
             >
               <Typography fontSize={16} fontWeight={600}>
-                {t('comment_product')} <b style={{ color: theme.palette.primary.main }}> {reviewList?.length}</b>{' '}
+                {t('comment_product')} <b style={{ color: theme.palette.primary.main }}> {listComment?.total}</b>{' '}
                 {t('comments')}
               </Typography>
               <Box sx={{ width: '100%' }}>
                 <CommentInput onApply={handleComment} onCancel={handleCancelComment} />
 
                 {/* comment */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: '20px' }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                    mt: '20px',
+                    maxHeight: '300px',
+                    overflow: 'auto'
+                  }}
+                >
                   {listComment?.data?.map((comment: TCommentItemProduct) => {
                     const level: number = -1
 

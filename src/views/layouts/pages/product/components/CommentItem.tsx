@@ -203,8 +203,8 @@ const CommentItem = ({ item }: TProps) => {
         )}
 
         {isReply && (
-          <Box sx={{ ml: '80px', mt: -2 }}>
-            <CommentInput onApply={handleReply} onCancel={handleCancelReply} item={item} />
+          <Box sx={{ ml: '40px', mt: -2, mr: '40px' }}>
+            <CommentInput item={item} isReply={isReply} onApply={handleReply} onCancel={handleCancelReply} />
           </Box>
         )}
       </Box>
