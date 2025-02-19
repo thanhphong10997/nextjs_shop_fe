@@ -14,3 +14,28 @@ export const OBJECT_STATUS_USER = () => {
     }
   }
 }
+
+export const OBJECT_USER_TYPE = () => {
+  const { t } = useTranslation()
+
+  return {
+    '1': {
+      label: t('Facebook'),
+      value: '1'
+    },
+    '2': {
+      label: t('Google'),
+      value: '2'
+    },
+    '3': {
+      label: t('Email'),
+      value: '3'
+    }
+  }
+}
+
+export const CONFIG_USER_TYPE = {
+  FACEBOOK: 1,
+  GOOGLE: 2,
+  DEFAULT: 3
+}

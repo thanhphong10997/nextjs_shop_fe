@@ -1,4 +1,4 @@
-export const BASE_URL = process.env.NEXT_PUBLIC_API_HOST
+export const BASE_URL = `${process.env.NEXT_PUBLIC_API_HOST}/api`
 export const API_ENDPOINT = {
   AUTH: {
     INDEX: `${BASE_URL}/auth`,
@@ -46,5 +46,8 @@ export const API_ENDPOINT = {
     VN_PAY: {
       INDEX: `${BASE_URL}/payment/vnpay`
     }
+  },
+  REPORT: {
+    INDEX: `${BASE_URL}/report`
   }
 }

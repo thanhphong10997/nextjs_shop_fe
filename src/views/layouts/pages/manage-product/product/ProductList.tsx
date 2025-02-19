@@ -50,6 +50,8 @@ import CustomSelect from 'src/components/custom-select'
 import { OBJECT_STATUS_PRODUCT } from 'src/configs/product'
 import { getAllProductTypes } from 'src/services/product-type'
 import { formatDate } from 'src/utils/date'
+import { getCountProductStatus } from 'src/services/report'
+import ProductCountCard from './component/ProductCountCard'
 
 type TProps = {}
 
@@ -101,8 +103,27 @@ export const ProductListPage: NextPage<TProps> = () => {
   const [typeSelected, setTypeSelected] = useState<string[]>([])
   const [statusSelected, setStatusSelected] = useState<string[]>([])
   const [filterBy, setFilterBy] = useState<Record<string, string | string[]>>({})
+  const [countProductStatus, setCountProductStatus] = useState<{
+    data: Record<number, number>
+    total: number
+  }>({} as any)
 
   const CONSTANT_STATUS_PRODUCT = OBJECT_STATUS_PRODUCT()
+
+  const productStatusDataList = [
+    {
+      icon: 'hugeicons:product-loading',
+      status: '2'
+    },
+    {
+      icon: 'ic:baseline-public-off',
+      status: '0'
+    },
+    {
+      icon: 'material-symbols:public',
+      status: '1'
+    }
+  ]
 
   // hooks
   const { VIEW, CREATE, UPDATE, DELETE } = usePermission('MANAGE_PRODUCT.PRODUCT', [
@@ -345,6 +366,22 @@ export const ProductListPage: NextPage<TProps> = () => {
       })
   }
 
+  const fetchCountProductStatus = async () => {
+    setLoading(true)
+    await getCountProductStatus()
+      .then(res => {
+        const data = res?.data
+        setLoading(false)
+        setCountProductStatus({
+          data: data?.data,
+          total: data?.total
+        })
+      })
+      .catch(err => {
+        setLoading(false)
+      })
+  }
+
   // side effects
 
   useEffect(() => {
@@ -353,6 +390,7 @@ export const ProductListPage: NextPage<TProps> = () => {
 
   useEffect(() => {
     fetchAllTypes()
+    fetchCountProductStatus()
   }, [])
 
   useEffect(() => {
@@ -429,6 +467,25 @@ export const ProductListPage: NextPage<TProps> = () => {
       />
       <CreateEditProduct open={openCreateEdit.open} onClose={handleCloseCreateEdit} productId={openCreateEdit.id} />
       {isLoading && <Spinner />}
+      {/* count product status */}
+      <Box
+        sx={{
+          backgroundColor: 'inherit',
+          width: '100%',
+          mb: 4
+        }}
+      >
+        <Grid container spacing={6} sx={{ height: '100%' }}>
+          {productStatusDataList?.map((item: any, index: number) => {
+            return (
+              <Grid key={index} item xs={12} md={4} sm={6}>
+                <ProductCountCard {...item} countProductStatus={countProductStatus} />
+              </Grid>
+            )
+          })}
+        </Grid>
+      </Box>
+      {/* count product status */}
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,
@@ -436,7 +493,8 @@ export const ProductListPage: NextPage<TProps> = () => {
           alignItems: 'center',
           padding: '20px',
           height: '100%',
-          maxHeight: '100%'
+          maxHeight: '100%',
+          borderRadius: '15px'
         }}
       >
         <Grid container sx={{ height: '100%', width: '100%' }}>
