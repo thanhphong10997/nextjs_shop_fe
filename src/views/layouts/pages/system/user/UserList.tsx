@@ -49,8 +49,11 @@ import TableHeader from 'src/components/table-header'
 import { PERMISSIONS } from 'src/configs/permission'
 import CustomSelect from 'src/components/custom-select'
 import { getAllRoles } from 'src/services/role'
-import { OBJECT_STATUS_USER } from 'src/configs/user'
+import { CONFIG_USER_TYPE, OBJECT_STATUS_USER, OBJECT_USER_TYPE } from 'src/configs/user'
 import { getAllCities } from 'src/services/city'
+import { getCountUserType } from 'src/services/report'
+import UserCountCard from './component/UserCountCard'
+import { Icon } from '@iconify/react/dist/iconify.js'
 
 type TProps = {}
 
@@ -105,8 +108,49 @@ export const UserListPage: NextPage<TProps> = () => {
   const [roleSelected, setRoleSelected] = useState<string[]>([])
   const [citySelected, setCitySelected] = useState<string[]>([])
   const [statusSelected, setStatusSelected] = useState<string[]>([])
+  const [typeSelected, setTypeSelected] = useState<string[]>([])
+  const [countUserType, setCountUserType] = useState<{
+    data: Record<number, number>
+    totalUser: number
+  }>({} as any)
 
+  // const
   const CONSTANT_STATUS_USER = OBJECT_STATUS_USER()
+  const CONSTANT_USER_TYPE = OBJECT_USER_TYPE()
+  const userDataList = [
+    {
+      icon: 'tdesign:user-filled',
+      userType: 4
+    },
+    {
+      icon: 'logos:facebook',
+      userType: CONFIG_USER_TYPE.FACEBOOK
+    },
+    {
+      icon: 'flat-color-icons:google',
+      userType: CONFIG_USER_TYPE.GOOGLE
+    },
+    {
+      icon: 'logos:google-gmail',
+      userType: CONFIG_USER_TYPE.DEFAULT
+    }
+  ]
+
+  const mapUserType = {
+    1: {
+      title: t('Facebook'),
+      icon: 'logos:facebook'
+    },
+    2: {
+      title: t('Google'),
+      icon: 'flat-color-icons:google'
+    },
+    3: {
+      title: t('Email'),
+      icon: 'logos:google-gmail',
+      iconSize: 18
+    }
+  }
 
   // hooks
   const { VIEW, CREATE, UPDATE, DELETE } = usePermission('SYSTEM.USER', ['VIEW', 'CREATE', 'UPDATE', 'DELETE'])
@@ -197,6 +241,28 @@ export const UserListPage: NextPage<TProps> = () => {
 
         return (
           <>{row.status ? <ActiveUserStyled label={t('Active')} /> : <DeactiveUserStyled label={t('Blocking')} />}</>
+        )
+      }
+    },
+    {
+      field: 'userType',
+      headerName: t('User Type'),
+      minWidth: 100,
+      maxWidth: 100,
+      renderCell: params => {
+        const { row } = params
+
+        return (
+          <>
+            {row.userType && (
+              <Box>
+                <Icon
+                  icon={(mapUserType as any)?.[row.userType]?.icon}
+                  fontSize={(mapUserType as any)?.[row.userType]?.iconSize || 24}
+                />
+              </Box>
+            )}
+          </>
         )
       }
     },
@@ -364,16 +430,33 @@ export const UserListPage: NextPage<TProps> = () => {
       })
   }
 
+  const fetchCountUserType = async () => {
+    setLoading(true)
+    await getCountUserType()
+      .then(res => {
+        const data = res?.data
+        setLoading(false)
+        setCountUserType({
+          data: data?.data,
+          totalUser: data?.total
+        })
+      })
+      .catch(err => {
+        setLoading(false)
+      })
+  }
+
   // side effects
 
   useEffect(() => {
     fetchAllRoles()
     fetchAllCities()
+    fetchCountUserType()
   }, [])
 
   useEffect(() => {
-    setFilterBy({ roleId: roleSelected, status: statusSelected, cityId: citySelected })
-  }, [roleSelected, statusSelected, citySelected])
+    setFilterBy({ roleId: roleSelected, status: statusSelected, cityId: citySelected, userType: typeSelected })
+  }, [roleSelected, statusSelected, citySelected, typeSelected])
 
   useEffect(() => {
     handleGetListUser()
@@ -449,6 +532,25 @@ export const UserListPage: NextPage<TProps> = () => {
       />
       <CreateEditUser open={openCreateEdit.open} onClose={handleCloseCreateEdit} userId={openCreateEdit.id} />
       {isLoading && <Spinner />}
+      {/* count user type */}
+      <Box
+        sx={{
+          backgroundColor: 'inherit',
+          width: '100%',
+          mb: 4
+        }}
+      >
+        <Grid container spacing={6} sx={{ height: '100%' }}>
+          {userDataList?.map((item: any, index: number) => {
+            return (
+              <Grid key={index} item xs={12} md={3} sm={6}>
+                <UserCountCard {...item} countUserType={countUserType} />
+              </Grid>
+            )
+          })}
+        </Grid>
+      </Box>
+      {/* count user type */}
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,
@@ -456,7 +558,8 @@ export const UserListPage: NextPage<TProps> = () => {
           alignItems: 'center',
           padding: '20px',
           height: '100%',
-          maxHeight: '100%'
+          maxHeight: '100%',
+          borderRadius: '15px'
         }}
       >
         <Grid container sx={{ height: '100%', width: '100%' }}>
@@ -497,6 +600,18 @@ export const UserListPage: NextPage<TProps> = () => {
                   multiple
                   onChange={e => {
                     setStatusSelected(e.target.value as string[])
+                  }}
+                />
+              </Box>
+              <Box sx={{ width: '200px' }}>
+                <CustomSelect
+                  value={typeSelected}
+                  options={Object.values(CONSTANT_USER_TYPE)}
+                  placeholder={t('user_type')}
+                  fullWidth
+                  multiple
+                  onChange={e => {
+                    setTypeSelected(e.target.value as string[])
                   }}
                 />
               </Box>

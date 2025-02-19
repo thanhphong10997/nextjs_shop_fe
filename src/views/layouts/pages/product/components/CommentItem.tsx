@@ -135,17 +135,18 @@ const CommentItem = ({ item }: TProps) => {
             horizontal: 'left'
           }}
         >
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', width: '100px' }}>
             <Button
-              startIcon={<Icon icon='lucide:edit' />}
               variant='text'
               sx={{ mt: 1, height: '30px', ml: '8px', backgroundColor: 'transparent!important' }}
               onClick={() => setEditComment(true)}
             >
-              {t('Edit')}
+              <span style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                <Icon icon='lucide:edit' style={{ marginRight: '8px' }} />
+                {t('Edit')}
+              </span>
             </Button>
             <Button
-              startIcon={<Icon icon='ic:outline-delete' fontSize={30} />}
               variant='text'
               sx={{ mt: 1, height: '30px', ml: '8px', backgroundColor: 'transparent!important' }}
               onClick={() => {
@@ -153,7 +154,10 @@ const CommentItem = ({ item }: TProps) => {
                 handleCloseOptions()
               }}
             >
-              {t('delete')}
+              <span style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                <Icon icon='ic:outline-delete' fontSize={20} style={{ marginRight: '8px' }} />
+                {t('delete')}
+              </span>
             </Button>
           </Box>
         </Popover>

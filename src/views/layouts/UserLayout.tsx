@@ -54,15 +54,17 @@ export const UserLayout: NextPage<TProps> = ({ children }) => {
             m: 4,
             width: `calc(100% - 32px)`,
             maxWidth: `calc(100% - 32px) !important`,
-            maxHeight: `calc(100vh - ${theme.mixins.toolbar.minHeight}px - 32px)`,
-            minHeight: `calc(100vh - ${theme.mixins.toolbar.minHeight}px - 32px)`,
+
+            // maxHeight: `calc(100vh - ${theme.mixins.toolbar.minHeight}px - 32px)`,
+            // minHeight: `calc(100vh - ${theme.mixins.toolbar.minHeight}px - 32px)`,
             padding: '0!important',
-            overflow: 'auto',
-            borderRadius: '15px',
-            backgroundColor: theme =>
-              theme.palette.mode === 'light'
-                ? theme.palette.customColors.lightPaperBg
-                : theme.palette.customColors.darkPaperBg
+            overflow: 'auto'
+
+            // borderRadius: '15px'
+            // backgroundColor: theme =>
+            //   theme.palette.mode === 'light'
+            //     ? theme.palette.customColors.lightPaperBg
+            //     : theme.palette.customColors.darkPaperBg
           }}
         >
           {children}
