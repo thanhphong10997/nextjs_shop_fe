@@ -85,13 +85,13 @@ export const ReviewListPage: NextPage<TProps> = () => {
     isLoading,
     isSuccessEdit,
     isErrorEdit,
-    messageErrorEdit,
+    messageEdit,
     isSuccessDelete,
     isErrorDelete,
-    messageErrorDelete,
+    messageDelete,
     isSuccessMultipleDelete,
     isErrorMultipleDelete,
-    messageErrorMultipleDelete,
+    messageMultipleDelete,
     typeError
   } = useSelector((state: RootState) => state.review)
 
@@ -290,7 +290,7 @@ export const ReviewListPage: NextPage<TProps> = () => {
       handleGetListReview()
       handleCloseEdit()
       dispatch(resetInitialState())
-    } else if (isErrorEdit && messageErrorEdit && typeError) {
+    } else if (isErrorEdit && messageEdit && typeError) {
       const errorConfig = OBJECT_TYPE_ERROR_USER[typeError]
       if (errorConfig) {
         toast.error(t(errorConfig))
@@ -299,7 +299,7 @@ export const ReviewListPage: NextPage<TProps> = () => {
       }
       dispatch(resetInitialState())
     }
-  }, [isSuccessEdit, isErrorEdit, messageErrorEdit, typeError])
+  }, [isSuccessEdit, isErrorEdit, messageEdit, typeError])
 
   useEffect(() => {
     if (isSuccessDelete) {
@@ -307,11 +307,11 @@ export const ReviewListPage: NextPage<TProps> = () => {
       handleGetListReview()
       dispatch(resetInitialState())
       handleCloseConfirmDeleteReview()
-    } else if (isErrorDelete && messageErrorDelete) {
+    } else if (isErrorDelete && messageDelete) {
       toast.error(t('delete_review_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
+  }, [isSuccessDelete, isErrorDelete, messageDelete])
 
   useEffect(() => {
     if (isSuccessMultipleDelete) {
@@ -319,11 +319,11 @@ export const ReviewListPage: NextPage<TProps> = () => {
       handleGetListReview()
       dispatch(resetInitialState())
       handleCloseConfirmDeleteMultipleReview()
-    } else if (isErrorMultipleDelete && messageErrorMultipleDelete) {
+    } else if (isErrorMultipleDelete && messageMultipleDelete) {
       toast.error(t('delete_multiple_review_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageErrorMultipleDelete])
+  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageMultipleDelete])
 
   return (
     <>

@@ -17,16 +17,16 @@ const initialState = {
   isLoading: false,
   isSuccessCreate: false,
   isErrorCreate: false,
-  messageErrorCreate: '',
+  messageCreate: '',
   isSuccessEdit: false,
   isErrorEdit: false,
-  messageErrorEdit: '',
+  messageEdit: '',
   isSuccessDelete: false,
   isErrorDelete: false,
-  messageErrorDelete: '',
+  messageDelete: '',
   isSuccessMultipleDelete: false,
   isErrorMultipleDelete: false,
-  messageErrorMultipleDelete: '',
+  messageMultipleDelete: '',
   typeError: '',
   reviews: {
     data: [],
@@ -43,16 +43,16 @@ export const reviewSlice = createSlice({
       state.typeError = ''
       state.isSuccessCreate = false
       state.isErrorCreate = false
-      state.messageErrorCreate = ''
+      state.messageCreate = ''
       state.isSuccessEdit = false
       state.isErrorEdit = false
-      state.messageErrorEdit = ''
+      state.messageEdit = ''
       state.isSuccessDelete = false
       state.isErrorDelete = false
-      state.messageErrorDelete = ''
+      state.messageDelete = ''
       state.isSuccessMultipleDelete = false
       state.isErrorMultipleDelete = false
-      state.messageErrorMultipleDelete = ''
+      state.messageMultipleDelete = ''
     }
   },
   extraReducers: builder => {
@@ -85,7 +85,7 @@ export const reviewSlice = createSlice({
       state.isLoading = false
       state.isSuccessCreate = !!action?.payload?.data?._id
       state.isErrorCreate = !action?.payload?.data?._id
-      state.messageErrorCreate = action?.payload?.message
+      state.messageCreate = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
 
@@ -100,7 +100,7 @@ export const reviewSlice = createSlice({
       state.isLoading = false
       state.isSuccessEdit = !!action?.payload?.data?._id
       state.isErrorEdit = !action?.payload?.data?._id
-      state.messageErrorEdit = action?.payload?.message
+      state.messageEdit = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
 
@@ -115,7 +115,7 @@ export const reviewSlice = createSlice({
       state.isLoading = false
       state.isSuccessEdit = !!action?.payload?.data?._id
       state.isErrorEdit = !action?.payload?.data?._id
-      state.messageErrorEdit = action?.payload?.message
+      state.messageEdit = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
 
@@ -130,7 +130,7 @@ export const reviewSlice = createSlice({
       state.isLoading = false
       state.isSuccessDelete = !!action?.payload?.data?._id
       state.isErrorDelete = !action?.payload?.data?._id
-      state.messageErrorDelete = action?.payload?.message
+      state.messageDelete = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
 
@@ -145,7 +145,7 @@ export const reviewSlice = createSlice({
       state.isLoading = false
       state.isSuccessDelete = !!action?.payload?.data?._id
       state.isErrorDelete = !action?.payload?.data?._id
-      state.messageErrorDelete = action?.payload?.message
+      state.messageDelete = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
 
@@ -160,7 +160,7 @@ export const reviewSlice = createSlice({
       state.isLoading = false
       state.isSuccessMultipleDelete = !!action?.payload?.data
       state.isErrorMultipleDelete = !action?.payload?.data
-      state.messageErrorMultipleDelete = action?.payload?.message
+      state.messageMultipleDelete = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
   }

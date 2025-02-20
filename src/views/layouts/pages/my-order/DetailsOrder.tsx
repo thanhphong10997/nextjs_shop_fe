@@ -72,13 +72,13 @@ export const MyDetailsOrderPage: NextPage<TProps> = () => {
 
   // redux
   const dispatch: AppDispatch = useDispatch()
-  const { isSuccessCancelMe, orderItems, isErrorCancelMe, messageErrorCancelMe } = useSelector(
+  const { isSuccessCancelMe, orderItems, isErrorCancelMe, messageCancelMe } = useSelector(
     (state: RootState) => state.orderProduct
   )
   const {
     isSuccessCreate,
     isErrorCreate,
-    messageErrorCreate,
+    messageCreate,
     typeError,
     isLoading: loadingReview
   } = useSelector((state: RootState) => state.review)
@@ -195,22 +195,22 @@ export const MyDetailsOrderPage: NextPage<TProps> = () => {
       toast.success(t('cancel_order_success'))
       dispatch(resetInitialState())
       handleGetDetailsOrdersOfMe()
-    } else if (isErrorCancelMe && messageErrorCancelMe) {
+    } else if (isErrorCancelMe && messageCancelMe) {
       toast.error(t('cancel_order_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessCancelMe, isErrorCancelMe, messageErrorCancelMe])
+  }, [isSuccessCancelMe, isErrorCancelMe, messageCancelMe])
 
   useEffect(() => {
     if (isSuccessCreate) {
       toast.success(t('write_review_success'))
       dispatch(resetInitialReview())
       handleCloseReview()
-    } else if (isErrorCreate && messageErrorCreate) {
+    } else if (isErrorCreate && messageCreate) {
       toast.error(t('write_review_error'))
       dispatch(resetInitialReview())
     }
-  }, [isSuccessCreate, isErrorCreate, messageErrorCreate])
+  }, [isSuccessCreate, isErrorCreate, messageCreate])
 
   return (
     <>

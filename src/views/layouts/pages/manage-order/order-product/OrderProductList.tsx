@@ -12,12 +12,10 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import { resetInitialState } from 'src/stores/order-product'
+import { deleteOrderProductAsync, getAllOrderProductsAsync } from 'src/stores/order-product/actions'
 
 // translate
 import { useTranslation } from 'react-i18next'
-
-// config
-// import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 
 // Components
 import GridEdit from 'src/components/grid-edit'
@@ -27,6 +25,9 @@ import CustomDataGrid from 'src/components/custom-data-grid'
 import InputSearch from 'src/components/input-search'
 import Spinner from 'src/components/spinner'
 import ConfirmationDialog from 'src/components/confirmation-dialog'
+import CustomSelect from 'src/components/custom-select'
+import EditOrderProduct from './components/EditOrderProduct'
+import OrderStatusCountCard from './components/OrderStatusCountCard'
 
 // react toast
 import toast from 'react-hot-toast'
@@ -36,18 +37,16 @@ import { OBJECT_TYPE_ERROR_USER } from 'src/configs/error'
 import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 
 // services
+import { getAllCities } from 'src/services/city'
+import { getCountOrderStatus } from 'src/services/report'
 
 // utils
-import { formatFilter, formatNumberToLocal, toFullName } from 'src/utils'
+import { formatFilter, formatNumberToLocal } from 'src/utils'
 
-// hooks
+// others
 import { usePermission } from 'src/hooks/usePermission'
-import CustomSelect from 'src/components/custom-select'
-import { getAllCities } from 'src/services/city'
-import { deleteOrderProductAsync, getAllOrderProductsAsync } from 'src/stores/order-product/actions'
 import { PRODUCT_ORDER_STATUS } from 'src/configs/orderProduct'
 import { TItemOrderProduct } from 'src/types/order-product'
-import EditOrderProduct from './components/EditOrderProduct'
 
 type TProps = {}
 
@@ -92,6 +91,29 @@ export const OrderProductListPage: NextPage<TProps> = () => {
     }
   }
 
+  const dataOrderStatusList = [
+    {
+      icon: 'lsicon:order-outline',
+      status: 4
+    },
+    {
+      icon: 'mdi:payment-clock',
+      status: PRODUCT_ORDER_STATUS[0]?.value
+    },
+    {
+      icon: 'carbon:delivery',
+      status: PRODUCT_ORDER_STATUS[1]?.value
+    },
+    {
+      icon: 'material-symbols-light:order-approve',
+      status: PRODUCT_ORDER_STATUS[2]?.value
+    },
+    {
+      icon: 'lsicon:order-close-outline',
+      status: PRODUCT_ORDER_STATUS[3]?.value
+    }
+  ]
+
   // state
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTION[0])
@@ -110,6 +132,10 @@ export const OrderProductListPage: NextPage<TProps> = () => {
   const [filterBy, setFilterBy] = useState<Record<string, string | string[]>>({})
   const [citySelected, setCitySelected] = useState<string[]>([])
   const [statusSelected, setStatusSelected] = useState<string[]>([])
+  const [countOrderStatus, setCountOrderStatus] = useState<{
+    data: Record<number, number>
+    total: number
+  }>({} as any)
 
   // hooks
   const { VIEW, UPDATE, DELETE } = usePermission('SYSTEM.MANAGE_ORDER.ORDER', ['VIEW', 'UPDATE', 'DELETE'])
@@ -120,10 +146,10 @@ export const OrderProductListPage: NextPage<TProps> = () => {
     isLoading,
     isSuccessEdit,
     isErrorEdit,
-    messageErrorEdit,
+    messageEdit,
     isSuccessDelete,
     isErrorDelete,
-    messageErrorDelete,
+    messageDelete,
 
     typeError
   } = useSelector((state: RootState) => state.orderProduct)
@@ -333,6 +359,22 @@ export const OrderProductListPage: NextPage<TProps> = () => {
       })
   }
 
+  const fetchAllStatusCountOrder = async () => {
+    setLoading(true)
+    await getCountOrderStatus()
+      .then(res => {
+        const data = res?.data
+        setLoading(false)
+        setCountOrderStatus({
+          data: data?.data,
+          total: data?.total
+        })
+      })
+      .catch(err => {
+        setLoading(false)
+      })
+  }
+
   const memoStatusOption = useMemo(() => {
     return Object.values(PRODUCT_ORDER_STATUS)?.map(item => ({
       label: t(item?.label),
@@ -344,6 +386,7 @@ export const OrderProductListPage: NextPage<TProps> = () => {
 
   useEffect(() => {
     fetchAllCities()
+    fetchAllStatusCountOrder()
   }, [])
 
   useEffect(() => {
@@ -360,7 +403,7 @@ export const OrderProductListPage: NextPage<TProps> = () => {
       handleGetListOrderProduct()
       handleCloseEdit()
       dispatch(resetInitialState())
-    } else if (isErrorEdit && messageErrorEdit && typeError) {
+    } else if (isErrorEdit && messageEdit && typeError) {
       const errorConfig = OBJECT_TYPE_ERROR_USER[typeError]
       if (errorConfig) {
         toast.error(t(errorConfig))
@@ -369,7 +412,7 @@ export const OrderProductListPage: NextPage<TProps> = () => {
       }
       dispatch(resetInitialState())
     }
-  }, [isSuccessEdit, isErrorEdit, messageErrorEdit, typeError])
+  }, [isSuccessEdit, isErrorEdit, messageEdit, typeError])
 
   useEffect(() => {
     if (isSuccessDelete) {
@@ -377,11 +420,11 @@ export const OrderProductListPage: NextPage<TProps> = () => {
       handleGetListOrderProduct()
       dispatch(resetInitialState())
       handleCloseConfirmDeleteOrderProduct()
-    } else if (isErrorDelete && messageErrorDelete) {
+    } else if (isErrorDelete && messageDelete) {
       toast.error(t('delete_order_product_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
+  }, [isSuccessDelete, isErrorDelete, messageDelete])
 
   return (
     <>
@@ -397,6 +440,25 @@ export const OrderProductListPage: NextPage<TProps> = () => {
 
       <EditOrderProduct open={openEdit.open} onClose={handleCloseEdit} orderId={openEdit.id} />
       {isLoading && <Spinner />}
+      {/* count order status */}
+      <Box
+        sx={{
+          backgroundColor: 'inherit',
+          width: '100%',
+          mb: 4
+        }}
+      >
+        <Grid container spacing={6} sx={{ height: '100%' }}>
+          {dataOrderStatusList?.map((item: any, index: number) => {
+            return (
+              <Grid key={index} item xs={12} md={3} sm={6}>
+                <OrderStatusCountCard {...item} countOrderStatus={countOrderStatus} />
+              </Grid>
+            )
+          })}
+        </Grid>
+      </Box>
+      {/* count order status */}
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,

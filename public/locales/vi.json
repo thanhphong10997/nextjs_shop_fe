@@ -319,5 +319,20 @@
   "delete_multiple_review_success": "Xóa nhiều đánh giá thành công",
   "delete_multiple_review_error":"Xóa nhiều đánh giá thất bại",
   "reply": "Trả lời",
-  "comment": "Bình luận"
+  "comment": "Bình luận",
+  "product_quantity_based_on_type": "Số lượng theo loại sản phẩm",
+  "quantity": "Số lượng",
+  "sales": "Doanh số",
+  "sales_in_current_year": "Doanh số năm nay",
+  "total_order": "Tổng đơn hàng",
+  "comment...": "Viết bình luận...",
+  "create_comment_success": "Bình luận thành công",
+  "create_comment_error": "Bình luận thất bại",
+  "reply_comment_success": "Trả lời bình luận thành công",
+  "reply_comment_error": "Trả lời bình luận thất bại",
+  "users_type_statistic": "Thống kê loại người dùng",
+  "order_status_statistic":"Thống kê trạng thái đơn hàng",
+  "number_of_users": "Số người dùng",
+  "number_of_orders": "Số đơn hàng",
+  "popular_products": "Sản phẩm phổ biến"
 }

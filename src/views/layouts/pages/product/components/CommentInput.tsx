@@ -98,7 +98,7 @@ const CommentInput = (props: TCommentInput) => {
         <TextField
           fullWidth
           variant='standard'
-          placeholder={t('Comment...')}
+          placeholder={t('comment...')}
           value={inputComment}
           onFocus={() => setIsFocus(true)}
           onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setInputComment(e.target.value)}

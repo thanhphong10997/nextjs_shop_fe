@@ -98,26 +98,26 @@ export const DetailsProductPage: NextPage<TProps> = () => {
   const {
     isSuccessEdit,
     isErrorEdit,
-    messageErrorEdit,
+    messageEdit,
     isSuccessDelete,
     isErrorDelete,
-    messageErrorDelete,
+    messageDelete,
 
     typeError
   } = useSelector((state: RootState) => state.review)
   const {
     isSuccessCreate: isSuccessCreateComment,
     isErrorCreate: isErrorCreateComment,
-    messageErrorCreate: messageErrorCreateComment,
+    messageCreate: messageCreateComment,
     isSuccessReply,
     isErrorReply,
-    messageErrorReply,
+    messageReply,
     isSuccessDelete: isSuccessDeleteComment,
     isErrorDelete: isErrorDeleteComment,
-    messageErrorDelete: messageErrorDeleteComment,
+    messageDelete: messageDeleteComment,
     isSuccessEdit: isSuccessEditComment,
     isErrorEdit: isErrorEditComment,
-    messageErrorEdit: messageErrorEditComment
+    messageEdit: messageEditComment
   } = useSelector((state: RootState) => state.comments)
   const dispatch: AppDispatch = useDispatch()
 
@@ -429,7 +429,7 @@ export const DetailsProductPage: NextPage<TProps> = () => {
 
   // review
   useEffect(() => {
-    if (messageErrorEdit) {
+    if (messageEdit) {
       if (isSuccessEdit) {
         toast.success(t('update_review_success'))
         fetchGetAllReviewListByProduct(dataProduct?._id)
@@ -444,10 +444,10 @@ export const DetailsProductPage: NextPage<TProps> = () => {
         dispatch(resetInitialState())
       }
     }
-  }, [isSuccessEdit, isErrorEdit, messageErrorEdit, typeError])
+  }, [isSuccessEdit, isErrorEdit, messageEdit, typeError])
 
   useEffect(() => {
-    if (messageErrorDelete) {
+    if (messageDelete) {
       if (isSuccessDelete) {
         toast.success(t('delete_review_success'))
         fetchGetAllReviewListByProduct(dataProduct?._id)
@@ -457,11 +457,11 @@ export const DetailsProductPage: NextPage<TProps> = () => {
         dispatch(resetInitialState())
       }
     }
-  }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
+  }, [isSuccessDelete, isErrorDelete, messageDelete])
 
   // comment
   useEffect(() => {
-    if (messageErrorCreateComment) {
+    if (messageCreateComment) {
       if (isSuccessCreateComment) {
         toast.success(t('create_comment_success'))
 
@@ -472,10 +472,10 @@ export const DetailsProductPage: NextPage<TProps> = () => {
         dispatch(resetInitialStateComment())
       }
     }
-  }, [isSuccessCreateComment, isErrorCreateComment, messageErrorCreateComment])
+  }, [isSuccessCreateComment, isErrorCreateComment, messageCreateComment])
 
   useEffect(() => {
-    if (messageErrorReply) {
+    if (messageReply) {
       if (isSuccessReply) {
         toast.success(t('reply_comment_success'))
 
@@ -486,10 +486,10 @@ export const DetailsProductPage: NextPage<TProps> = () => {
         dispatch(resetInitialStateComment())
       }
     }
-  }, [isSuccessReply, isErrorReply, messageErrorReply])
+  }, [isSuccessReply, isErrorReply, messageReply])
 
   useEffect(() => {
-    if (messageErrorDeleteComment) {
+    if (messageDeleteComment) {
       if (isSuccessDeleteComment) {
         toast.success(t('delete_comment_success'))
 
@@ -500,10 +500,10 @@ export const DetailsProductPage: NextPage<TProps> = () => {
         dispatch(resetInitialStateComment())
       }
     }
-  }, [isSuccessDeleteComment, isErrorDeleteComment, messageErrorDeleteComment])
+  }, [isSuccessDeleteComment, isErrorDeleteComment, messageDeleteComment])
 
   useEffect(() => {
-    if (messageErrorEditComment) {
+    if (messageEditComment) {
       if (isSuccessEditComment) {
         toast.success(t('update_comment_success'))
 
@@ -514,7 +514,7 @@ export const DetailsProductPage: NextPage<TProps> = () => {
         dispatch(resetInitialStateComment())
       }
     }
-  }, [isSuccessEditComment, isErrorEditComment, messageErrorEditComment])
+  }, [isSuccessEditComment, isErrorEditComment, messageEditComment])
 
   return (
     <>

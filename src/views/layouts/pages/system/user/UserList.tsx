@@ -160,14 +160,14 @@ export const UserListPage: NextPage<TProps> = () => {
     users,
     isSuccessCreateEdit,
     isErrorCreateEdit,
-    messageErrorCreateEdit,
+    messageCreateEdit,
     isLoading,
     isSuccessDelete,
     isErrorDelete,
-    messageErrorDelete,
+    messageDelete,
     isSuccessMultipleDelete,
     isErrorMultipleDelete,
-    messageErrorMultipleDelete,
+    messageMultipleDelete,
     typeError
   } = useSelector((state: RootState) => state.user)
 
@@ -472,7 +472,7 @@ export const UserListPage: NextPage<TProps> = () => {
       handleGetListUser()
       handleCloseCreateEdit()
       dispatch(resetInitialState())
-    } else if (isErrorCreateEdit && messageErrorCreateEdit && typeError) {
+    } else if (isErrorCreateEdit && messageCreateEdit && typeError) {
       const errorConfig = OBJECT_TYPE_ERROR_USER[typeError]
       if (errorConfig) {
         toast.error(t(errorConfig))
@@ -485,7 +485,7 @@ export const UserListPage: NextPage<TProps> = () => {
       }
       dispatch(resetInitialState())
     }
-  }, [isSuccessCreateEdit, isErrorCreateEdit, messageErrorCreateEdit, typeError])
+  }, [isSuccessCreateEdit, isErrorCreateEdit, messageCreateEdit, typeError])
 
   useEffect(() => {
     if (isSuccessDelete) {
@@ -493,11 +493,11 @@ export const UserListPage: NextPage<TProps> = () => {
       handleGetListUser()
       dispatch(resetInitialState())
       handleCloseConfirmDeleteUser()
-    } else if (isErrorDelete && messageErrorDelete) {
+    } else if (isErrorDelete && messageDelete) {
       toast.error(t('delete_user_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
+  }, [isSuccessDelete, isErrorDelete, messageDelete])
 
   useEffect(() => {
     if (isSuccessMultipleDelete) {
@@ -505,11 +505,11 @@ export const UserListPage: NextPage<TProps> = () => {
       handleGetListUser()
       dispatch(resetInitialState())
       handleCloseConfirmDeleteMultipleUser()
-    } else if (isErrorMultipleDelete && messageErrorMultipleDelete) {
+    } else if (isErrorMultipleDelete && messageMultipleDelete) {
       toast.error(t('delete_multiple_user_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageErrorMultipleDelete])
+  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageMultipleDelete])
 
   return (
     <>

@@ -1,11 +1,12 @@
 // Next
 import { NextPage } from 'next'
 import { PERMISSIONS } from 'src/configs/permission'
+import DashboardPage from 'src/views/layouts/pages/dashboard'
 
 type TProps = {}
 
 export const Index: NextPage<TProps> = () => {
-  return <h1>This is dashboard</h1>
+  return <DashboardPage />
 }
 
 Index.permission = [PERMISSIONS.DASHBOARD]

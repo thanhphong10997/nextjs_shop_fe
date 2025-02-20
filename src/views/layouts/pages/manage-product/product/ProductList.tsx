@@ -138,14 +138,14 @@ export const ProductListPage: NextPage<TProps> = () => {
     products,
     isSuccessCreateEdit,
     isErrorCreateEdit,
-    messageErrorCreateEdit,
+    messageCreateEdit,
     isLoading,
     isSuccessDelete,
     isErrorDelete,
-    messageErrorDelete,
+    messageDelete,
     isSuccessMultipleDelete,
     isErrorMultipleDelete,
-    messageErrorMultipleDelete,
+    messageMultipleDelete,
     typeError
   } = useSelector((state: RootState) => state.product)
 
@@ -407,7 +407,7 @@ export const ProductListPage: NextPage<TProps> = () => {
       handleGetListProducts()
       handleCloseCreateEdit()
       dispatch(resetInitialState())
-    } else if (isErrorCreateEdit && messageErrorCreateEdit && typeError) {
+    } else if (isErrorCreateEdit && messageCreateEdit && typeError) {
       const errorConfig = OBJECT_TYPE_ERROR_PRODUCT[typeError]
       if (errorConfig) {
         toast.error(t(errorConfig))
@@ -420,7 +420,7 @@ export const ProductListPage: NextPage<TProps> = () => {
       }
       dispatch(resetInitialState())
     }
-  }, [isSuccessCreateEdit, isErrorCreateEdit, messageErrorCreateEdit, typeError])
+  }, [isSuccessCreateEdit, isErrorCreateEdit, messageCreateEdit, typeError])
 
   useEffect(() => {
     if (isSuccessDelete) {
@@ -428,11 +428,11 @@ export const ProductListPage: NextPage<TProps> = () => {
       handleGetListProducts()
       dispatch(resetInitialState())
       handleCloseConfirmDeleteProduct()
-    } else if (isErrorDelete && messageErrorDelete) {
+    } else if (isErrorDelete && messageDelete) {
       toast.error(t('delete_product_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
+  }, [isSuccessDelete, isErrorDelete, messageDelete])
 
   useEffect(() => {
     if (isSuccessMultipleDelete) {
@@ -440,11 +440,11 @@ export const ProductListPage: NextPage<TProps> = () => {
       handleGetListProducts()
       dispatch(resetInitialState())
       handleCloseConfirmDeleteMultipleProduct()
-    } else if (isErrorMultipleDelete && messageErrorMultipleDelete) {
+    } else if (isErrorMultipleDelete && messageMultipleDelete) {
       toast.error(t('delete_multiple_product_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageErrorMultipleDelete])
+  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageMultipleDelete])
 
   return (
     <>

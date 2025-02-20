@@ -84,11 +84,11 @@ export const RoleListPage: NextPage<TProps> = () => {
     roles,
     isSuccessCreateEdit,
     isErrorCreateEdit,
-    messageErrorCreateEdit,
+    messageCreateEdit,
     isLoading,
     isSuccessDelete,
     isErrorDelete,
-    messageErrorDelete,
+    messageDelete,
     typeError
   } = useSelector((state: RootState) => state.role)
 
@@ -241,7 +241,7 @@ export const RoleListPage: NextPage<TProps> = () => {
       handleGetListRoles()
       handleCloseCreateEdit()
       dispatch(resetInitialState())
-    } else if (isErrorCreateEdit && messageErrorCreateEdit && typeError) {
+    } else if (isErrorCreateEdit && messageCreateEdit && typeError) {
       const errorConfig = OBJECT_TYPE_ERROR_ROLE[typeError]
       if (errorConfig) {
         toast.error(t(errorConfig))
@@ -254,7 +254,7 @@ export const RoleListPage: NextPage<TProps> = () => {
       }
       dispatch(resetInitialState())
     }
-  }, [isSuccessCreateEdit, isErrorCreateEdit, messageErrorCreateEdit, typeError])
+  }, [isSuccessCreateEdit, isErrorCreateEdit, messageCreateEdit, typeError])
 
   useEffect(() => {
     if (isSuccessDelete) {
@@ -262,11 +262,11 @@ export const RoleListPage: NextPage<TProps> = () => {
       handleGetListRoles()
       dispatch(resetInitialState())
       handleCloseConfirmDeleteRole()
-    } else if (isErrorDelete && messageErrorDelete) {
-      toast.error(t(messageErrorDelete))
+    } else if (isErrorDelete && messageDelete) {
+      toast.error(t(messageDelete))
       dispatch(resetInitialState())
     }
-  }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
+  }, [isSuccessDelete, isErrorDelete, messageDelete])
 
   return (
     <>
