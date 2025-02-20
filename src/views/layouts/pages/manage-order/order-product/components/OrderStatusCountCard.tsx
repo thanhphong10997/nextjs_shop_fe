@@ -1,61 +1,74 @@
-import { Icon } from '@iconify/react/dist/iconify.js'
+// mui
 import { Avatar, Box, Card, CardContent, SxProps, Theme, Typography, useTheme } from '@mui/material'
+
+// icon
+import { Icon } from '@iconify/react/dist/iconify.js'
+
+// react
 import React from 'react'
+
+// translate
 import { useTranslation } from 'react-i18next'
+
+// others
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
-export type UserCountCardProps = {
+export type OrderStatusCountCardProps = {
   icon: string
-  userType: number
-  countUserType: { data: Record<number, number>; totalUser: number }
-  count: number
+  countOrderStatus: { data: Record<number, number>; total: number }
+  status: number
   sx?: SxProps<Theme>
   avatarSize?: number
   iconSize?: number | string
 }
 
-const UserCountCard = (props: UserCountCardProps) => {
+const OrderStatusCountCard = (props: OrderStatusCountCardProps) => {
   // hooks
   const { t } = useTranslation()
   const theme = useTheme()
 
   // props
-  const { sx, icon, count, countUserType, iconSize = 24, avatarSize = 38, userType } = props
+  const { sx, icon, status, iconSize = 24, avatarSize = 38, countOrderStatus } = props
 
   // const
-  const mapUserType = {
-    1: {
-      title: t('facebook_users'),
-      count: countUserType?.data?.[1],
+  const mapOrderStatus = {
+    0: {
+      title: t('wait_payment'),
+      count: countOrderStatus?.data?.[0],
       themeColor: theme.palette.success.main
     },
+    1: {
+      title: t('wait_delivery'),
+      count: countOrderStatus?.data?.[1],
+      themeColor: theme.palette.info.main
+    },
     2: {
-      title: t('google_users'),
-      count: countUserType?.data?.[2],
+      title: t('done_order'),
+      count: countOrderStatus?.data?.[2],
       themeColor: theme.palette.error.main
     },
     3: {
-      title: t('email_users'),
-      count: countUserType?.data?.[3],
-      themeColor: theme.palette.info.main
+      title: t('cancel_order'),
+      count: countOrderStatus?.data?.[3],
+      themeColor: theme.palette.warning.main
     },
     4: {
-      title: t('total_user'),
-      count: countUserType?.totalUser,
+      title: t('total_order'),
+      count: countOrderStatus?.total,
       themeColor: theme.palette.primary.main
     }
   }
 
   return (
-    <Card sx={{ ...sx, backgroundColor: hexToRGBA((mapUserType as any)?.[userType]?.themeColor, 0.7) }}>
+    <Card sx={{ ...sx, backgroundColor: hexToRGBA((mapOrderStatus as any)?.[status]?.themeColor, 0.7) }}>
       <CardContent sx={{ gap: 3, display: 'flex', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
           <Typography sx={{ mb: 1, color: theme.palette.customColors.lightPaperBg }}>
-            {(mapUserType as any)[userType]?.title}
+            {(mapOrderStatus as any)[status]?.title}
           </Typography>
           <Box sx={{ mb: 1, columnGap: 1.5, display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
             <Typography variant='h4' sx={{ color: theme.palette.customColors.lightPaperBg, fontWeight: 'bold' }}>
-              {(mapUserType as any)[userType]?.count}
+              {(mapOrderStatus as any)[status]?.count}
             </Typography>
           </Box>
         </Box>
@@ -66,11 +79,11 @@ const UserCountCard = (props: UserCountCardProps) => {
             height: avatarSize
           }}
         >
-          <Icon icon={icon} fontSize={iconSize} color={(mapUserType as any)?.[userType]?.themeColor} />
+          <Icon icon={icon} fontSize={iconSize} color={(mapOrderStatus as any)?.[status]?.themeColor} />
         </Avatar>
       </CardContent>
     </Card>
   )
 }
 
-export default UserCountCard
+export default OrderStatusCountCard

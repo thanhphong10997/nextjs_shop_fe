@@ -16,16 +16,16 @@ const initialState = {
   isLoading: false,
   isSuccessCreate: false,
   isErrorCreate: false,
-  messageErrorCreate: '',
+  messageCreate: '',
   isSuccessCancelMe: false,
   isErrorCancelMe: false,
-  messageErrorCancelMe: '',
+  messageCancelMe: '',
   isSuccessEdit: false,
   isErrorEdit: false,
-  messageErrorEdit: '',
+  messageEdit: '',
   isSuccessDelete: false,
   isErrorDelete: false,
-  messageErrorDelete: '',
+  messageDelete: '',
   typeError: '',
   orderItems: [],
   orderProducts: {
@@ -50,16 +50,16 @@ export const orderProductSlice = createSlice({
       state.typeError = ''
       state.isSuccessCreate = false
       state.isErrorCreate = false
-      state.messageErrorCreate = ''
+      state.messageCreate = ''
       state.isSuccessEdit = false
       state.isErrorEdit = false
-      state.messageErrorEdit = ''
+      state.messageEdit = ''
       state.isSuccessCancelMe = false
       state.isErrorCancelMe = false
-      state.messageErrorCancelMe = ''
+      state.messageCancelMe = ''
       state.isSuccessDelete = false
       state.isErrorDelete = false
-      state.messageErrorDelete = ''
+      state.messageDelete = ''
     }
   },
   extraReducers: builder => {
@@ -92,7 +92,7 @@ export const orderProductSlice = createSlice({
       state.isLoading = false
       state.isSuccessCreate = !!action?.payload?.data?._id
       state.isErrorCreate = !action?.payload?.data?._id
-      state.messageErrorCreate = action?.payload?.message
+      state.messageCreate = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
 
@@ -107,7 +107,7 @@ export const orderProductSlice = createSlice({
       state.isLoading = false
       state.isSuccessCancelMe = !!action?.payload?.data?._id
       state.isErrorCancelMe = !action?.payload?.data?._id
-      state.messageErrorCancelMe = action?.payload?.message
+      state.messageCancelMe = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
 
@@ -140,7 +140,7 @@ export const orderProductSlice = createSlice({
       state.isLoading = false
       state.isSuccessEdit = !!action?.payload?.data?._id
       state.isErrorEdit = !action?.payload?.data?._id
-      state.messageErrorEdit = action?.payload?.message
+      state.messageEdit = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
 
@@ -155,7 +155,7 @@ export const orderProductSlice = createSlice({
       state.isLoading = false
       state.isSuccessDelete = !!action?.payload?.data?._id
       state.isErrorDelete = !action?.payload?.data?._id
-      state.messageErrorDelete = action?.payload?.message
+      state.messageDelete = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
   }

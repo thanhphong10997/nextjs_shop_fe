@@ -47,15 +47,8 @@ const ReviewCard = (props: TReviewCard) => {
   const { user } = useAuth()
 
   // redux
-  const {
-    isSuccessEdit,
-    isErrorEdit,
-    messageErrorEdit,
-    isSuccessDelete,
-    isErrorDelete,
-    messageErrorDelete,
-    typeError
-  } = useSelector((state: RootState) => state.review)
+  const { isSuccessEdit, isErrorEdit, messageEdit, isSuccessDelete, isErrorDelete, messageDelete, typeError } =
+    useSelector((state: RootState) => state.review)
 
   // state
   const [openEdit, setOpenEdit] = useState({
@@ -102,13 +95,13 @@ const ReviewCard = (props: TReviewCard) => {
     if (isSuccessEdit) {
       handleCloseEdit()
     }
-  }, [isSuccessEdit, isErrorEdit, messageErrorEdit, typeError])
+  }, [isSuccessEdit, isErrorEdit, messageEdit, typeError])
 
   useEffect(() => {
     if (isSuccessDelete) {
       handleCloseConfirmDeleteReview()
     }
-  }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
+  }, [isSuccessDelete, isErrorDelete, messageDelete])
 
   return (
     <>

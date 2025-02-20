@@ -92,14 +92,14 @@ export const PaymentTypeListPage: NextPage<TProps> = () => {
     paymentTypes,
     isSuccessCreateEdit,
     isErrorCreateEdit,
-    messageErrorCreateEdit,
+    messageCreateEdit,
     isLoading,
     isSuccessDelete,
     isErrorDelete,
-    messageErrorDelete,
+    messageDelete,
     isSuccessMultipleDelete,
     isErrorMultipleDelete,
-    messageErrorMultipleDelete,
+    messageMultipleDelete,
     typeError
   } = useSelector((state: RootState) => state.paymentType)
 
@@ -273,7 +273,7 @@ export const PaymentTypeListPage: NextPage<TProps> = () => {
       handleGetListPaymentTypes()
       handleCloseCreateEdit()
       dispatch(resetInitialState())
-    } else if (isErrorCreateEdit && messageErrorCreateEdit && typeError) {
+    } else if (isErrorCreateEdit && messageCreateEdit && typeError) {
       const errorConfig = OBJECT_TYPE_ERROR_PAYMENT[typeError]
       if (errorConfig) {
         toast.error(t(errorConfig))
@@ -286,7 +286,7 @@ export const PaymentTypeListPage: NextPage<TProps> = () => {
       }
       dispatch(resetInitialState())
     }
-  }, [isSuccessCreateEdit, isErrorCreateEdit, messageErrorCreateEdit, typeError])
+  }, [isSuccessCreateEdit, isErrorCreateEdit, messageCreateEdit, typeError])
 
   useEffect(() => {
     if (isSuccessDelete) {
@@ -294,11 +294,11 @@ export const PaymentTypeListPage: NextPage<TProps> = () => {
       handleGetListPaymentTypes()
       dispatch(resetInitialState())
       handleCloseConfirmDeletePaymentType()
-    } else if (isErrorDelete && messageErrorDelete) {
+    } else if (isErrorDelete && messageDelete) {
       toast.error(t('delete_payment_type_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
+  }, [isSuccessDelete, isErrorDelete, messageDelete])
 
   useEffect(() => {
     if (isSuccessMultipleDelete) {
@@ -306,11 +306,11 @@ export const PaymentTypeListPage: NextPage<TProps> = () => {
       handleGetListPaymentTypes()
       dispatch(resetInitialState())
       handleCloseConfirmDeleteMultiplePaymentType()
-    } else if (isErrorMultipleDelete && messageErrorMultipleDelete) {
+    } else if (isErrorMultipleDelete && messageMultipleDelete) {
       toast.error(t('delete_multiple_payment_type_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageErrorMultipleDelete])
+  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageMultipleDelete])
 
   return (
     <>

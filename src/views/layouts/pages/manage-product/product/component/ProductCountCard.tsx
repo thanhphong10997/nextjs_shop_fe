@@ -57,8 +57,7 @@ const ProductCountCard = (props: ProductCountCard) => {
           variant='rounded'
           sx={{
             width: avatarSize,
-            height: avatarSize,
-            backgroundColor: theme.palette.grey[400]
+            height: avatarSize
           }}
         >
           <Icon icon={icon} fontSize={iconSize} color={(mapProductStatus as any)?.[status]?.themeColor} />

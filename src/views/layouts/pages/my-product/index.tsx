@@ -80,10 +80,10 @@ export const MyProductPage: NextPage<TProps> = () => {
     likedProducts,
     isSuccessLike,
     isErrorLike,
-    messageErrorLike,
+    messageLike,
     isSuccessUnLike,
     isErrorUnLike,
-    messageErrorUnLike,
+    messageUnLike,
     typeError
   } = useSelector((state: RootState) => state.product)
   const dispatch: AppDispatch = useDispatch()
@@ -133,7 +133,7 @@ export const MyProductPage: NextPage<TProps> = () => {
       toast.success(t('like_product_successfully'))
       dispatch(resetInitialState())
       handleGetListData()
-    } else if (isErrorLike && messageErrorLike && typeError) {
+    } else if (isErrorLike && messageLike && typeError) {
       const errorConfig = OBJECT_TYPE_ERROR_PRODUCT[typeError]
       if (errorConfig) {
         toast.error(t(errorConfig))
@@ -142,14 +142,14 @@ export const MyProductPage: NextPage<TProps> = () => {
       }
       dispatch(resetInitialState())
     }
-  }, [isSuccessLike, isErrorLike, messageErrorLike, typeError])
+  }, [isSuccessLike, isErrorLike, messageLike, typeError])
 
   useEffect(() => {
     if (isSuccessUnLike) {
       toast.success(t('unlike_product_successfully'))
       dispatch(resetInitialState())
       handleGetListData()
-    } else if (isErrorUnLike && messageErrorUnLike && typeError) {
+    } else if (isErrorUnLike && messageUnLike && typeError) {
       const errorConfig = OBJECT_TYPE_ERROR_PRODUCT[typeError]
       if (errorConfig) {
         toast.error(t(errorConfig))
@@ -158,7 +158,7 @@ export const MyProductPage: NextPage<TProps> = () => {
       }
       dispatch(resetInitialState())
     }
-  }, [isSuccessUnLike, isErrorUnLike, messageErrorUnLike, typeError])
+  }, [isSuccessUnLike, isErrorUnLike, messageUnLike, typeError])
 
   return (
     <>

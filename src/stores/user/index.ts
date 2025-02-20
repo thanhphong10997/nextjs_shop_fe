@@ -20,13 +20,13 @@ const initialState = {
   typeError: '',
   isSuccessCreateEdit: false,
   isErrorCreateEdit: false,
-  messageErrorCreateEdit: '',
+  messageCreateEdit: '',
   isSuccessDelete: false,
   isErrorDelete: false,
-  messageErrorDelete: '',
+  messageDelete: '',
   isSuccessMultipleDelete: false,
   isErrorMultipleDelete: false,
-  messageErrorMultipleDelete: '',
+  messageMultipleDelete: '',
   users: {
     data: [],
     total: 0
@@ -45,10 +45,10 @@ export const userSlice = createSlice({
       state.typeError = ''
       state.isSuccessCreateEdit = false
       state.isErrorCreateEdit = false
-      state.messageErrorCreateEdit = ''
+      state.messageCreateEdit = ''
       state.isSuccessDelete = false
       state.isErrorDelete = false
-      state.messageErrorDelete = ''
+      state.messageDelete = ''
     }
   },
   extraReducers: builder => {
@@ -81,7 +81,7 @@ export const userSlice = createSlice({
       state.isLoading = false
       state.isSuccessCreateEdit = !!action?.payload?.data?._id
       state.isErrorCreateEdit = !action?.payload?.data?._id
-      state.messageErrorCreateEdit = action?.payload?.message
+      state.messageCreateEdit = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
 
@@ -90,7 +90,7 @@ export const userSlice = createSlice({
     //   state.isLoading = false
     //   state.isSuccessCreateEdit = false
     //   state.isErrorCreateEdit = true
-    //   state.messageErrorCreateEdit = action.payload?.data?.message
+    //   state.messageCreateEdit = action.payload?.data?.message
     //   state.typeError = action.payload?.data?.typeError
     // })
 
@@ -105,7 +105,7 @@ export const userSlice = createSlice({
       state.isLoading = false
       state.isSuccessCreateEdit = !!action?.payload?.data?._id
       state.isErrorCreateEdit = !action?.payload?.data?._id
-      state.messageErrorCreateEdit = action?.payload?.message
+      state.messageCreateEdit = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
 
@@ -120,7 +120,7 @@ export const userSlice = createSlice({
       state.isLoading = false
       state.isSuccessDelete = !!action?.payload?.data?._id
       state.isErrorDelete = !action?.payload?.data?._id
-      state.messageErrorDelete = action?.payload?.message
+      state.messageDelete = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
 
@@ -135,7 +135,7 @@ export const userSlice = createSlice({
       state.isLoading = false
       state.isSuccessMultipleDelete = !!action?.payload?.data
       state.isErrorMultipleDelete = !action?.payload?.data
-      state.messageErrorMultipleDelete = action?.payload?.message
+      state.messageMultipleDelete = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })
   }

@@ -84,7 +84,7 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
 
   // redux
   const dispatch: AppDispatch = useDispatch()
-  const { isLoading, isSuccessCreate, isErrorCreate, messageErrorCreate, orderItems } = useSelector(
+  const { isLoading, isSuccessCreate, isErrorCreate, messageCreate, orderItems } = useSelector(
     (state: RootState) => state.orderProduct
   )
 
@@ -345,7 +345,7 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
 
       // memoQueryProduct.selectedProduct?.map((item: TItemOrderProduct) => handleChangeAmountCart(item, -item?.amount))
       dispatch(resetInitialState())
-    } else if (isErrorCreate && messageErrorCreate) {
+    } else if (isErrorCreate && messageCreate) {
       Swal.fire({
         title: t('Opps!'),
         text: t('create_product_order_error'),
@@ -356,7 +356,7 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
       })
       dispatch(resetInitialState())
     }
-  }, [isSuccessCreate, isErrorCreate, messageErrorCreate])
+  }, [isSuccessCreate, isErrorCreate, messageCreate])
 
   useEffect(() => {
     const data: any = router.query

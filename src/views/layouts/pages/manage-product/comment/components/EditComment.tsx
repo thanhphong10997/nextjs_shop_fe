@@ -1,5 +1,5 @@
 // Import Mui
-import { Box, Button, Grid, IconButton, Rating, TextField, Typography, useTheme } from '@mui/material'
+import { Box, Button, Grid, IconButton, Typography, useTheme } from '@mui/material'
 
 // Import React
 import React, { useEffect, useState } from 'react'
@@ -18,8 +18,6 @@ import { Controller, useForm } from 'react-hook-form'
 // redux
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from 'src/stores'
-import { getDetailsReview } from 'src/services/review-product'
-import { updateReviewAsync } from 'src/stores/reviews/actions'
 
 // components
 import CustomModal from 'src/components/custom-modal'

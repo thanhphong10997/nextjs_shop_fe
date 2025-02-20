@@ -99,7 +99,7 @@ export const MyOrderPage: NextPage<TProps> = () => {
   const [searchBy, setSearchBy] = useState('')
 
   // redux
-  const { ordersOfMe, isLoading, isSuccessCancelMe, isErrorCancelMe, messageErrorCancelMe, typeError } = useSelector(
+  const { ordersOfMe, isLoading, isSuccessCancelMe, isErrorCancelMe, messageCancelMe, typeError } = useSelector(
     (state: RootState) => state.orderProduct
   )
   const dispatch: AppDispatch = useDispatch()
@@ -138,11 +138,11 @@ export const MyOrderPage: NextPage<TProps> = () => {
       toast.success(t('cancel_order_success'))
       handleGetListOrdersOfMe()
       dispatch(resetInitialState())
-    } else if (isErrorCancelMe && messageErrorCancelMe) {
+    } else if (isErrorCancelMe && messageCancelMe) {
       toast.error(t('cancel_order_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessCancelMe, isErrorCancelMe, messageErrorCancelMe])
+  }, [isSuccessCancelMe, isErrorCancelMe, messageCancelMe])
 
   return (
     <>

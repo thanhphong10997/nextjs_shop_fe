@@ -80,13 +80,13 @@ export const CommentListPage: NextPage<TProps> = () => {
     isLoading,
     isSuccessEdit,
     isErrorEdit,
-    messageErrorEdit,
+    messageEdit,
     isSuccessDelete,
     isErrorDelete,
-    messageErrorDelete,
+    messageDelete,
     isSuccessMultipleDelete,
     isErrorMultipleDelete,
-    messageErrorMultipleDelete,
+    messageMultipleDelete,
 
     typeError
   } = useSelector((state: RootState) => state.comments)
@@ -270,7 +270,7 @@ export const CommentListPage: NextPage<TProps> = () => {
       handleGetListComments()
       handleCloseEdit()
       dispatch(resetInitialState())
-    } else if (isErrorEdit && messageErrorEdit && typeError) {
+    } else if (isErrorEdit && messageEdit && typeError) {
       const errorConfig = OBJECT_TYPE_ERROR_USER[typeError]
       if (errorConfig) {
         toast.error(t(errorConfig))
@@ -279,7 +279,7 @@ export const CommentListPage: NextPage<TProps> = () => {
       }
       dispatch(resetInitialState())
     }
-  }, [isSuccessEdit, isErrorEdit, messageErrorEdit, typeError])
+  }, [isSuccessEdit, isErrorEdit, messageEdit, typeError])
 
   useEffect(() => {
     if (isSuccessDelete) {
@@ -287,11 +287,11 @@ export const CommentListPage: NextPage<TProps> = () => {
       handleGetListComments()
       dispatch(resetInitialState())
       handleCloseConfirmDeleteComment()
-    } else if (isErrorDelete && messageErrorDelete) {
+    } else if (isErrorDelete && messageDelete) {
       toast.error(t('delete_comment_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
+  }, [isSuccessDelete, isErrorDelete, messageDelete])
 
   useEffect(() => {
     if (isSuccessMultipleDelete) {
@@ -299,11 +299,11 @@ export const CommentListPage: NextPage<TProps> = () => {
       handleGetListComments()
       dispatch(resetInitialState())
       handleCloseConfirmDeleteMultipleComment()
-    } else if (isErrorMultipleDelete && messageErrorMultipleDelete) {
+    } else if (isErrorMultipleDelete && messageMultipleDelete) {
       toast.error(t('delete_multiple_comment_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageErrorMultipleDelete])
+  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageMultipleDelete])
 
   return (
     <>

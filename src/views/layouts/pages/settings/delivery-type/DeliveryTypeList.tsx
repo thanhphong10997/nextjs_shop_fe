@@ -94,14 +94,14 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
     deliveryTypes,
     isSuccessCreateEdit,
     isErrorCreateEdit,
-    messageErrorCreateEdit,
+    messageCreateEdit,
     isLoading,
     isSuccessDelete,
     isErrorDelete,
-    messageErrorDelete,
+    messageDelete,
     isSuccessMultipleDelete,
     isErrorMultipleDelete,
-    messageErrorMultipleDelete,
+    messageMultipleDelete,
     typeError
   } = useSelector((state: RootState) => state.deliveryType)
 
@@ -275,7 +275,7 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
       handleGetListDeliveryTypes()
       handleCloseCreateEdit()
       dispatch(resetInitialState())
-    } else if (isErrorCreateEdit && messageErrorCreateEdit && typeError) {
+    } else if (isErrorCreateEdit && messageCreateEdit && typeError) {
       const errorConfig = OBJECT_TYPE_ERROR_DELIVERY[typeError]
       if (errorConfig) {
         toast.error(t(errorConfig))
@@ -288,7 +288,7 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
       }
       dispatch(resetInitialState())
     }
-  }, [isSuccessCreateEdit, isErrorCreateEdit, messageErrorCreateEdit, typeError])
+  }, [isSuccessCreateEdit, isErrorCreateEdit, messageCreateEdit, typeError])
 
   useEffect(() => {
     if (isSuccessDelete) {
@@ -296,11 +296,11 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
       handleGetListDeliveryTypes()
       dispatch(resetInitialState())
       handleCloseConfirmDeleteDeliveryType()
-    } else if (isErrorDelete && messageErrorDelete) {
+    } else if (isErrorDelete && messageDelete) {
       toast.error(t('delete_delivery_type_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
+  }, [isSuccessDelete, isErrorDelete, messageDelete])
 
   useEffect(() => {
     if (isSuccessMultipleDelete) {
@@ -308,11 +308,11 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
       handleGetListDeliveryTypes()
       dispatch(resetInitialState())
       handleCloseConfirmDeleteMultipleDeliveryType()
-    } else if (isErrorMultipleDelete && messageErrorMultipleDelete) {
+    } else if (isErrorMultipleDelete && messageMultipleDelete) {
       toast.error(t('delete_multiple_delivery_type_error'))
       dispatch(resetInitialState())
     }
-  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageErrorMultipleDelete])
+  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageMultipleDelete])
 
   return (
     <>
