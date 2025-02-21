@@ -88,7 +88,7 @@ export const DetailsProductPage: NextPage<TProps> = () => {
   const router = useRouter()
 
   // get slug from web address
-  const productId = router.query?.productId as string
+  const slug = router.query?.productId as string
 
   // auth
   const { user } = useAuth()
@@ -197,10 +197,10 @@ export const DetailsProductPage: NextPage<TProps> = () => {
       })
   }
 
-  const fetchListCommentProduct = async () => {
+  const fetchListCommentProduct = async (productId: string) => {
     setLoading(true)
     await getAllPublicComments({
-      params: { limit: -1, page: -1, order: 'createdAt desc', isPublic: true, productId: dataProduct?._id }
+      params: { limit: -1, page: -1, order: 'createdAt desc', isPublic: true, productId }
     })
       .then(async res => {
         const data = res?.data
@@ -347,16 +347,16 @@ export const DetailsProductPage: NextPage<TProps> = () => {
 
   // side effects
   useEffect(() => {
-    if (productId) {
-      fetchGetDetailsProduct(productId)
-      fetchListRelatedProduct(productId)
-      fetchListCommentProduct()
+    if (slug) {
+      fetchGetDetailsProduct(slug)
+      fetchListRelatedProduct(slug)
     }
-  }, [productId])
+  }, [slug])
 
   useEffect(() => {
     if (dataProduct?._id) {
       fetchGetAllReviewListByProduct(dataProduct?._id)
+      fetchListCommentProduct(dataProduct?._id)
     }
   }, [dataProduct?._id])
 
@@ -946,9 +946,7 @@ export const DetailsProductPage: NextPage<TProps> = () => {
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 2,
-                        mt: '20px',
-                        maxHeight: '500px',
-                        overflow: 'auto'
+                        mt: '20px'
                       }}
                     >
                       {listComment?.data?.map((comment: TCommentItemProduct) => {
