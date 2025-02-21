@@ -41,6 +41,7 @@ import ThemeComponent from 'src/theme/ThemeComponent'
 import { UserLayout } from 'src/views/layouts/UserLayout'
 import { AxiosInterceptor } from 'src/helpers/axios'
 import NoGuard from 'src/components/auth/NoGuard'
+import { useTheme } from '@mui/material'
 
 type ExtendedAppProps = AppProps & {
   Component: NextPage
@@ -84,6 +85,8 @@ export default function App(props: ExtendedAppProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { settings } = useSettings()
 
+  const theme = useTheme()
+
   // Variables
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
 
@@ -100,13 +103,15 @@ export default function App(props: ExtendedAppProps) {
     success: {
       className: 'react-hot-toast',
       style: {
-        background: '#DDF6E8'
+        background: '#DDF6E8',
+        color: theme.palette.text.primary
       }
     },
     error: {
       className: 'react-hot-toast',
       style: {
-        background: '#FDE4D5'
+        background: '#FDE4D5',
+        color: theme.palette.text.primary
       }
     }
   }
