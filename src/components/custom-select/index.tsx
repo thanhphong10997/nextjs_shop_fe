@@ -16,7 +16,7 @@ const StyledSelect = styled(Select)<SelectProps>(({ theme }) => {
     // },
     '& .MuiSelect-select.MuiSelect-outlined.MuiInputBase-input': {
       backgroundColor: theme.palette.background.paper,
-      padding: '9px 32px'
+      padding: '18px 12px'
     },
 
     legend: {
@@ -25,7 +25,9 @@ const StyledSelect = styled(Select)<SelectProps>(({ theme }) => {
     },
     '.css-14lo706 > span': {
       opacity: 1
-    }
+    },
+
+    '.Mui-disabled.MuiSelect-select': { color: theme.palette.grey[500], cursor: 'not-allowed' }
 
     // '.MuiOutlinedInput-notchedOutline': {
     //   top: '0!important',
@@ -49,7 +51,7 @@ const CustomSelect = (props: TCustomSelect) => {
   const { t } = useTranslation()
 
   return (
-    <Box sx={{ width: '100%', height: '39px', position: 'relative' }}>
+    <Box sx={{ width: '100%', height: 'auto', position: 'relative' }}>
       {((Array.isArray(value) && !value.length) || !value) && <CustomPlaceholder>{placeholder}</CustomPlaceholder>}
       {/* <CustomPlaceholder>{placeholder}</CustomPlaceholder> */}
       <StyledSelect fullWidth={fullWidth} value={value} label={label} onChange={onChange} {...rests}>

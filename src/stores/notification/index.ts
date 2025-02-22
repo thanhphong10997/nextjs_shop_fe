@@ -24,7 +24,8 @@ const initialState = {
   messageReadAll: '',
   notifications: {
     data: [],
-    total: 0
+    total: 0,
+    totalNew: 0
   }
 }
 
@@ -58,11 +59,13 @@ export const notificationSlice = createSlice({
       state.isLoading = false
       state.notifications.data = action?.payload?.data?.notifications || []
       state.notifications.total = action?.payload?.data?.totalCount
+      state.notifications.totalNew = action?.payload?.data?.totalNew
     })
     builder.addCase(getAllNotificationsAsync.rejected, (state, action) => {
       state.isLoading = false
       state.notifications.data = []
       state.notifications.total = 0
+      state.notifications.totalNew = 0
     })
 
     // mark read notifications
@@ -89,8 +92,8 @@ export const notificationSlice = createSlice({
 
     builder.addCase(markReadAllNotificationAsync.fulfilled, (state, action) => {
       state.isLoading = false
-      state.isSuccessReadAll = !!action?.payload?.data?._id
-      state.isErrorReadAll = !action?.payload?.data?._id
+      state.isSuccessReadAll = !!action?.payload?.data?.length
+      state.isErrorReadAll = !action?.payload?.data?.length
       state.messageReadAll = action?.payload?.message
       state.typeError = action?.payload?.typeError
     })

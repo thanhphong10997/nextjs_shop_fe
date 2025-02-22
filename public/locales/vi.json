@@ -257,14 +257,16 @@
   "all": "Tất cả",
   "wait_payment" : "Chờ thanh toán",
   "wait_delivery": "Chờ giao hàng",
-  "done": "Hoàn thành",
+  "order_is_delivered": "Đơn hàng đã được giao",
   "cancel_order": "Hủy đơn hàng",
   "title_cancel_order": "Hủy đơn hàng",
   "confirm_cancel_order": "Bạn có chắc muốn hủy đơn hàng này?",
   "cancel_order_success": "Hủy đơn hàng thành công",
   "cancel_order_error":"Hủy đơn hàng thất bại",
   "my_order": "Đơn hàng của tôi",
-  "done_order": "Đã hoàn thành",
+  "done": "Đã hoàn thành",
+  "done_order":"Đã hoàn thành đơn hàng",
+  "order_is_paid": "Đã thanh toán đơn hàng",
   "canceled_order": "Đã hủy",
   "order_has_been_delivery": "Đơn hàng đã được giao thành công",
   "update_order_product_success": "Cập nhật đơn hàng thành công",
@@ -341,5 +343,8 @@
   "marked_notifications_success": "Đã đánh dấu thông báo",
   "marked_notifications_error": "Đánh dấu thông báo thất bại",
   "delete_notifications_success": "Xóa thông báo thành công",
-  "delete_notifications_error": "Xóa thông báo thất bại"
+  "delete_notifications_error": "Xóa thông báo thất bại",
+  "mark_read_all_notifications": "Đánh dấu đã đọc tất cả",
+  "read": "Đã đọc",
+  "unread": "Chưa đọc"
 }

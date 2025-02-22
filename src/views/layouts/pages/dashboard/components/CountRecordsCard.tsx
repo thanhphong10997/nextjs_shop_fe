@@ -65,35 +65,36 @@ const CountRecordsCard = (props: TProps) => {
         <Typography sx={{ fontSize: '26px', fontWeight: '600', mb: 4 }}>Statistics</Typography>
       </Box>
       <Grid container spacing={6}>
-        {Object.keys(data)?.map(record => {
-          return (
-            <Grid item key={record} md={3} sm={6} xs={12}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Avatar
-                  variant='rounded'
-                  sx={{
-                    width: '50px',
-                    height: '50px',
-                    borderRadius: '50%',
-                    color: hexToRGBA((mapRecord as any)?.[record]?.theme, 0.16)
-                  }}
-                >
-                  <Icon
-                    icon={(mapRecord as any)?.[record]?.icon}
-                    fontSize={30}
-                    color={(mapRecord as any)?.[record]?.theme}
-                  />
-                </Avatar>
-                <Box>
-                  <Typography sx={{ fontSize: '26px' }}>
-                    {record === 'revenue' ? `${formatNumberToLocal(data?.[record])} VND` : data?.[record]}
-                  </Typography>
-                  <Typography sx={{ fontSize: '16px' }}>{(mapRecord as any)?.[record]?.title}</Typography>
+        {data &&
+          Object.keys(data)?.map(record => {
+            return (
+              <Grid item key={record} md={3} sm={6} xs={12}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Avatar
+                    variant='rounded'
+                    sx={{
+                      width: '50px',
+                      height: '50px',
+                      borderRadius: '50%',
+                      color: hexToRGBA((mapRecord as any)?.[record]?.theme, 0.16)
+                    }}
+                  >
+                    <Icon
+                      icon={(mapRecord as any)?.[record]?.icon}
+                      fontSize={30}
+                      color={(mapRecord as any)?.[record]?.theme}
+                    />
+                  </Avatar>
+                  <Box>
+                    <Typography sx={{ fontSize: '26px' }}>
+                      {record === 'revenue' ? `${formatNumberToLocal(data?.[record])} VND` : data?.[record]}
+                    </Typography>
+                    <Typography sx={{ fontSize: '16px' }}>{(mapRecord as any)?.[record]?.title}</Typography>
+                  </Box>
                 </Box>
-              </Box>
-            </Grid>
-          )
-        })}
+              </Grid>
+            )
+          })}
       </Grid>
     </Box>
   )

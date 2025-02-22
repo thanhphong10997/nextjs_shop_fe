@@ -4,16 +4,19 @@ export type LoginParams = {
   email: string
   password: string
   rememberMe?: boolean
+  deviceToken?: string
 }
 
 export type LoginGoogleParams = {
   tokenId: string
   rememberMe?: boolean
+  deviceToken?: string
 }
 
 export type LoginFacebookParams = {
   tokenId: string
   rememberMe?: boolean
+  deviceToken?: string
 }
 
 export type TUserAddresses = {

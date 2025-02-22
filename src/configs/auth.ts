@@ -12,5 +12,6 @@ export const REFRESH_TOKEN = 'refreshToken'
 export const TEMPORARY_TOKEN = 'temporaryToken'
 export const PRE_AUTH_TOKEN = 'prevAuthToken'
 export const REMEMBER_AUTH_TOKEN = 'rememberAuthToken'
+export const DEVICE_TOKEN = 'deviceToken'
 
 export const LIST_PAGE_PUBLIC = ['/product', '/home']

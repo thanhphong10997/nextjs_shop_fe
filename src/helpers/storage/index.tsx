@@ -1,5 +1,6 @@
 import {
   ACCESS_TOKEN,
+  DEVICE_TOKEN,
   PRE_AUTH_TOKEN,
   REFRESH_TOKEN,
   REMEMBER_AUTH_TOKEN,
@@ -121,5 +122,26 @@ export const getLocalRememberLoginAuthSocial = () => {
 export const clearLocalRememberLoginAuthSocial = () => {
   if (typeof window !== 'undefined') {
     window.localStorage.removeItem(REMEMBER_AUTH_TOKEN)
+  }
+}
+
+// firebase cloud message local storage
+export const setLocalDeviceToken = (token: string) => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(DEVICE_TOKEN, token)
+  }
+}
+
+export const getLocalDeviceToken = () => {
+  if (typeof window !== 'undefined') {
+    return window.localStorage.getItem(DEVICE_TOKEN)
+  }
+
+  return ''
+}
+
+export const clearLocalDeviceToken = () => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.removeItem(DEVICE_TOKEN)
   }
 }

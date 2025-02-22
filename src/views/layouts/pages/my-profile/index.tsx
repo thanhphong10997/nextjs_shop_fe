@@ -340,7 +340,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
                     />
                   </Grid>
                   {!isDisabledRole && (
-                    <Grid item md={6} xs={12}>
+                    <Grid item md={6} xs={12} sx={{ height: '100%' }}>
                       <Controller
                         name='role'
                         control={control}
@@ -351,6 +351,7 @@ export const MyProfilePage: NextPage<TProps> = () => {
                           return (
                             <>
                               <CustomSelect
+                                disabled
                                 label={t('Role')}
                                 value={value}
                                 onChange={onChange}

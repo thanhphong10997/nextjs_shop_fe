@@ -25,7 +25,6 @@ import {
   IconButton,
   useTheme
 } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 
 // Import react hook form
 import { useForm, SubmitHandler, Controller } from 'react-hook-form'
@@ -47,6 +46,7 @@ import { useTranslation } from 'react-i18next'
 import { signIn, useSession } from 'next-auth/react'
 import {
   clearLocalPreTokenSocial,
+  getLocalDeviceToken,
   getLocalPreTokenSocial,
   getLocalRememberLoginAuthSocial,
   setLocalPreTokenSocial,
@@ -54,6 +54,7 @@ import {
 } from 'src/helpers/storage'
 import FallbackSpinner from 'src/components/fall-back'
 import { ROUTE_CONFIG } from 'src/configs/route'
+import useFcmToken from 'src/hooks/useFcmToken'
 
 type TProps = {}
 type Inputs = {
@@ -77,6 +78,9 @@ export const LoginPage: NextPage<TProps> = () => {
   // state
   const [showPassword, setShowPassword] = useState(false)
   const [isRemember, setIsRemember] = useState(false)
+
+  // firebase cloud message token
+  const { fcmToken } = useFcmToken()
 
   const { data: session, status } = useSession()
 
@@ -104,7 +108,7 @@ export const LoginPage: NextPage<TProps> = () => {
 
   const onSubmit: SubmitHandler<Inputs> = data => {
     if (!Object.keys(errors)?.length) {
-      login({ ...data, rememberMe: isRemember }, err => {
+      login({ ...data, rememberMe: isRemember, deviceToken: fcmToken }, err => {
         if (err?.response?.data?.typeError === 'INVALID') {
           toast.error(t('the_email_or_password_is_wrong'))
         }
@@ -123,15 +127,19 @@ export const LoginPage: NextPage<TProps> = () => {
     signIn('facebook')
     clearLocalPreTokenSocial()
   }
-  const localRemember = getLocalRememberLoginAuthSocial()
 
   // check auth sign in google
   useEffect(() => {
     if ((session as any)?.accessToken && (session as any)?.accessToken !== prevLocalSocialToken) {
       const localRemember = getLocalRememberLoginAuthSocial()
+      const deviceToken = getLocalDeviceToken()
       if ((session as any)?.provider === 'facebook') {
         loginFacebook(
-          { tokenId: (session as any)?.accessToken, rememberMe: localRemember ? localRemember === 'true' : false },
+          {
+            tokenId: (session as any)?.accessToken,
+            rememberMe: localRemember ? localRemember === 'true' : false,
+            deviceToken: deviceToken ? deviceToken : ''
+          },
           err => {
             if (err?.response?.data?.typeError === 'INVALID') {
               toast.error(t('the_email_or_password_is_wrong'))
@@ -141,7 +149,11 @@ export const LoginPage: NextPage<TProps> = () => {
         )
       } else {
         loginGoogle(
-          { tokenId: (session as any)?.accessToken, rememberMe: localRemember ? localRemember === 'true' : false },
+          {
+            tokenId: (session as any)?.accessToken,
+            rememberMe: localRemember ? localRemember === 'true' : false,
+            deviceToken: deviceToken ? deviceToken : ''
+          },
           err => {
             if (err?.response?.data?.typeError === 'INVALID') {
               toast.error(t('the_email_or_password_is_wrong'))

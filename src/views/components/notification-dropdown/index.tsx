@@ -12,20 +12,24 @@ import {
   Typography,
   useTheme
 } from '@mui/material'
-import React, { Fragment, SyntheticEvent, useEffect, useState } from 'react'
+import React, { Fragment, SyntheticEvent, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import NotificationItem from './components/NotificationItem'
 import { AppDispatch, RootState } from 'src/stores'
 import { useDispatch, useSelector } from 'react-redux'
-import { getAllNotificationsAsync } from 'src/stores/notification/actions'
+import { getAllNotificationsAsync, markReadAllNotificationAsync } from 'src/stores/notification/actions'
 import toast from 'react-hot-toast'
 import { resetInitialState } from 'src/stores/notification'
+import fireBaseApp from 'src/configs/firebase'
+import { getMessaging, onMessage } from 'firebase/messaging'
 
 export type NotificationsType = {
   _id: string
   createdAt: string
   title: string
   body: string
+  isRead: boolean
+  context: string
   referenceId: string
 }
 
@@ -63,6 +67,10 @@ const NotificationDropDown = () => {
 
   // state
   const [anchorEl, setAnchorEl] = useState<(EventTarget & Element) | null>(null)
+  const [limit, setLimit] = useState(10)
+
+  // ref
+  const wrapperListRef = useRef<HTMLDivElement>(null)
 
   // redux
   const dispatch: AppDispatch = useDispatch()
@@ -72,6 +80,9 @@ const NotificationDropDown = () => {
     isErrorRead,
     isSuccessRead,
     messageRead,
+    isSuccessReadAll,
+    isErrorReadAll,
+    messageReadAll,
     isSuccessDelete,
     isErrorDelete,
     messageDelete
@@ -86,21 +97,38 @@ const NotificationDropDown = () => {
     setAnchorEl(null)
   }
 
+  const handleMarkReadAllNotifications = () => {
+    dispatch(markReadAllNotificationAsync())
+  }
+
   const handleGetListNotification = () => {
     dispatch(
       getAllNotificationsAsync({
         params: {
-          limit: -1,
-          page: -1
+          limit: limit,
+          page: 1,
+          order: 'createdAt desc'
         }
       })
     )
   }
 
+  const handleScrollListNotification = () => {
+    const wrapperContent = wrapperListRef.current
+    if (!wrapperContent) return
+    const listHeight = wrapperContent.clientHeight
+    const scrollHeight = wrapperContent.scrollHeight
+    const maxHeight = scrollHeight - listHeight
+    const currentHeight = wrapperContent.scrollTop
+    if (currentHeight >= maxHeight) {
+      if (notifications.total > limit) setLimit(prev => prev + 10)
+    }
+  }
+
   // side effects
   useEffect(() => {
     handleGetListNotification()
-  }, [])
+  }, [limit])
 
   useEffect(() => {
     if (messageRead) {
@@ -117,6 +145,20 @@ const NotificationDropDown = () => {
   }, [isSuccessRead, isErrorRead, messageRead])
 
   useEffect(() => {
+    if (messageReadAll) {
+      if (isSuccessReadAll && !isErrorReadAll) {
+        toast.success(t('marked_all_notifications_success'))
+        dispatch(resetInitialState())
+        handleGetListNotification()
+      } else if (isErrorReadAll && messageReadAll) {
+        toast.error(t('marked_all_notifications_error'))
+        dispatch(resetInitialState())
+        handleGetListNotification()
+      }
+    }
+  }, [isSuccessReadAll, isErrorReadAll, messageReadAll])
+
+  useEffect(() => {
     if (messageDelete) {
       if (isSuccessDelete && !isErrorDelete) {
         toast.success(t('delete_notifications_success'))
@@ -130,7 +172,23 @@ const NotificationDropDown = () => {
     }
   }, [isSuccessDelete, isErrorDelete, messageDelete])
 
-  console.log('notification', { notifications })
+  // send message notification to firebase
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      const messaging = getMessaging(fireBaseApp)
+      const unsubscribe = onMessage(messaging, payload => {
+        // Handle the received push notification while the app is in the foreground
+        // You can display a notification or update the UI based on the payload
+        console.log('Foreground push notification received:', payload)
+        handleGetListNotification()
+      })
+
+      return () => {
+        unsubscribe() // Unsubscribe from the onMessage event
+      }
+    }
+  }, [])
 
   return (
     <Fragment>
@@ -138,7 +196,7 @@ const NotificationDropDown = () => {
       <IconButton color='inherit' aria-haspopup='true' aria-controls='customized-menu' onClick={handleDropdownOpen}>
         <Badge
           color='error'
-          badgeContent={4}
+          badgeContent={notifications?.totalNew}
           sx={{
             '& .MuiBadge-badge': {
               top: 4,
@@ -168,12 +226,16 @@ const NotificationDropDown = () => {
               Notifications
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <Chip size='small' color='primary' label={`${notifications?.total} New`} />
+              <Chip size='small' color='primary' label={`${notifications?.totalNew} New`} />
               <Icon icon='line-md:email-opened' />
             </Box>
           </Box>
         </MenuItem>
-        <Box sx={{ maxHeight: 349, overflowY: 'auto', overflowX: 'hidden' }}>
+        <Box
+          sx={{ maxHeight: 349, overflowY: 'auto', overflowX: 'hidden' }}
+          ref={wrapperListRef}
+          onScroll={handleScrollListNotification}
+        >
           {notifications?.data?.map((notification: NotificationsType, index: number) => (
             <NotificationItem key={index} notification={notification} handleDropdownClose={handleDropdownClose} />
           ))}
@@ -189,8 +251,8 @@ const NotificationDropDown = () => {
             borderTop: theme => `1px solid ${theme.palette.divider}`
           }}
         >
-          <Button fullWidth variant='contained' onClick={handleDropdownClose}>
-            {t('Mark read all notifications')}
+          <Button fullWidth variant='contained' onClick={handleMarkReadAllNotifications}>
+            {t('mark_read_all_notifications')}
           </Button>
         </MenuItem>
       </StyledMenu>
