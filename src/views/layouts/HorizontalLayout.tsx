@@ -21,6 +21,7 @@ import { useRouter } from 'next/router'
 import { ROUTE_CONFIG } from 'src/configs/route'
 import Link from 'next/link'
 import CartProduct from '../components/cart-product'
+import NotificationDropDown from '../components/notification-dropdown'
 
 // Iconify
 // import { Icon } from '@iconify/react'
@@ -102,7 +103,10 @@ const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer, hideMenu }) =>
         <ModeToggle />
         <CartProduct />
         {auth.user ? (
-          <UserDropdown />
+          <>
+            <NotificationDropDown />
+            <UserDropdown />
+          </>
         ) : (
           <Button variant='contained' sx={{ width: 'auto', ml: 4 }} onClick={handleNavigateLogIn}>
             Sign In
