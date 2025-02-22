@@ -101,7 +101,7 @@ const AuthProvider = ({ children }: Props) => {
   const handleLogin = (params: LoginParams, errorCallback?: ErrCallbackType) => {
     // axios
     //   .post(authConfig.loginEndpoint, params)
-    loginAuth({ email: params.email, password: params.password })
+    loginAuth({ email: params.email, password: params.password, deviceToken: params?.deviceToken })
       .then(async response => {
         if (params.rememberMe) {
           setLocalUserData(JSON.stringify(response.data.user), response.data.access_token, response.data.refresh_token)
@@ -127,7 +127,7 @@ const AuthProvider = ({ children }: Props) => {
   const handleLoginGoogle = (params: LoginGoogleParams, errorCallback?: ErrCallbackType) => {
     // axios
     //   .post(authConfig.loginEndpoint, params)
-    loginAuthGoogle(params?.tokenId)
+    loginAuthGoogle({ idToken: params?.tokenId, deviceToken: params.deviceToken })
       .then(async response => {
         if (params.rememberMe) {
           setLocalUserData(JSON.stringify(response.data.user), response.data.access_token, response.data.refresh_token)
@@ -153,7 +153,7 @@ const AuthProvider = ({ children }: Props) => {
   const handleLoginFacebook = (params: LoginFacebookParams, errorCallback?: ErrCallbackType) => {
     // axios
     //   .post(authConfig.loginEndpoint, params)
-    loginAuthFacebook(params?.tokenId)
+    loginAuthFacebook({ idToken: params?.tokenId, deviceToken: params.deviceToken })
       .then(async response => {
         if (params.rememberMe) {
           setLocalUserData(JSON.stringify(response.data.user), response.data.access_token, response.data.refresh_token)
