@@ -336,5 +336,10 @@
   "order_status_statistic":"Thống kê trạng thái đơn hàng",
   "number_of_users": "Số người dùng",
   "number_of_orders": "Số đơn hàng",
-  "popular_products": "Sản phẩm phổ biến"
+  "popular_products": "Sản phẩm phổ biến",
+  "create_order": "Đặt hàng thành công",
+  "marked_notifications_success": "Đã đánh dấu thông báo",
+  "marked_notifications_error": "Đánh dấu thông báo thất bại",
+  "delete_notifications_success": "Xóa thông báo thành công",
+  "delete_notifications_error": "Xóa thông báo thất bại"
 }
