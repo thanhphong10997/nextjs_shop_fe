@@ -1,15 +1,9 @@
-import { getMessaging, onMessage } from 'firebase/messaging'
 import Head from 'next/head'
 import { ReactNode, useEffect } from 'react'
-import fireBaseApp from 'src/configs/firebase'
-import useFcmToken from 'src/hooks/useFcmToken'
 import { LayoutNotApp } from 'src/views/layouts/LayoutNotApp'
 import HomePage from 'src/views/layouts/pages/home'
 
 export default function Home() {
-  // Use the token as needed
-  // fcmToken && console.log('FCM token:', fcmToken)
-
   return (
     <>
       <Head>

@@ -3,6 +3,7 @@ import { Box, Button, Card, Typography, useTheme } from '@mui/material'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import Spinner from 'src/components/spinner'
 import { ROUTE_CONFIG } from 'src/configs/route'
 import { getVNPayIpnPaymentVNPay } from 'src/services/payment'
 import { formatNumberToLocal } from 'src/utils'
@@ -46,69 +47,81 @@ const PaymentVNPay = () => {
   }, [vnp_SecureHash, vnp_ResponseCode, vnp_TxnRef])
 
   return (
-    <Card sx={{ padding: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Typography sx={{ fontSize: '24px', fontWeight: 600, color: theme.palette.primary.main }}>
-          {formatNumberToLocal(paymentData?.totalPrice)} VND
-        </Typography>
-      </Box>
-      {paymentData.status === '00' ? (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            flexDirection: 'column',
-            gap: 4
-          }}
-        >
-          <Box
-            sx={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: '20px'
-            }}
-          >
-            <Icon icon='ooui:success' style={{ fontSize: '50px', color: theme.palette.success.main }} />
-          </Box>
-          <Typography sx={{ fontWeight: 600 }}>{t('payment_success')}</Typography>
+    <>
+      {!paymentData.status && <Spinner />}
+      <Card sx={{ padding: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Typography sx={{ fontSize: '24px', fontWeight: 600, color: theme.palette.primary.main }}>
+            {formatNumberToLocal(paymentData?.totalPrice)} VND
+          </Typography>
         </Box>
-      ) : (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            flexDirection: 'column',
-            gap: 4
-          }}
-        >
-          <Box
-            sx={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: '20px'
-            }}
-          >
-            <Icon icon='fluent:warning-28-regular' style={{ fontSize: '50px', color: theme.palette.warning.main }} />
-          </Box>
-          <Typography sx={{ fontWeight: 600 }}>{t('payment_error')}</Typography>
-        </Box>
-      )}
 
-      <Box
-        sx={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          mt: 4
-        }}
-      >
-        <Button variant='contained' onClick={() => router.push(ROUTE_CONFIG.HOME)}>
-          {t('return_home')}
-        </Button>
-      </Box>
-    </Card>
+        {/* fix case payment error will show the first time after reload pages  */}
+        {paymentData.status && (
+          <>
+            {paymentData.status === '00' ? (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexDirection: 'column',
+                  gap: 4
+                }}
+              >
+                <Box
+                  sx={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginTop: '20px'
+                  }}
+                >
+                  <Icon icon='ooui:success' style={{ fontSize: '50px', color: theme.palette.success.main }} />
+                </Box>
+                <Typography sx={{ fontWeight: 600 }}>{t('payment_success')}</Typography>
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexDirection: 'column',
+                  gap: 4
+                }}
+              >
+                <Box
+                  sx={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginTop: '20px'
+                  }}
+                >
+                  <Icon
+                    icon='fluent:warning-28-regular'
+                    style={{ fontSize: '50px', color: theme.palette.warning.main }}
+                  />
+                </Box>
+                <Typography sx={{ fontWeight: 600 }}>{t('payment_error')}</Typography>
+              </Box>
+            )}
+          </>
+        )}
+
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            mt: 4
+          }}
+        >
+          <Button variant='contained' onClick={() => router.push(ROUTE_CONFIG.HOME)}>
+            {t('return_home')}
+          </Button>
+        </Box>
+      </Card>
+    </>
   )
 }
 

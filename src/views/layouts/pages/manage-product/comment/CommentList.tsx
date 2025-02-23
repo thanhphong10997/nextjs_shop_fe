@@ -373,7 +373,6 @@ export const CommentListPage: NextPage<TProps> = () => {
             sortingOrder={['desc', 'asc']}
             disableRowSelectionOnClick
             disableColumnFilter
-            disableColumnMenu
             slots={{
               pagination: PaginationComponent
             }}

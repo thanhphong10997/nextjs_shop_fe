@@ -373,7 +373,6 @@ export const CityListPage: NextPage<TProps> = () => {
             sortingOrder={['desc', 'asc']}
             disableRowSelectionOnClick
             disableColumnFilter
-            disableColumnMenu
             rowSelectionModel={selectedRow}
             onRowSelectionModelChange={(row: GridRowSelectionModel) => {
               setSelectedRow(row as string[])

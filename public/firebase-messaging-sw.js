@@ -16,6 +16,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig)
 // eslint-disable-next-line no-undef
 const messaging = firebase.messaging()
+console.log('firebase messaging', { messaging })
 
 messaging.onBackgroundMessage(payload => {
   const notificationTitle = payload.notification.title
