@@ -657,7 +657,6 @@ export const UserListPage: NextPage<TProps> = () => {
             sortingOrder={['desc', 'asc']}
             disableRowSelectionOnClick
             disableColumnFilter
-            disableColumnMenu
             rowSelectionModel={selectedRow?.map(item => item.id)}
             onRowSelectionModelChange={(row: GridRowSelectionModel) => {
               const formatData: any = row.map(id => {

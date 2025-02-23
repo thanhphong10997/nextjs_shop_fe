@@ -118,7 +118,7 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
   const handleFormatProductData = (items: any) => {
     const objectMap: Record<string, TItemOrderProduct> = {}
     orderItems?.forEach((order: any) => {
-      objectMap[order?.product] = order
+      objectMap[order?.product?._id] = order
     })
 
     return items?.map((item: any) => ({
@@ -287,6 +287,7 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
       language: i18n.language === 'vi' ? 'vn' : i18n.language
     })
       .then(response => {
+        console.log('response', response.data)
         if (response?.data) {
           window.open(response?.data, '_blank')
         }

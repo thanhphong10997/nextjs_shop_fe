@@ -328,7 +328,6 @@ export const RoleListPage: NextPage<TProps> = () => {
               sortingOrder={['desc', 'asc']}
               disableRowSelectionOnClick
               disableColumnFilter
-              disableColumnMenu
               hideFooter
               onRowClick={row => {
                 setSelectedRow({
