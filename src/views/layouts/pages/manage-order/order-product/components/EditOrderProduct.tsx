@@ -32,26 +32,17 @@ import { yupResolver } from '@hookform/resolvers/yup'
 // redux
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from 'src/stores'
-import { createProductAsync, updateProductAsync } from 'src/stores/product/actions'
+import { getDetailsOrderProduct } from 'src/services/order-product'
+import { updateOrderProductAsync } from 'src/stores/order-product/actions'
 
 // components
 import Spinner from 'src/components/spinner'
-import WrapperFileUpload from 'src/components/wrapper-file-upload'
 import CustomSelect from 'src/components/custom-select'
-import CustomDatePicker from 'src/components/custom-date-picker'
-import CustomEditor from 'src/components/custom-editor'
 
 // others
-import { convertFileToBase64, convertHTMLToDraft, stringToSlug } from 'src/utils'
+import { stringToSlug } from 'src/utils'
 import { getAllProductTypes } from 'src/services/product-type'
-import { getDetailsProduct } from 'src/services/product'
 import { getAllCities } from 'src/services/city'
-
-// draftJs
-import { EditorState, convertToRaw } from 'draft-js'
-import draftToHtml from 'draftjs-to-html'
-import { getDetailsOrderProduct } from 'src/services/order-product'
-import { updateOrderProductAsync } from 'src/stores/order-product/actions'
 
 type TEditProduct = {
   open: boolean
@@ -64,8 +55,6 @@ type TDefaultValues = {
   phone: string
   address: string
   city: string
-  isPaid: number
-  isDelivered: number
 }
 
 const EditOrderProduct = (props: TEditProduct) => {
@@ -92,9 +81,7 @@ const EditOrderProduct = (props: TEditProduct) => {
     fullName: '',
     phone: '',
     address: '',
-    city: '',
-    isPaid: 0,
-    isDelivered: 0
+    city: ''
   }
   const schema = yup
     .object()
@@ -102,10 +89,7 @@ const EditOrderProduct = (props: TEditProduct) => {
       fullName: yup.string().required(t('required_field')),
       phone: yup.string().required(t('required_field')),
       address: yup.string().required(t('required_field')),
-      city: yup.string().required(t('required_field')),
-
-      isPaid: yup.number().required(t('required_field')),
-      isDelivered: yup.number().required(t('required_field'))
+      city: yup.string().required(t('required_field'))
     })
     .required()
   const {
@@ -178,9 +162,7 @@ const EditOrderProduct = (props: TEditProduct) => {
             fullName: data?.shippingAddress?.fullName,
             phone: data?.shippingAddress?.phone,
             city: data?.shippingAddress?.city,
-            address: data?.shippingAddress?.address,
-            isPaid: data?.isPaid ? 1 : 0,
-            isDelivered: data?.isDelivered ? 1 : 0
+            address: data?.shippingAddress?.address
           })
         }
         setLoading(false)
@@ -370,93 +352,6 @@ const EditOrderProduct = (props: TEditProduct) => {
                                   </FormHelperText>
                                 )}
                               </>
-                            )
-                          }}
-                        />
-                      </Grid>
-
-                      <Grid item md={6} xs={12}>
-                        <Controller
-                          name='isDelivered'
-                          control={control}
-                          render={({ field: { onChange, onBlur, value } }) => {
-                            // Fixing error: Function components cannot be given refs
-
-                            return (
-                              <Box
-                                sx={{
-                                  display: 'flex',
-                                  flexDirection: 'column'
-                                }}
-                              >
-                                <InputLabel
-                                  sx={{
-                                    fontSize: '14px',
-                                    display: 'block',
-                                    color: `${theme.palette.customColors.main}ad`
-                                  }}
-                                >
-                                  {t('delivery_status')}
-                                </InputLabel>
-                                <FormControlLabel
-                                  sx={{
-                                    margin: 0
-                                  }}
-                                  control={
-                                    <Switch
-                                      value={value}
-                                      checked={Boolean(value)}
-                                      onChange={event => {
-                                        onChange(event?.target.checked ? 1 : 0)
-                                      }}
-                                    />
-                                  }
-                                  label={Boolean(value) ? t('delivered') : t('not_delivered')}
-                                />
-                              </Box>
-                            )
-                          }}
-                        />
-                      </Grid>
-                      <Grid item md={6} xs={12}>
-                        <Controller
-                          name='isPaid'
-                          control={control}
-                          render={({ field: { onChange, onBlur, value } }) => {
-                            // Fixing error: Function components cannot be given refs
-
-                            return (
-                              <Box
-                                sx={{
-                                  display: 'flex',
-                                  flexDirection: 'column'
-                                }}
-                              >
-                                <InputLabel
-                                  sx={{
-                                    fontSize: '14px',
-                                    display: 'block',
-                                    color: `${theme.palette.customColors.main}ad`
-                                  }}
-                                >
-                                  {t('payment_status')}
-                                </InputLabel>
-                                <FormControlLabel
-                                  sx={{
-                                    margin: 0
-                                  }}
-                                  control={
-                                    <Switch
-                                      value={value}
-                                      checked={Boolean(value)}
-                                      onChange={event => {
-                                        onChange(event?.target.checked ? 1 : 0)
-                                      }}
-                                    />
-                                  }
-                                  label={Boolean(value) ? t('paid') : t('not_paid')}
-                                />
-                              </Box>
                             )
                           }}
                         />

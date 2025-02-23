@@ -9,7 +9,8 @@ import {
   getAllOrderProductsAsync,
   getAllOrderProductsByMeAsync,
   serviceName,
-  updateOrderProductAsync
+  updateOrderProductAsync,
+  updateOrderProductStatusAsync
 } from './actions'
 
 const initialState = {
@@ -137,6 +138,21 @@ export const orderProductSlice = createSlice({
     // Still go to fullfilled (not rejected) even if the api return an error
 
     builder.addCase(updateOrderProductAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccessEdit = !!action?.payload?.data?._id
+      state.isErrorEdit = !action?.payload?.data?._id
+      state.messageEdit = action?.payload?.message
+      state.typeError = action?.payload?.typeError
+    })
+
+    // Update order product status
+    builder.addCase(updateOrderProductStatusAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+
+    // Still go to fullfilled (not rejected) even if the api return an error
+
+    builder.addCase(updateOrderProductStatusAsync.fulfilled, (state, action) => {
       state.isLoading = false
       state.isSuccessEdit = !!action?.payload?.data?._id
       state.isErrorEdit = !action?.payload?.data?._id

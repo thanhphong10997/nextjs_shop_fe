@@ -8,7 +8,7 @@ export const PRODUCT_ORDER_STATUS = {
     value: '1'
   },
   2: {
-    label: 'done_order',
+    label: 'done',
     value: '2'
   },
   3: {

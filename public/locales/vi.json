@@ -346,5 +346,7 @@
   "delete_notifications_error": "Xóa thông báo thất bại",
   "mark_read_all_notifications": "Đánh dấu đã đọc tất cả",
   "read": "Đã đọc",
-  "unread": "Chưa đọc"
+  "unread": "Chưa đọc",
+  "paid_status": "Trạng thái thanh toán",
+  "delivery_status": "Trạng thái giao hàng"
 }

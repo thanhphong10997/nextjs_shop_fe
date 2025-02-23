@@ -74,7 +74,15 @@ const CustomPagination = React.forwardRef((props: TProps, ref: Ref<any>) => {
             })}
           </Select>
         </Box>
-        <StyledPagination color='primary' {...rests} />
+        <StyledPagination
+          color='primary'
+          page={page}
+          count={Math.ceil(rowLength / pageSize)}
+          {...rests}
+          onChange={(e, page: number) => {
+            onChangePagination(page, pageSize)
+          }}
+        />
       </Box>
     </Box>
   )
