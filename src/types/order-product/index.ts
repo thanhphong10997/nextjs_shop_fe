@@ -48,6 +48,13 @@ export type TParamsEditOrderProduct = {
   isDelivered: boolean
 }
 
+export type TParamsUpdateOrderStatus = {
+  id: string
+  isDelivered?: number
+  isPaid?: number
+  status?: number
+}
+
 export type TItemOrderProductMe = {
   _id: string
   shippingAddress: {

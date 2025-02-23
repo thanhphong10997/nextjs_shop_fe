@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // Import Mui
-import { Avatar, AvatarGroup, Box, Chip, ChipProps, Grid, styled, Typography, useTheme } from '@mui/material'
+import { Avatar, AvatarGroup, Box, Chip, ChipProps, Grid, styled, Switch, Typography, useTheme } from '@mui/material'
 import { GridColDef, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
@@ -12,7 +12,11 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import { resetInitialState } from 'src/stores/order-product'
-import { deleteOrderProductAsync, getAllOrderProductsAsync } from 'src/stores/order-product/actions'
+import {
+  deleteOrderProductAsync,
+  getAllOrderProductsAsync,
+  updateOrderProductStatusAsync
+} from 'src/stores/order-product/actions'
 
 // translate
 import { useTranslation } from 'react-i18next'
@@ -46,7 +50,8 @@ import { formatFilter, formatNumberToLocal } from 'src/utils'
 // others
 import { usePermission } from 'src/hooks/usePermission'
 import { PRODUCT_ORDER_STATUS } from 'src/configs/orderProduct'
-import { TItemOrderProduct } from 'src/types/order-product'
+import { TItemOrderProduct, TParamsUpdateOrderStatus } from 'src/types/order-product'
+import MoreButton from './components/MoreButton'
 
 type TProps = {}
 
@@ -113,6 +118,13 @@ export const OrderProductListPage: NextPage<TProps> = () => {
       status: PRODUCT_ORDER_STATUS[3]?.value
     }
   ]
+
+  const memoStatusOption = useMemo(() => {
+    return Object.values(PRODUCT_ORDER_STATUS)?.map(item => ({
+      label: t(item?.label),
+      value: item?.value
+    }))
+  }, [])
 
   // state
   const [page, setPage] = useState(1)
@@ -221,7 +233,43 @@ export const OrderProductListPage: NextPage<TProps> = () => {
         return <Typography>{row?.shippingAddress?.city?.name}</Typography>
       }
     },
+    {
+      field: 'isPaid',
+      headerName: t('paid_status'),
+      minWidth: 140,
+      maxWidth: 140,
+      renderCell: params => {
+        const { row } = params
+        console.log('row', { row })
 
+        return (
+          <Switch
+            checked={!!row.isPaid}
+            onChange={e => {
+              handleUpdateOrderStatus({ id: row?._id, isPaid: e.target.checked ? 1 : 0 })
+            }}
+          />
+        )
+      }
+    },
+    {
+      field: 'isDelivered',
+      headerName: t('delivery_status'),
+      minWidth: 140,
+      maxWidth: 140,
+      renderCell: params => {
+        const { row } = params
+
+        return (
+          <Switch
+            checked={!!row?.isDelivered}
+            onChange={e => {
+              handleUpdateOrderStatus({ id: row?._id, isDelivered: e.target.checked ? 1 : 0 })
+            }}
+          />
+        )
+      }
+    },
     {
       field: 'status',
       headerName: t('Status'),
@@ -246,7 +294,7 @@ export const OrderProductListPage: NextPage<TProps> = () => {
     {
       field: 'action',
       headerName: t('Actions'),
-      width: 150,
+      width: 180,
       sortable: false,
       renderCell: params => {
         const { row } = params
@@ -272,6 +320,7 @@ export const OrderProductListPage: NextPage<TProps> = () => {
                   })
                 }}
               />
+              <MoreButton data={row} memoStatusOption={memoStatusOption} />
             </Box>
           </Box>
         )
@@ -336,6 +385,10 @@ export const OrderProductListPage: NextPage<TProps> = () => {
     }
   }
 
+  const handleUpdateOrderStatus = (data: TParamsUpdateOrderStatus) => {
+    dispatch(updateOrderProductStatusAsync(data))
+  }
+
   // fetch api
 
   const fetchAllCities = async () => {
@@ -374,13 +427,6 @@ export const OrderProductListPage: NextPage<TProps> = () => {
         setLoading(false)
       })
   }
-
-  const memoStatusOption = useMemo(() => {
-    return Object.values(PRODUCT_ORDER_STATUS)?.map(item => ({
-      label: t(item?.label),
-      value: item?.value
-    }))
-  }, [])
 
   // side effects
 
@@ -520,7 +566,6 @@ export const OrderProductListPage: NextPage<TProps> = () => {
             sortingOrder={['desc', 'asc']}
             disableRowSelectionOnClick
             disableColumnFilter
-            disableColumnMenu
             slots={{
               pagination: PaginationComponent
             }}

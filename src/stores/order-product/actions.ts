@@ -7,11 +7,17 @@ import {
   deleteOrderProduct,
   getAllOrderProducts,
   getAllOrderProductsByMe,
-  updateOrderProduct
+  updateOrderProduct,
+  updateOrderProductStatus
 } from 'src/services/order-product'
 
 // types
-import { TParamsCreateOrderProduct, TParamsEditOrderProduct, TParamsGetOrderProducts } from 'src/types/order-product'
+import {
+  TParamsCreateOrderProduct,
+  TParamsEditOrderProduct,
+  TParamsGetOrderProducts,
+  TParamsUpdateOrderStatus
+} from 'src/types/order-product'
 
 export const serviceName = 'order-product'
 
@@ -65,3 +71,12 @@ export const deleteOrderProductAsync = createAsyncThunk(`${serviceName}/delete-o
 
   return response
 })
+
+export const updateOrderProductStatusAsync = createAsyncThunk(
+  `${serviceName}/update-order-product-status`,
+  async (data: TParamsUpdateOrderStatus) => {
+    const response = await updateOrderProductStatus(data)
+
+    return response
+  }
+)

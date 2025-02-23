@@ -6,7 +6,12 @@ import { API_ENDPOINT } from 'src/configs/api'
 import instanceAxios from 'src/helpers/axios'
 
 // types
-import { TParamsCreateOrderProduct, TParamsEditOrderProduct, TParamsGetOrderProducts } from 'src/types/order-product'
+import {
+  TParamsCreateOrderProduct,
+  TParamsEditOrderProduct,
+  TParamsGetOrderProducts,
+  TParamsUpdateOrderStatus
+} from 'src/types/order-product'
 
 export const getAllOrderProductsByMe = async (data: { params: TParamsGetOrderProducts }) => {
   try {
@@ -83,6 +88,17 @@ export const updateOrderProduct = async (data: TParamsEditOrderProduct) => {
   const { id, ...rests } = data
   try {
     const res = await instanceAxios.put(`${API_ENDPOINT.MANAGE_ORDER.ORDER.INDEX}/${id}`, rests)
+
+    return res.data
+  } catch (err: any) {
+    return err?.response?.data
+  }
+}
+
+export const updateOrderProductStatus = async (data: TParamsUpdateOrderStatus) => {
+  const { id, ...rests } = data
+  try {
+    const res = await instanceAxios.post(`${API_ENDPOINT.MANAGE_ORDER.ORDER.INDEX}/status/${id}`, rests)
 
     return res.data
   } catch (err: any) {
