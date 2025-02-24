@@ -39,6 +39,7 @@ import { OBJECT_TYPE_ERROR_PRODUCT } from 'src/configs/error'
 import NoData from 'src/components/no-data'
 import CustomSelect from 'src/components/custom-select'
 import SkeletonCard from '../product/components/SkeletonCard'
+import ChatBotAI from 'src/components/chatbot-ai'
 
 type TProps = {}
 
@@ -235,6 +236,9 @@ export const HomePage: NextPage<TProps> = () => {
   return (
     <>
       {loading && <Spinner />}
+      {/* chat bot AI */}
+      <ChatBotAI />
+      {/* chat bot AI */}
 
       <Box
         sx={{

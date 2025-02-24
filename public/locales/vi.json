@@ -348,5 +348,6 @@
   "read": "Đã đọc",
   "unread": "Chưa đọc",
   "paid_status": "Trạng thái thanh toán",
-  "delivery_status": "Trạng thái giao hàng"
+  "delivery_status": "Trạng thái giao hàng",
+  "support": "Hỗ trợ"
 }
