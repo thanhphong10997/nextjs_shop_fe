@@ -144,9 +144,9 @@ export const DetailsProductPage: NextPage<TProps> = () => {
   }
 
   // fetch api
-  const fetchGetDetailsProduct = async (slug: string) => {
+  const fetchGetDetailsProduct = async (slug: string, isViewed?: boolean) => {
     setLoading(true)
-    await getDetailsProductPublicBySlug(slug)
+    await getDetailsProductPublicBySlug(slug, isViewed)
       .then(async res => {
         const data = res?.data
         if (data) {
@@ -348,7 +348,7 @@ export const DetailsProductPage: NextPage<TProps> = () => {
   // side effects
   useEffect(() => {
     if (slug) {
-      fetchGetDetailsProduct(slug)
+      fetchGetDetailsProduct(slug, true)
       fetchListRelatedProduct(slug)
     }
   }, [slug])

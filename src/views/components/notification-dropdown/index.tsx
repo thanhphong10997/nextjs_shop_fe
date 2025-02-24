@@ -205,7 +205,11 @@ const NotificationDropDown = () => {
             }
           }}
         >
-          <Icon icon='tabler:bell' fontSize='1.625rem' />
+          <Icon
+            icon='tabler:bell'
+            fontSize='1.625rem'
+            color={theme.palette.mode === 'light' ? '#2F2B3D8a' : '#D0D4F18a'}
+          />
         </Badge>
       </IconButton>
       {/* Notification icon */}
