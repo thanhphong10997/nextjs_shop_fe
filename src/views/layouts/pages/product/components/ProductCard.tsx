@@ -60,6 +60,8 @@ const ProductCard = (props: TProductCard) => {
   // props
   const { item } = props
 
+  console.log('item', { item })
+
   // theme
   const theme = useTheme()
   const router = useRouter()
@@ -255,19 +257,68 @@ const ProductCard = (props: TProductCard) => {
               {t('not_sell_product')}
             </Typography>
           )}
-          {item?.location?.name && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
-              <Icon icon='bx:map' />
-              <Typography
-                variant='h6'
-                sx={{
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  mt: 1
-                }}
-              >
-                {item?.location?.name}
-              </Typography>
+          {(item?.location?.name || item?.views) && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px', mt: 2 }}>
+              {item?.location?.name && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Icon icon='bx:map' />
+                  <Typography
+                    variant='h6'
+                    sx={{
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                      mt: 1
+                    }}
+                  >
+                    {item?.location?.name}
+                  </Typography>
+                </Box>
+              )}
+              {!!item?.views && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Icon icon='lets-icons:view-light' fontSize={18} />
+                  <Typography
+                    variant='h6'
+                    sx={{
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                      mt: 0
+                    }}
+                  >
+                    {item?.views}
+                  </Typography>
+                </Box>
+              )}
+              {!!item?.uniqueViews?.length && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Icon icon='mdi:account-view-outline' fontSize={18} />
+                  <Typography
+                    variant='h6'
+                    sx={{
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                      mt: 0
+                    }}
+                  >
+                    {item?.uniqueViews?.length}
+                  </Typography>
+                </Box>
+              )}
+              {!!item?.likedBy?.length && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Icon icon='lsicon:user-like-outline' fontSize={16} />
+                  <Typography
+                    variant='h6'
+                    sx={{
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                      mt: 0
+                    }}
+                  >
+                    {item?.likedBy?.length}
+                  </Typography>
+                </Box>
+              )}
             </Box>
           )}
 

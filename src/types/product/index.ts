@@ -62,6 +62,8 @@ export type TProduct = {
   slug: string
   totalLike: number
   likedBy: string[]
+  views: number
+  uniqueViews: string[]
   discountEndDate: Date | null
   discountStartDate: Date | null
 }
