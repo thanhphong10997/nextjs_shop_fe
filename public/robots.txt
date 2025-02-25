@@ -1,0 +1,10 @@
+User-agent: Googlebot
+Disallow: /system/
+Disallow: /manage-product/
+
+User-agent: *
+Allow: /
+Allow: /home
+Allow: /product
+
+Sitemap:https://nextjs-shop-fe.vercel.app/sitemap.xml
