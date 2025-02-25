@@ -64,9 +64,12 @@ import connectSocketIO from 'src/helpers/socket'
 import { ACTION_SOCKET_COMMENT } from 'src/configs/socket'
 import { TItemOrderProduct } from 'src/types/order-product'
 
-type TProps = {}
+type TProps = {
+  productDataServer: TProduct
+  relatedProductListServer: TProduct[]
+}
 
-export const DetailsProductPage: NextPage<TProps> = () => {
+export const DetailsProductPage: NextPage<TProps> = ({ productDataServer, relatedProductListServer }) => {
   // theme
   const theme = useTheme()
 
@@ -144,35 +147,35 @@ export const DetailsProductPage: NextPage<TProps> = () => {
   }
 
   // fetch api
-  const fetchGetDetailsProduct = async (slug: string, isViewed?: boolean) => {
-    setLoading(true)
-    await getDetailsProductPublicBySlug(slug, isViewed)
-      .then(async res => {
-        const data = res?.data
-        if (data) {
-          setDataProduct(data)
-        }
-        setLoading(false)
-      })
-      .catch(() => {
-        setLoading(false)
-      })
-  }
+  // const fetchGetDetailsProduct = async (slug: string, isViewed?: boolean) => {
+  //   setLoading(true)
+  //   await getDetailsProductPublicBySlug(slug, isViewed)
+  //     .then(async res => {
+  //       const data = res?.data
+  //       if (data) {
+  //         setDataProduct(data)
+  //       }
+  //       setLoading(false)
+  //     })
+  //     .catch(() => {
+  //       setLoading(false)
+  //     })
+  // }
 
-  const fetchListRelatedProduct = async (slug: string) => {
-    setLoading(true)
-    await getListRelatedProductBySlug({ params: { slug: slug } })
-      .then(async res => {
-        const data = res?.data
-        if (data) {
-          setRelatedProduct(data?.products)
-        }
-        setLoading(false)
-      })
-      .catch(() => {
-        setLoading(false)
-      })
-  }
+  // const fetchListRelatedProduct = async (slug: string) => {
+  //   setLoading(true)
+  //   await getListRelatedProductBySlug({ params: { slug: slug } })
+  //     .then(async res => {
+  //       const data = res?.data
+  //       if (data) {
+  //         setRelatedProduct(data?.products)
+  //       }
+  //       setLoading(false)
+  //     })
+  //     .catch(() => {
+  //       setLoading(false)
+  //     })
+  // }
 
   const fetchGetAllReviewListByProduct = async (id: string) => {
     setLoading(true)
@@ -332,7 +335,6 @@ export const DetailsProductPage: NextPage<TProps> = () => {
       const commentIndex = listComment?.findIndex((comment: TCommentItemProduct) => comment?._id === id)
       if (commentIndex !== -1) {
         listComment.splice(commentIndex, 1)
-        console.log('deletedCountIn', { deleteCount })
         deleteCount += 1
       }
     })
@@ -346,10 +348,24 @@ export const DetailsProductPage: NextPage<TProps> = () => {
   }
 
   // side effects
+
+  // sever side rendering
+  useEffect(() => {
+    if (productDataServer?._id) {
+      setDataProduct(productDataServer)
+    }
+  }, [productDataServer])
+
+  useEffect(() => {
+    if (relatedProductListServer?.length > 0) {
+      setRelatedProduct(relatedProductListServer)
+    }
+  }, [relatedProductListServer])
+
   useEffect(() => {
     if (slug) {
-      fetchGetDetailsProduct(slug, true)
-      fetchListRelatedProduct(slug)
+      // fetchGetDetailsProduct(slug, true)
+      // fetchListRelatedProduct(slug)
     }
   }, [slug])
 
@@ -411,7 +427,6 @@ export const DetailsProductPage: NextPage<TProps> = () => {
 
     socket.on(ACTION_SOCKET_COMMENT.DELETE_MULTIPLE_COMMENT, data => {
       const deletedCount = deleteManyCommentByIdRecursive(cloneListComment?.data, data)
-      console.log('deletedCountOut', { deletedCount })
 
       setListComment({
         data: cloneListComment?.data,
@@ -424,8 +439,6 @@ export const DetailsProductPage: NextPage<TProps> = () => {
       socket.disconnect()
     }
   }, [listComment])
-
-  console.log('listComment', { listComment })
 
   // review
   useEffect(() => {
