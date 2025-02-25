@@ -90,7 +90,7 @@ export default function App(props: ExtendedAppProps) {
   const router = useRouter()
 
   // get product title from route
-  const slugProduct = (router?.query?.productId as string).replaceAll('-', ' ')
+  const slugProduct = (router?.query?.productId as string)?.replaceAll('-', ' ')
 
   // Variables
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
