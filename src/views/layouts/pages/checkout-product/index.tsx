@@ -198,6 +198,14 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
   }
 
   const handleOrderProduct = () => {
+    // fix bug that if user did not enter the address and process the order
+    if (!memoDefaultAddress) {
+      setOpenAddress(true)
+
+      return
+    }
+
+    /*******/
     const totalPrice = +memoShippingPrice + Number(memoQueryProduct?.totalPrice)
     dispatch(
       createOrderProductAsync({

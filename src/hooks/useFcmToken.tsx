@@ -35,6 +35,7 @@ const useFcmToken = () => {
     retrieveToken()
   }, [])
 
+  // set the token to the local storage after the token has value
   if (token && token !== getLocalDeviceToken()) {
     clearLocalDeviceToken()
     setLocalDeviceToken(token)

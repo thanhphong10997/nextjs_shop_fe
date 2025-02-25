@@ -22,9 +22,10 @@ const StyledWrapperEditor = styled(Box)<StyledWrapperEditorProps>(({ theme, erro
       border: error ? `1px solid ${theme.palette.error.main}` : `1px solid ${theme.palette.customColors.main}33`
     },
     '.rdw-editor-toolbar': {
-      border: 'none',
       borderTopLeftRadius: 8,
-      borderTopRightRadius: 8
+      borderTopRightRadius: 8,
+      backgroundColor: theme.palette.background.paper,
+      border: `1px solid ${theme.palette.customColors.main}33`
     },
     '.rdw-editor-main': {
       border: `1px solid ${theme.palette.customColors.main}33`,

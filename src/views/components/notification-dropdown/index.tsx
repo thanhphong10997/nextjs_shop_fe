@@ -22,6 +22,9 @@ import toast from 'react-hot-toast'
 import { resetInitialState } from 'src/stores/notification'
 import fireBaseApp from 'src/configs/firebase'
 import { getMessaging, onMessage } from 'firebase/messaging'
+import useFcmToken from 'src/hooks/useFcmToken'
+import { updateDeviceToken } from 'src/services/auth'
+import { clearLocalDeviceToken, getLocalDeviceToken, setLocalDeviceToken } from 'src/helpers/storage'
 
 export type NotificationsType = {
   _id: string
@@ -65,9 +68,13 @@ const NotificationDropDown = () => {
   const theme = useTheme()
   const { t } = useTranslation()
 
+  // firebase cloud message token
+  const { fcmToken } = useFcmToken()
+
   // state
   const [anchorEl, setAnchorEl] = useState<(EventTarget & Element) | null>(null)
   const [limit, setLimit] = useState(10)
+  const localDeviceToken = getLocalDeviceToken()
 
   // ref
   const wrapperListRef = useRef<HTMLDivElement>(null)
@@ -125,11 +132,26 @@ const NotificationDropDown = () => {
     }
   }
 
+  // update device token
+  const handleUpdateDeviceToken = async (deviceToken: string) => {
+    clearLocalDeviceToken()
+    setLocalDeviceToken(deviceToken)
+    await updateDeviceToken({ deviceToken: deviceToken })
+  }
+
   // side effects
   useEffect(() => {
     handleGetListNotification()
   }, [limit])
 
+  // device token
+  useEffect(() => {
+    if (localDeviceToken !== fcmToken) {
+      handleUpdateDeviceToken(fcmToken)
+    }
+  }, [fcmToken])
+
+  // show popup message
   useEffect(() => {
     if (messageRead) {
       if (isSuccessRead && !isErrorRead) {

@@ -13,7 +13,7 @@ const StyledChatBot = styled(Box)<BoxProps>(({ theme }) => {
       '--df-messenger-user-message': theme.palette.primary.main,
 
       // '--df-messenger-input-box-color': theme.palette.background.paper,
-      '--df-messenger-input-font-color': theme.palette.text.primary,
+      '--df-messenger-input-font-color': theme.palette.primary.main,
       '--df-messenger-minimized-chat-close-icon-color': theme.palette.primary.main
     }
   }
