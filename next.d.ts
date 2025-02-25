@@ -11,5 +11,11 @@ declare module 'next' {
     contentHeightFixed?: boolean
     getLayout?: (page: ReactElement) => ReactNode
     permission?: string[]
+
+    // meta tags for SEO purposes
+    title?: string
+    description?: string
+    keywords?: string
+    urlImage?: string
   }
 }
