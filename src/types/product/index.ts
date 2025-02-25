@@ -55,6 +55,7 @@ export type TProduct = {
   sold: number
   price: number
   discount: number
+  description: string
   location: {
     name: string
     _id: string

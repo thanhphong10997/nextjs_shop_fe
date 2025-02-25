@@ -198,3 +198,10 @@ export const isExpiry = (startDate: Date | null, endDate: Date | null) => {
 
   return false
 }
+
+export const getTextFromHTML = (html: string) => {
+  const newElement = document.createElement('div')
+  newElement.innerHTML = html
+
+  return newElement.textContent || newElement.innerText
+}
