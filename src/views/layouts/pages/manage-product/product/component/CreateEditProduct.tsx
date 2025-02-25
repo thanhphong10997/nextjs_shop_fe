@@ -690,7 +690,7 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
                             return (
                               <>
                                 <CustomSelect
-                                  label={t('location')}
+                                  label={`${t('location')}*`}
                                   value={value}
                                   onChange={onChange}
                                   onBlur={onBlur}

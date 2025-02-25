@@ -2,6 +2,11 @@
 const nextConfig = {
   reactStrictMode: false,
 
+  // fix the warning for large data
+  experimental: {
+    largePageDataBytes: 128 * 100000
+  },
+
   // fix the issue with the src of the image from the third party app
   images: {
     remotePatterns: [
