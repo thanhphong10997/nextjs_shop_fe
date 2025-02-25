@@ -25,6 +25,12 @@ const StyledDatePicker = styled(Box)<StyledDatePickerProps>(({ theme, error }) =
     height: '38px',
     padding: '8px',
     position: 'relative',
+    '.react-datepicker__input-container': {
+      'input::placeholder': {
+        color: theme.palette.text.secondary,
+        opacity: 0.42
+      }
+    },
     '.react-datepicker__header': {
       backgroundColor: theme.palette.customColors.bodyBg,
       color: '#fff',

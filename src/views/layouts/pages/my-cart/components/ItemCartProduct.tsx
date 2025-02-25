@@ -16,7 +16,7 @@ import { TItemOrderProduct } from 'src/types/order-product'
 import { cloneDeep, convertUpdateProductToCart, formatNumberToLocal, isExpiry } from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 import { Icon } from '@iconify/react/dist/iconify.js'
-import { getDetailsProduct } from 'src/services/product'
+import { getDetailsProductPublic } from 'src/services/product'
 import Link from 'next/link'
 
 type TProps = {
@@ -79,7 +79,7 @@ const ItemCartProduct = ({ item, index, selectedRows, handleChangeCheckbox }: TP
 
   // fetch api
   const fetchDetailsProduct = async (id: string) => {
-    const res = await getDetailsProduct(id)
+    const res = await getDetailsProductPublic(id)
     console.log('res', res)
     const data = res?.data
 

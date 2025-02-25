@@ -349,5 +349,13 @@
   "unread": "Chưa đọc",
   "paid_status": "Trạng thái thanh toán",
   "delivery_status": "Trạng thái giao hàng",
-  "support": "Hỗ trợ"
+  "support": "Hỗ trợ",
+
+  "you_do_not_have_permission_access_the_page": "Bạn không có quyền truy cập trang này",
+  "contact_site_administrator": "Hãy liên hệ với quản trị viên của trang",
+  "page_not_found": "Không tìm thấy trang",
+  "request_url_not_found": "Đường dẫn không hợp lệ",
+  "something_was_wrong": "có gì đó sai sai!",
+  "internal_sever_error": "Có lỗi xảy ra ở máy chủ",
+  "you_are_not_authorized": "Bạn không có quyền truy cập trang này!"
 }
