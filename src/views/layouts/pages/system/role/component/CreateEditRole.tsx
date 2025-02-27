@@ -21,6 +21,8 @@ import { createRoleAsync, updateRoleAsync } from 'src/stores/role/actions'
 import { getDetailsRole } from 'src/services/role'
 import Spinner from 'src/components/spinner'
 import { PERMISSIONS } from 'src/configs/permission'
+import { useQuery } from '@tanstack/react-query'
+import { queryKeys } from 'src/configs/queryKey'
 
 type TCreateEditRole = {
   open: boolean
@@ -29,10 +31,17 @@ type TCreateEditRole = {
 }
 
 const CreateEditRole = (props: TCreateEditRole) => {
+  // hooks
   const { t } = useTranslation()
   const theme = useTheme()
+
+  // props
   const { open, onClose, roleId } = props
+
+  // redux
   const dispatch: AppDispatch = useDispatch()
+
+  // state
   const [loading, setLoading] = useState(false)
 
   // react hook form
@@ -69,30 +78,40 @@ const CreateEditRole = (props: TCreateEditRole) => {
   // fetch api
   const fetchDetailsRole = async (id: string) => {
     setLoading(true)
-    await getDetailsRole(id)
-      .then(res => {
-        const data = res.data
-        if (data) {
-          reset({
-            name: data.name
-          })
-        }
-        setLoading(false)
-      })
-      .catch(err => {
-        setLoading(false)
-      })
+    const res = await getDetailsRole(id)
+
+    return res?.data
   }
+
+  // Query
+  const { data: roleDetails, isPending } = useQuery({
+    queryKey: [queryKeys.role_detail, roleId],
+    queryFn: () => fetchDetailsRole(roleId || ''),
+    select: data => data?.roles,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: 5000,
+    gcTime: 10000,
+
+    // the query won't be called if the role id is empty
+    enabled: !!roleId
+  })
 
   useEffect(() => {
     if (!open) {
       reset({
         name: ''
       })
-    } else if (roleId) {
-      fetchDetailsRole(roleId)
     }
-  }, [open, roleId])
+  }, [open])
+
+  useEffect(() => {
+    if (roleDetails) {
+      reset({
+        name: roleDetails?.name
+      })
+    }
+  }, [roleDetails])
 
   return (
     <>
