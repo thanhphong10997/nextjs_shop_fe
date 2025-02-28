@@ -3,16 +3,10 @@ import { NextPage } from 'next'
 
 // Import Mui
 import { Box, Button, Grid, useTheme } from '@mui/material'
-import { GridColDef, GridRowClassNameParams, GridSortModel, GridValueGetterParams } from '@mui/x-data-grid'
+import { GridColDef, GridRowClassNameParams, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
 import React, { useEffect, useRef, useState } from 'react'
-
-// Import redux
-import { useDispatch, useSelector } from 'react-redux'
-import { AppDispatch, RootState } from 'src/stores'
-import { deleteRoleAsync, getAllRolesAsync, updateRoleAsync } from 'src/stores/role/actions'
-import { resetInitialState } from 'src/stores/role'
 
 // translate
 import { useTranslation } from 'react-i18next'
@@ -39,18 +33,19 @@ import toast from 'react-hot-toast'
 import { Icon } from '@iconify/react/dist/iconify.js'
 
 // config
-import { OBJECT_TYPE_ERROR_ROLE } from 'src/configs/error'
 import { PERMISSIONS } from 'src/configs/permission'
 
 // services
-import { getAllRoles, getDetailsRole } from 'src/services/role'
+import { deleteRole, getAllRoles, getDetailsRole, updateRole } from 'src/services/role'
 
 // utils
 import { getAllObjectValues } from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 import { usePermission } from 'src/hooks/usePermission'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useMutationState, useQuery, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from 'src/configs/queryKey'
+import { TParamsEditRole } from 'src/types/role/role'
+import { useGetListRoles, useMutationEditRole } from 'src/queries/role'
 
 type TProps = {}
 
@@ -75,7 +70,7 @@ export const RoleListPage: NextPage<TProps> = () => {
     open: false,
     id: ''
   })
-  const [sortBy, setSortBy] = useState('')
+  const [sortBy, setSortBy] = useState('createdAt desc')
   const [searchBy, setSearchBy] = useState('')
   const [loading, setLoading] = useState(false)
   const [selectedPermission, setSelectedPermission] = useState<string[]>([])
@@ -89,22 +84,6 @@ export const RoleListPage: NextPage<TProps> = () => {
 
   // Query
   const queryClient = useQueryClient()
-
-  // redux
-  const {
-    roles,
-    isSuccessCreateEdit,
-    isErrorCreateEdit,
-    messageCreateEdit,
-    isLoading,
-    isSuccessDelete,
-    isErrorDelete,
-    messageDelete,
-    typeError
-  } = useSelector((state: RootState) => state.role)
-
-  // redux
-  const dispatch: AppDispatch = useDispatch()
 
   const columns: GridColDef[] = [
     {
@@ -174,23 +153,61 @@ export const RoleListPage: NextPage<TProps> = () => {
   // fetch API
 
   // Query
-  const fetchRoles = async (sortBy: string, searchBy: string) => {
-    const res = await getAllRoles({ params: { limit: -1, page: -1, search: searchBy, order: sortBy } })
+
+  // get the status of the latest data after call create role API, can use to push the toast message
+  // const data = useMutationState({
+  //   filters: { mutationKey: [queryKeys.create_role] },
+  //   select: mutation => mutation.state
+  // })
+  // const isSuccessCreate = data?.[length - 1]?.status
+
+  // get all roles
+
+  const { data: roleList, isPending } = useGetListRoles(
+    { limit: -1, page: -1, order: sortBy, search: searchBy },
+    {
+      select: data => data?.roles,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      staleTime: 10000
+    }
+  )
+
+  // delete role
+  const fetchDeleteRole = async (id: string) => {
+    const res = await deleteRole(id)
 
     return res?.data
   }
 
-  const { data: roleList, isPending } = useQuery({
-    queryKey: [queryKeys.role_list, sortBy, searchBy],
-    queryFn: () => fetchRoles(sortBy, searchBy),
-    select: data => data?.roles,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: 10000
+  const { isPending: isLoadingDelete, mutate: mutateDeleteRole } = useMutation({
+    mutationKey: [queryKeys.delete_role],
+    mutationFn: fetchDeleteRole,
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: [queryKeys.role_list, -1, -1, sortBy, searchBy] })
+      handleCloseConfirmDeleteRole()
+      toast.success(t('delete_role_success'))
+    },
+    onError: () => {
+      toast.error(t('delete_role_error'))
+    },
+    onSettled: () => {}
+  })
+
+  // update role permissions
+
+  const { isPending: isLoadingEdit, mutate: mutateEditRole } = useMutationEditRole({
+    onSuccess: () => {
+      // refetch API
+      queryClient.refetchQueries({ queryKey: [queryKeys.role_list, -1, -1, sortBy, searchBy] })
+      toast.success(t('update_role_success'))
+    },
+    onError: () => {
+      toast.error(t('update_role_error'))
+    }
   })
 
   // Handler
-  const handleOnChangePagination = () => {}
 
   const handleCloseConfirmDeleteRole = () => {
     setOpenConfirmationDeleteRole({
@@ -201,7 +218,8 @@ export const RoleListPage: NextPage<TProps> = () => {
   }
 
   const handleDeleteRole = () => {
-    dispatch(deleteRoleAsync(openConfirmationDeleteRole.id))
+    // dispatch(deleteRoleAsync(openConfirmationDeleteRole.id))
+    mutateDeleteRole(openConfirmationDeleteRole.id)
   }
 
   const handleCloseCreateEdit = () => {
@@ -218,7 +236,8 @@ export const RoleListPage: NextPage<TProps> = () => {
   }
 
   const handleUpdateRole = () => {
-    dispatch(updateRoleAsync({ name: selectedRow.name, id: selectedRow.id, permissions: selectedPermission }))
+    // dispatch(updateRoleAsync({ name: selectedRow.name, id: selectedRow.id, permissions: selectedPermission }))
+    mutateEditRole({ name: selectedRow.name, id: selectedRow.id, permissions: selectedPermission })
   }
 
   const handleGetDetailsRole = async (id: string) => {
@@ -250,50 +269,9 @@ export const RoleListPage: NextPage<TProps> = () => {
     }
   }, [selectedRow])
 
-  useEffect(() => {
-    if (isSuccessCreateEdit) {
-      if (openCreateEdit.id) {
-        toast.success(t('update_role_success'))
-      } else {
-        toast.success(t('create_role_success'))
-      }
-
-      // get role list by refetching API
-      queryClient.refetchQueries({ queryKey: [queryKeys.role_list] })
-      handleCloseCreateEdit()
-      dispatch(resetInitialState())
-    } else if (isErrorCreateEdit && messageCreateEdit && typeError) {
-      const errorConfig = OBJECT_TYPE_ERROR_ROLE[typeError]
-      if (errorConfig) {
-        toast.error(t(errorConfig))
-      } else {
-        if (openCreateEdit.id) {
-          toast.error(t('update_role_error'))
-        } else {
-          toast.error(t('create_role_error'))
-        }
-      }
-      dispatch(resetInitialState())
-    }
-  }, [isSuccessCreateEdit, isErrorCreateEdit, messageCreateEdit, typeError])
-
-  useEffect(() => {
-    if (isSuccessDelete) {
-      toast.success(t('delete_role_success'))
-
-      // get role list by refetching API
-      queryClient.refetchQueries({ queryKey: [queryKeys.role_list] })
-      dispatch(resetInitialState())
-      handleCloseConfirmDeleteRole()
-    } else if (isErrorDelete && messageDelete) {
-      toast.error(t(messageDelete))
-      dispatch(resetInitialState())
-    }
-  }, [isSuccessDelete, isErrorDelete, messageDelete])
-
   return (
     <>
-      {(loading || isPending) && <Spinner />}
+      {(isLoadingEdit || isPending || isLoadingDelete || loading) && <Spinner />}
       <ConfirmationDialog
         title={t('title_delete_role')}
         description={t('confirm_delete_role')}
@@ -302,8 +280,13 @@ export const RoleListPage: NextPage<TProps> = () => {
         handleCancel={handleCloseConfirmDeleteRole}
         handleConfirm={handleDeleteRole}
       />
-      <CreateEditRole open={openCreateEdit.open} onClose={handleCloseCreateEdit} roleId={openCreateEdit.id} />
-      {isLoading && <Spinner />}
+      <CreateEditRole
+        open={openCreateEdit.open}
+        roleId={openCreateEdit.id}
+        sortBy={sortBy}
+        searchBy={searchBy}
+        onClose={handleCloseCreateEdit}
+      />
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,
