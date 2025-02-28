@@ -16,7 +16,7 @@ export type TParamsEditRole = {
   permissions?: string[]
 }
 
-export type TParamsDeleteRole = {
-  name: string
-  id: string
-}
+// export type TParamsDeleteRole = {
+//   name: string
+//   id: string
+// }
