@@ -166,7 +166,7 @@ const CommentItem = ({ item }: TProps) => {
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flex: 1 }}>
             <Box sx={{ width: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 2 }}>
                   <Typography>
                     {toFullName(
                       item?.user?.lastName || '',
@@ -175,7 +175,9 @@ const CommentItem = ({ item }: TProps) => {
                       i18n.language
                     )}
                   </Typography>
-                  <Typography color='secondary'>{getPastTime(new Date(item?.createdAt), t)}</Typography>
+                  <Typography color='secondary' fontSize={12}>
+                    {getPastTime(new Date(item?.createdAt), t)}
+                  </Typography>
                 </Box>
               </Box>
               {editComment ? (
