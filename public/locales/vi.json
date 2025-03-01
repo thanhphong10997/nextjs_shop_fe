@@ -45,6 +45,8 @@
   "update_role_success": "Cập nhật vai trò thành công",
   "title_delete_role": "Xác nhận xóa vai trò",
   "confirm_delete_role": "Bạn có chắc muốn xóa vai trò này?",
+  "delete_role_success": "Xóa vai trò thành công",
+  "delete_role_error": "Xóa vai trò thất bại",
   "confirm": "Xác nhận",
   "cancel": "Hủy bỏ",
   "System": "Hệ thống",

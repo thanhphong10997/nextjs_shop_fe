@@ -40,8 +40,29 @@ import NoData from 'src/components/no-data'
 import CustomSelect from 'src/components/custom-select'
 import SkeletonCard from '../product/components/SkeletonCard'
 import ChatBotAI from 'src/components/chatbot-ai'
+import { useRouter } from 'next/router'
 
-type TProps = {}
+interface TOptions {
+  label: string
+  value: string
+}
+
+interface TProps {
+  products: TProduct[]
+  totalCount: number
+  productTypesServer: TOptions[]
+  serverParams: {
+    limit: number
+    page: number
+    order: string
+    productType: string
+  }
+}
+
+type TProductsPublicState = {
+  data: TProduct[]
+  total: number
+}
 
 const StyledTabs = styled(Tabs)<TabsProps>(({ theme }) => {
   return {
@@ -51,12 +72,16 @@ const StyledTabs = styled(Tabs)<TabsProps>(({ theme }) => {
   }
 })
 
-export const HomePage: NextPage<TProps> = () => {
-  // theme
+export const HomePage: NextPage<TProps> = (props: TProps) => {
+  // hooks
   const theme = useTheme()
+  const router = useRouter()
 
   // translate
   const { t, i18n } = useTranslation()
+
+  // props
+  const { products, totalCount, serverParams, productTypesServer } = props
 
   // redux
   const {
@@ -81,7 +106,7 @@ export const HomePage: NextPage<TProps> = () => {
 
   const [typesOption, setTypesOption] = useState<{ label: string; value: string }[]>([])
   const [filterBy, setFilterBy] = useState<Record<string, string | string[]>>({})
-  const [productsPublic, setProductsPublic] = useState({
+  const [productsPublic, setProductsPublic] = useState<TProductsPublicState>({
     data: [],
     total: 0
   })
@@ -92,12 +117,16 @@ export const HomePage: NextPage<TProps> = () => {
   const [citiesOption, setCitiesOption] = useState<{ label: string; value: string }[]>([])
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    if (!firstRender.current) {
+      firstRender.current = true
+    }
     setProductTypeSelected(newValue)
   }
 
   // ref
   // optimize the calling api for better performance
   const firstRender = useRef<boolean>(false)
+  const isServerRendered = useRef<boolean>(false)
 
   // fetch API
   const handleGetListProducts = async () => {
@@ -106,7 +135,6 @@ export const HomePage: NextPage<TProps> = () => {
       params: { limit: pageSize, page: page, search: searchBy, order: sortBy, ...formatFilter(filterBy) }
     }
 
-    // dispatch(getAllProductsAsync(query))
     await getAllProductsPublic(query).then(res => {
       if (res?.data) {
         setLoading(false)
@@ -122,15 +150,31 @@ export const HomePage: NextPage<TProps> = () => {
   const handleOnChangePagination = (page: number, pageSize: number) => {
     setPage(page)
     setPageSize(pageSize)
+    if (!firstRender.current) {
+      firstRender.current = true
+    }
+
+    // server side rendering
+    // router.push(`/home?page=${page}&limit=${pageSize}`)
   }
 
   const handleFilterProduct = (value: string, type: string) => {
     switch (type) {
       case 'review':
-        setReviewSelected(value)
+        {
+          setReviewSelected(value)
+          if (!firstRender.current) {
+            firstRender.current = true
+          }
+        }
         break
       case 'location':
-        setLocationSelected(value)
+        {
+          setLocationSelected(value)
+          if (!firstRender.current) {
+            firstRender.current = true
+          }
+        }
         break
     }
   }
@@ -141,29 +185,31 @@ export const HomePage: NextPage<TProps> = () => {
   }
 
   // fetch api
-  const fetchAllTypes = async () => {
-    setLoading(true)
-    await getAllProductTypes({ params: { limit: -1, page: -1 } })
-      .then(res => {
-        const data = res?.data?.productTypes
-        if (data) {
-          setTypesOption(
-            data?.map((item: { name: string; _id: string }) => {
-              return {
-                label: item?.name,
-                value: item?._id
-              }
-            })
-          )
-          setProductTypeSelected(data?.[0]?._id)
-          firstRender.current = true
-        }
-        setLoading(false)
-      })
-      .catch(() => {
-        setLoading(false)
-      })
-  }
+  // already call on sever side
+
+  // const fetchAllTypes = async () => {
+  //   setLoading(true)
+  //   await getAllProductTypes({ params: { limit: -1, page: -1 } })
+  //     .then(res => {
+  //       const data = res?.data?.productTypes
+  //       if (data) {
+  //         setTypesOption(
+  //           data?.map((item: { name: string; _id: string }) => {
+  //             return {
+  //               label: item?.name,
+  //               value: item?._id
+  //             }
+  //           })
+  //         )
+  //         setProductTypeSelected(data?.[0]?._id)
+  //         firstRender.current = true
+  //       }
+  //       setLoading(false)
+  //     })
+  //     .catch(() => {
+  //       setLoading(false)
+  //     })
+  // }
 
   const fetchAllCities = async () => {
     await getAllCities({ params: { limit: -1, page: -1 } })
@@ -188,16 +234,37 @@ export const HomePage: NextPage<TProps> = () => {
 
   // side effects
   useEffect(() => {
-    fetchAllTypes()
+    // fetchAllTypes()
     fetchAllCities()
   }, [])
 
+  // only render on sever side the first time when the page loads
+  // then the data of the page will be saved to the state (at client side)
   useEffect(() => {
-    if (firstRender.current) handleGetListProducts()
+    if (!isServerRendered.current && serverParams && totalCount && !!products.length && !!productTypesServer.length) {
+      setPage(serverParams?.page)
+      setPageSize(serverParams?.limit)
+      setSortBy(serverParams?.order)
+      setProductsPublic({
+        data: products,
+        total: totalCount
+      })
+      if (serverParams.productType) {
+        setProductTypeSelected(serverParams?.productType)
+      }
+
+      setTypesOption(productTypesServer)
+
+      isServerRendered.current = true
+    }
+  }, [serverParams, totalCount, products, productTypesServer])
+
+  useEffect(() => {
+    if (isServerRendered.current && firstRender.current) handleGetListProducts()
   }, [sortBy, searchBy, page, pageSize, filterBy])
 
   useEffect(() => {
-    if (firstRender.current)
+    if (isServerRendered.current && firstRender.current)
       setFilterBy({ productType: productTypeSelected, minStar: reviewSelected, productLocation: locationSelected })
   }, [productTypeSelected, reviewSelected, locationSelected])
 
@@ -259,6 +326,9 @@ export const HomePage: NextPage<TProps> = () => {
                 label={t('sort')}
                 value={sortBy}
                 onChange={e => {
+                  if (!firstRender.current) {
+                    firstRender.current = true
+                  }
                   setSortBy(e.target.value as string)
                 }}
                 options={[
@@ -279,7 +349,12 @@ export const HomePage: NextPage<TProps> = () => {
               <InputSearch
                 placeholder={t('search_product_name')}
                 value={searchBy}
-                onChange={(value: string) => setSearchBy(value)}
+                onChange={(value: string) => {
+                  if (!firstRender.current) {
+                    firstRender.current = true
+                  }
+                  setSearchBy(value)
+                }}
               />
             </Box>
           </Box>
@@ -329,7 +404,7 @@ export const HomePage: NextPage<TProps> = () => {
                   }}
                 >
                   {productsPublic?.data?.length > 0 ? (
-                    productsPublic?.data.map((product: TProduct) => (
+                    productsPublic?.data?.map((product: TProduct) => (
                       <Grid item key={product._id} md={4} sm={6} xs={12}>
                         <ProductCard item={product} />
                       </Grid>
@@ -346,11 +421,11 @@ export const HomePage: NextPage<TProps> = () => {
         </Box>
         <CustomPagination
           pageSize={pageSize}
-          page={page}
+          page={pageSize}
           rowLength={productsPublic?.total}
           pageSizeOptions={PAGE_SIZE_OPTION}
-          onChangePagination={handleOnChangePagination}
           isHideShowed
+          onChangePagination={handleOnChangePagination}
         />
       </Box>
     </>

@@ -1,12 +1,16 @@
 // ** React Imports
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 
 // ** Next Imports
 import Head from 'next/head'
-import { Router } from 'next/router'
+import { Router, useRouter } from 'next/router'
 import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import { SessionProvider } from 'next-auth/react'
+
+// Tanstack react query
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 // ** Store Imports
 import { Provider } from 'react-redux'
@@ -85,7 +89,15 @@ export default function App(props: ExtendedAppProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { settings } = useSettings()
 
+  // hooks
   const theme = useTheme()
+  const router = useRouter()
+
+  // get product title from route
+  const slugProduct = (router?.query?.productId as string)?.replaceAll('-', ' ')
+
+  // Create a client
+  const [queryClient] = useState(() => new QueryClient())
 
   // Variables
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
@@ -98,6 +110,14 @@ export default function App(props: ExtendedAppProps) {
 
   const aclAbilities = Component.acl ?? defaultACLObj
   const permission = Component.permission ?? []
+
+  // meta tags for SEO
+  const title = slugProduct
+    ? slugProduct
+    : (Component.title ?? `${themeConfig.templateName} - Lập trình NextJS 14 để tạo shop bán hàng`)
+  const description = Component.description ?? `Material Design, MUI, Admin Template, React Admin Template`
+  const keywords = Component.keywords ?? `Material Design, MUI, Admin Template, React Admin Template, Yup, Redux`
+  const urlImage = Component.urlImage ?? '/public/chip-chip-3-removebg.png'
 
   const toastOptions = {
     success: {
@@ -119,44 +139,57 @@ export default function App(props: ExtendedAppProps) {
   return (
     <Provider store={store}>
       <Head>
-        <title>{`${themeConfig.templateName} - Material Design React Admin Template`}</title>
-        <meta
-          name='description'
-          content={`${themeConfig.templateName} – Material Design React Admin Dashboard Template – is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.`}
-        />
-        <meta name='keywords' content='Material Design, MUI, Admin Template, React Admin Template' />
+        <title>{title}</title>
+        <meta name='description' content={description} />
+        <meta name='keywords' content={keywords} />
+        <meta name='author' content='Phong cute' />
+        <meta name='name' content='Shop bán hàng điện tử' />
+        <meta name='image' content='/public/chip-chip-3-removebg.png' />
         <meta name='viewport' content='initial-scale=1, width=device-width' />
+        {/* custom meta for facebook */}
+        <meta property='og:type' content='website' />
+        <meta property='og:title' content={title} />
+        <meta property='og:description' content={description} />
+        <meta property='og:image' content={urlImage} />
+        {/* custom meta for twitter(X) */}
+        <meta property='twitter:card' content='website' />
+        <meta property='twitter:title' content={title} />
+        <meta property='twitter:description' content={description} />
+        <meta property='twitter:image' content={urlImage} />
       </Head>
 
-      <AuthProvider>
-        <AxiosInterceptor>
-          <SessionProvider session={session}>
-            <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>
-              <SettingsConsumer>
-                {({ settings }) => {
-                  return (
-                    <ThemeComponent settings={settings}>
-                      <Guard authGuard={authGuard} guestGuard={guestGuard}>
-                        <AclGuard
-                          permission={permission}
-                          aclAbilities={aclAbilities}
-                          guestGuard={guestGuard}
-                          authGuard={authGuard}
-                        >
-                          {getLayout(<Component {...pageProps} />)}
-                        </AclGuard>
-                      </Guard>
-                      <ReactHotToast>
-                        <Toaster position={settings.toastPosition} toastOptions={toastOptions} />
-                      </ReactHotToast>
-                    </ThemeComponent>
-                  )
-                }}
-              </SettingsConsumer>
-            </SettingsProvider>
-          </SessionProvider>
-        </AxiosInterceptor>
-      </AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools initialIsOpen={false} buttonPosition='bottom-left' />
+        <AuthProvider>
+          <AxiosInterceptor>
+            <SessionProvider session={session}>
+              <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>
+                <SettingsConsumer>
+                  {({ settings }) => {
+                    return (
+                      <ThemeComponent settings={settings}>
+                        <Guard authGuard={authGuard} guestGuard={guestGuard}>
+                          <AclGuard
+                            permission={permission}
+                            aclAbilities={aclAbilities}
+                            guestGuard={guestGuard}
+                            authGuard={authGuard}
+                          >
+                            {getLayout(<Component {...pageProps} />)}
+                          </AclGuard>
+                        </Guard>
+                        <ReactHotToast>
+                          <Toaster position={settings.toastPosition} toastOptions={toastOptions} />
+                        </ReactHotToast>
+                      </ThemeComponent>
+                    )
+                  }}
+                </SettingsConsumer>
+              </SettingsProvider>
+            </SessionProvider>
+          </AxiosInterceptor>
+        </AuthProvider>
+      </QueryClientProvider>
     </Provider>
   )
 }
