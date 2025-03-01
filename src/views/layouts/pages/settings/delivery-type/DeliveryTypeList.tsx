@@ -338,7 +338,6 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
         onClose={handleCloseCreateEdit}
         deliveryTypeId={openCreateEdit.id}
       />
-      {isLoading && <Spinner />}
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,

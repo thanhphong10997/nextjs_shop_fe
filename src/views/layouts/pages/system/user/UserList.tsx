@@ -531,7 +531,6 @@ export const UserListPage: NextPage<TProps> = () => {
         handleConfirm={handleDeleteMultipleUser}
       />
       <CreateEditUser open={openCreateEdit.open} onClose={handleCloseCreateEdit} userId={openCreateEdit.id} />
-      {isLoading && <Spinner />}
       {/* count user type */}
       <Box
         sx={{

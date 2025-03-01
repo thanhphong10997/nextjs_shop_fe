@@ -1,5 +1,5 @@
 // axios
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 
 // components
 import { BASE_URL, API_ENDPOINT } from 'src/configs/api'
@@ -26,6 +26,35 @@ type TAxiosInterceptor = {
 
 // this variable is used to prevent the refresh token from being called multiple times
 let isRefreshing: boolean = false
+
+let failedQueue: any[] = []
+const addRequestQueue = (config: AxiosRequestConfig): Promise<any> => {
+  return new Promise<any>((resolve, reject) => {
+    failedQueue.push({
+      resolve: (token: string) => {
+        if (config.headers) {
+          config.headers['Authorization'] = `Bearer ${token}`
+        }
+        resolve(config)
+      },
+      reject: (err: any) => {
+        reject(err)
+      }
+    })
+  })
+}
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach(prom => {
+    if (token) {
+      prom.resolve(token)
+    } else {
+      prom.reject(error)
+    }
+  })
+  failedQueue = []
+}
+
 const AxiosInterceptor: FC<TAxiosInterceptor> = ({ children }) => {
   const router = useRouter()
   const { user, setUser } = useAuth()
@@ -62,37 +91,43 @@ const AxiosInterceptor: FC<TAxiosInterceptor> = ({ children }) => {
         } else {
           if (refreshToken) {
             const decodedRefreshToken: any = jwtDecode(refreshToken)
-            if (decodedRefreshToken?.exp > Date.now() / 1000 && !isRefreshing) {
-              isRefreshing = true
+            if (decodedRefreshToken?.exp > Date.now() / 1000) {
+              if (!isRefreshing) {
+                isRefreshing = true
 
-              // call api and return new access
-              await axios
-                .post(
-                  `${API_ENDPOINT.AUTH.INDEX}/refresh-token`,
-                  {},
-                  {
-                    headers: {
-                      Authorization: `Bearer ${refreshToken}`
+                // call api and return new access
+                await axios
+                  .post(
+                    `${API_ENDPOINT.AUTH.INDEX}/refresh-token`,
+                    {},
+                    {
+                      headers: {
+                        Authorization: `Bearer ${refreshToken}`
+                      }
                     }
-                  }
-                )
-                .then(response => {
-                  if (response?.data?.data?.access_token) {
-                    const newAccessToken = response.data.data.access_token
-                    if (accessToken) {
-                      setLocalUserData(JSON.stringify(user), newAccessToken, refreshToken)
+                  )
+                  .then(response => {
+                    const newAccessToken = response?.data?.data?.access_token
+                    if (newAccessToken) {
+                      config.headers['Authorization'] = `Bearer ${newAccessToken}`
+                      processQueue(null, newAccessToken)
+                      if (accessToken) {
+                        setLocalUserData(JSON.stringify(user), newAccessToken, refreshToken)
+                      }
+                    } else {
+                      handleRedirectLogin(router, setUser)
                     }
-                    config.headers['Authorization'] = `Bearer ${newAccessToken}`
-                  } else {
+                  })
+                  .catch(err => {
+                    processQueue(err, null)
                     handleRedirectLogin(router, setUser)
-                  }
-                })
-                .catch(err => {
-                  handleRedirectLogin(router, setUser)
-                })
-                .finally(() => {
-                  isRefreshing = true
-                })
+                  })
+                  .finally(() => {
+                    isRefreshing = false
+                  })
+              } else {
+                return await addRequestQueue(config)
+              }
             } else {
               handleRedirectLogin(router, setUser)
             }

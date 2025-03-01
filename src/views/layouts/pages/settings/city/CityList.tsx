@@ -312,7 +312,6 @@ export const CityListPage: NextPage<TProps> = () => {
         handleConfirm={handleDeleteMultipleCity}
       />
       <CreateEditCity open={openCreateEdit.open} onClose={handleCloseCreateEdit} cityId={openCreateEdit.id} />
-      {isLoading && <Spinner />}
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,

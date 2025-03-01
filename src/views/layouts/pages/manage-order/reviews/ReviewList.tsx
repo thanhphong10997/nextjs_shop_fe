@@ -345,7 +345,6 @@ export const ReviewListPage: NextPage<TProps> = () => {
         handleConfirm={handleDeleteMultipleReview}
       />
       <EditReview open={openEdit.open} onClose={handleCloseEdit} reviewId={openEdit.id} />
-      {isLoading && <Spinner />}
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,
