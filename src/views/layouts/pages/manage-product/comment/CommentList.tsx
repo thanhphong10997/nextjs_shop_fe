@@ -6,7 +6,7 @@ import { Box, Grid, Tooltip, Typography, useTheme } from '@mui/material'
 import { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
@@ -219,44 +219,44 @@ export const CommentListPage: NextPage<TProps> = () => {
     }
   }
 
-  const handleAction = (action: string) => {
+  const handleAction = useCallback((action: string) => {
     switch (action) {
       case 'delete': {
         setOpenConfirmationDeleteMultipleComment(true)
         break
       }
     }
-  }
+  }, [])
 
-  const handleCloseEdit = () => {
+  const handleCloseEdit = useCallback(() => {
     setOpenEdit({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
-  const handleCloseConfirmDeleteComment = () => {
+  const handleCloseConfirmDeleteComment = useCallback(() => {
     setOpenConfirmationDeleteComment({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
-  const handleDeleteComment = () => {
+  const handleDeleteComment = useCallback(() => {
     dispatch(deleteCommentAsync(openConfirmationDeleteComment.id))
-  }
+  }, [])
 
-  const handleCloseConfirmDeleteMultipleComment = () => {
+  const handleCloseConfirmDeleteMultipleComment = useCallback(() => {
     setOpenConfirmationDeleteMultipleComment(false)
-  }
+  }, [])
 
-  const handleDeleteMultipleComment = () => {
+  const handleDeleteMultipleComment = useCallback(() => {
     dispatch(
       deleteMultipleCommentAsync({
         commentIds: selectedRow
       })
     )
-  }
+  }, [selectedRow])
 
   // side effects
 

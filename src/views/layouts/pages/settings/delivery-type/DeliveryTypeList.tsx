@@ -6,7 +6,7 @@ import { Box, Grid, Typography, useTheme } from '@mui/material'
 import { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
@@ -209,35 +209,35 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
     setPageSize(pageSize)
   }
 
-  const handleCloseConfirmDeleteDeliveryType = () => {
+  const handleCloseConfirmDeleteDeliveryType = useCallback(() => {
     setOpenConfirmationDeleteDeliveryType({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
-  const handleCloseConfirmDeleteMultipleDeliveryType = () => {
+  const handleCloseConfirmDeleteMultipleDeliveryType = useCallback(() => {
     setOpenConfirmationDeleteMultipleDeliveryType(false)
-  }
+  }, [])
 
-  const handleDeleteMultipleDeliveryType = () => {
+  const handleDeleteMultipleDeliveryType = useCallback(() => {
     dispatch(
       deleteMultipleDeliveryTypeAsync({
         deliveryTypeIds: selectedRow
       })
     )
-  }
+  }, [selectedRow])
 
-  const handleDeleteDeliveryType = () => {
+  const handleDeleteDeliveryType = useCallback(() => {
     dispatch(deleteDeliveryTypeAsync(openConfirmationDeleteDeliveryType.id))
-  }
+  }, [])
 
-  const handleCloseCreateEdit = () => {
+  const handleCloseCreateEdit = useCallback(() => {
     setOpenCreateEdit({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
   const handleSort = (sort: GridSortModel) => {
     const sortOption = sort[0]
@@ -248,14 +248,14 @@ export const DeliveryTypeListPage: NextPage<TProps> = () => {
     }
   }
 
-  const handleAction = (action: string) => {
+  const handleAction = useCallback((action: string) => {
     switch (action) {
       case 'delete': {
         setOpenConfirmationDeleteMultipleDeliveryType(true)
         break
       }
     }
-  }
+  }, [])
 
   // fetch api
 

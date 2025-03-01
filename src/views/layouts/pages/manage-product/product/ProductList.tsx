@@ -6,7 +6,7 @@ import { Box, Chip, ChipProps, Grid, styled, Typography, useTheme } from '@mui/m
 import { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
@@ -299,35 +299,35 @@ export const ProductListPage: NextPage<TProps> = () => {
     setPageSize(pageSize)
   }
 
-  const handleCloseConfirmDeleteProduct = () => {
+  const handleCloseConfirmDeleteProduct = useCallback(() => {
     setOpenConfirmationDeleteProduct({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
-  const handleCloseConfirmDeleteMultipleProduct = () => {
+  const handleCloseConfirmDeleteMultipleProduct = useCallback(() => {
     setOpenConfirmationDeleteMultipleProduct(false)
-  }
+  }, [])
 
-  const handleDeleteMultipleProduct = () => {
+  const handleDeleteMultipleProduct = useCallback(() => {
     dispatch(
       deleteMultipleProductAsync({
         productIds: selectedRow
       })
     )
-  }
+  }, [selectedRow])
 
-  const handleDeleteProduct = () => {
+  const handleDeleteProduct = useCallback(() => {
     dispatch(deleteProductAsync(openConfirmationDeleteProduct.id))
-  }
+  }, [])
 
-  const handleCloseCreateEdit = () => {
+  const handleCloseCreateEdit = useCallback(() => {
     setOpenCreateEdit({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
   const handleSort = (sort: GridSortModel) => {
     const sortOption = sort[0]
@@ -338,14 +338,14 @@ export const ProductListPage: NextPage<TProps> = () => {
     }
   }
 
-  const handleAction = (action: string) => {
+  const handleAction = useCallback((action: string) => {
     switch (action) {
       case 'delete': {
         setOpenConfirmationDeleteMultipleProduct(true)
         break
       }
     }
-  }
+  }, [])
 
   // fetch api
   const fetchAllTypes = async () => {

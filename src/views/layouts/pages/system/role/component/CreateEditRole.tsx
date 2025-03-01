@@ -2,7 +2,7 @@
 import { Box, Button, IconButton, TextField, Tooltip, Typography, useTheme } from '@mui/material'
 
 // Import React
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 
 // Translate
 import { useTranslation } from 'react-i18next'
@@ -223,4 +223,4 @@ const CreateEditRole = (props: TCreateEditRole) => {
   )
 }
 
-export default CreateEditRole
+export default memo(CreateEditRole)

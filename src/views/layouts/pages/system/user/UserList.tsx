@@ -6,7 +6,7 @@ import { Box, Chip, ChipProps, Grid, styled, Typography, useTheme } from '@mui/m
 import { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
@@ -332,35 +332,35 @@ export const UserListPage: NextPage<TProps> = () => {
     setPageSize(pageSize)
   }
 
-  const handleCloseConfirmDeleteUser = () => {
+  const handleCloseConfirmDeleteUser = useCallback(() => {
     setOpenConfirmationDeleteUser({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
-  const handleCloseConfirmDeleteMultipleUser = () => {
+  const handleCloseConfirmDeleteMultipleUser = useCallback(() => {
     setOpenConfirmationDeleteMultipleUser(false)
-  }
+  }, [])
 
-  const handleDeleteMultipleUser = () => {
+  const handleDeleteMultipleUser = useCallback(() => {
     dispatch(
       deleteMultipleUserAsync({
         userIds: selectedRow.map(row => row.id)
       })
     )
-  }
+  }, [selectedRow])
 
   const handleDeleteUser = () => {
     dispatch(deleteUserAsync(openConfirmationDeleteUser.id))
   }
 
-  const handleCloseCreateEdit = () => {
+  const handleCloseCreateEdit = useCallback(() => {
     setOpenCreateEdit({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
   const handleSort = (sort: GridSortModel) => {
     const sortOption = sort[0]
@@ -371,7 +371,7 @@ export const UserListPage: NextPage<TProps> = () => {
     }
   }
 
-  const handleAction = (action: string) => {
+  const handleAction = useCallback((action: string) => {
     switch (action) {
       case 'delete': {
         setOpenConfirmationDeleteMultipleUser(true)
@@ -379,7 +379,7 @@ export const UserListPage: NextPage<TProps> = () => {
         break
       }
     }
-  }
+  }, [])
 
   const memoDisabledDeleteUser = useMemo(() => {
     return selectedRow.some((item: TSelectedRow) => item?.role?.permissions?.includes(PERMISSIONS.ADMIN))
