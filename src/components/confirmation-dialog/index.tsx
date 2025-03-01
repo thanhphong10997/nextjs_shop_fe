@@ -14,7 +14,7 @@ import {
 } from '@mui/material'
 
 // Import React
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 
 // Translate
 import { useTranslation } from 'react-i18next'
@@ -91,4 +91,4 @@ const ConfirmationDialog = (props: TConfirmationDialog) => {
   )
 }
 
-export default ConfirmationDialog
+export default memo(ConfirmationDialog)

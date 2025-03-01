@@ -2,7 +2,7 @@
 import { Box, Button, FormHelperText, Grid, IconButton, TextField, Typography, useTheme } from '@mui/material'
 
 // Import React
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 
 // Translate
 import { useTranslation } from 'react-i18next'
@@ -222,4 +222,4 @@ const CreateEditPaymentType = (props: TCreateEditPaymentType) => {
   )
 }
 
-export default CreateEditPaymentType
+export default memo(CreateEditPaymentType)

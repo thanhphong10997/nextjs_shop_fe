@@ -209,26 +209,26 @@ export const RoleListPage: NextPage<TProps> = () => {
 
   // Handler
 
-  const handleCloseConfirmDeleteRole = () => {
+  const handleCloseConfirmDeleteRole = useCallback(() => {
     setOpenConfirmationDeleteRole({
       open: false,
       id: ''
     })
     refActionGrid.current = false
-  }
+  }, [])
 
   const handleDeleteRole = () => {
     // dispatch(deleteRoleAsync(openConfirmationDeleteRole.id))
     mutateDeleteRole(openConfirmationDeleteRole.id)
   }
 
-  const handleCloseCreateEdit = () => {
+  const handleCloseCreateEdit = useCallback(() => {
     setOpenCreateEdit({
       open: false,
       id: ''
     })
-    refActionGrid.current = false
-  }
+     refActionGrid.current = false
+  }, [])
 
   const handleSort = (sort: GridSortModel) => {
     const sortOption = sort[0]

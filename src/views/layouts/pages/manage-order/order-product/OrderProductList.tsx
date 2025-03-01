@@ -6,7 +6,7 @@ import { Avatar, AvatarGroup, Box, Chip, ChipProps, Grid, styled, Switch, Typogr
 import { GridColDef, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
@@ -358,23 +358,23 @@ export const OrderProductListPage: NextPage<TProps> = () => {
     setPageSize(pageSize)
   }
 
-  const handleCloseConfirmDeleteOrderProduct = () => {
+  const handleCloseConfirmDeleteOrderProduct = useCallback(() => {
     setOpenConfirmationDeleteOrderProduct({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
-  const handleDeleteOrderProduct = () => {
+  const handleDeleteOrderProduct = useCallback(() => {
     dispatch(deleteOrderProductAsync(openConfirmationDeleteOrderProduct.id))
-  }
+  }, [])
 
-  const handleCloseEdit = () => {
+  const handleCloseEdit = useCallback(() => {
     setOpenEdit({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
   const handleSort = (sort: GridSortModel) => {
     const sortOption = sort[0]
