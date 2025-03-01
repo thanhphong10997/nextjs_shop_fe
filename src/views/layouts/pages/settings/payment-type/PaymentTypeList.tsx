@@ -336,7 +336,6 @@ export const PaymentTypeListPage: NextPage<TProps> = () => {
         onClose={handleCloseCreateEdit}
         paymentTypeId={openCreateEdit.id}
       />
-      {isLoading && <Spinner />}
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,

@@ -352,6 +352,7 @@ export const ProductListPage: NextPage<TProps> = () => {
     setLoading(true)
     await getAllProductTypes({ params: { limit: -1, page: -1 } })
       .then(res => {
+        setLoading(false)
         const data = res?.data?.productTypes
         if (data) {
           setTypesOption(
@@ -363,7 +364,6 @@ export const ProductListPage: NextPage<TProps> = () => {
             })
           )
         }
-        setLoading(false)
       })
       .catch(() => {
         setLoading(false)
@@ -470,7 +470,6 @@ export const ProductListPage: NextPage<TProps> = () => {
         handleConfirm={handleDeleteMultipleProduct}
       />
       <CreateEditProduct open={openCreateEdit.open} onClose={handleCloseCreateEdit} productId={openCreateEdit.id} />
-      {isLoading && <Spinner />}
       {/* count product status */}
       <Box
         sx={{

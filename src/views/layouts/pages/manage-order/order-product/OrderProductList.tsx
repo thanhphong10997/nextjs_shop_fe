@@ -485,7 +485,6 @@ export const OrderProductListPage: NextPage<TProps> = () => {
       />
 
       <EditOrderProduct open={openEdit.open} onClose={handleCloseEdit} orderId={openEdit.id} />
-      {isLoading && <Spinner />}
       {/* count order status */}
       <Box
         sx={{

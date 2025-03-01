@@ -20,7 +20,7 @@ const UserCountCard = (props: UserCountCardProps) => {
   const theme = useTheme()
 
   // props
-  const { sx, icon, count, countUserType, iconSize = 24, avatarSize = 38, userType } = props
+  const { sx, icon, countUserType, iconSize = 24, avatarSize = 38, userType } = props
 
   // const
   const mapUserType = {

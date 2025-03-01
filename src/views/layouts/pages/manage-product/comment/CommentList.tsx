@@ -326,7 +326,6 @@ export const CommentListPage: NextPage<TProps> = () => {
       />
 
       <EditComment open={openEdit.open} onClose={handleCloseEdit} commentId={openEdit.id} />
-      {isLoading && <Spinner />}
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,

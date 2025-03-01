@@ -338,7 +338,6 @@ export const ProductTypeListPage: NextPage<TProps> = () => {
         onClose={handleCloseCreateEdit}
         productTypeId={openCreateEdit.id}
       />
-      {isLoading && <Spinner />}
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,
