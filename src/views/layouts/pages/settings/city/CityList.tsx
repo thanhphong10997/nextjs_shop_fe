@@ -6,7 +6,7 @@ import { Box, Grid, Typography, useTheme } from '@mui/material'
 import { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
@@ -187,35 +187,35 @@ export const CityListPage: NextPage<TProps> = () => {
     setPageSize(pageSize)
   }
 
-  const handleCloseConfirmDeleteCity = () => {
+  const handleCloseConfirmDeleteCity = useCallback(() => {
     setOpenConfirmationDeleteCity({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
-  const handleCloseConfirmDeleteMultipleCity = () => {
+  const handleCloseConfirmDeleteMultipleCity = useCallback(() => {
     setOpenConfirmationDeleteMultipleCity(false)
-  }
+  }, [])
 
-  const handleDeleteMultipleCity = () => {
+  const handleDeleteMultipleCity = useCallback(() => {
     dispatch(
       deleteMultipleCityAsync({
         cityIds: selectedRow
       })
     )
-  }
+  }, [selectedRow])
 
-  const handleDeleteCity = () => {
+  const handleDeleteCity = useCallback(() => {
     dispatch(deleteCityAsync(openConfirmationDeleteCity.id))
-  }
+  }, [])
 
-  const handleCloseCreateEdit = () => {
+  const handleCloseCreateEdit = useCallback(() => {
     setOpenCreateEdit({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
   const handleSort = (sort: GridSortModel) => {
     const sortOption = sort[0]
@@ -226,14 +226,14 @@ export const CityListPage: NextPage<TProps> = () => {
     }
   }
 
-  const handleAction = (action: string) => {
+  const handleAction = useCallback((action: string) => {
     switch (action) {
       case 'delete': {
         setOpenConfirmationDeleteMultipleCity(true)
         break
       }
     }
-  }
+  }, [])
 
   // fetch api
 

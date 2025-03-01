@@ -6,7 +6,7 @@ import { Box, Grid, Typography, useTheme } from '@mui/material'
 import { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
@@ -207,35 +207,32 @@ export const PaymentTypeListPage: NextPage<TProps> = () => {
     setPageSize(pageSize)
   }
 
-  const handleCloseConfirmDeletePaymentType = () => {
-    setOpenConfirmationDeletePaymentType({
-      open: false,
-      id: ''
-    })
-  }
+  const handleCloseConfirmDeletePaymentType = useCallback(() => {
+    setOpenConfirmationDeleteMultiplePaymentType(false)
+  }, [])
 
   const handleCloseConfirmDeleteMultiplePaymentType = () => {
     setOpenConfirmationDeleteMultiplePaymentType(false)
   }
 
-  const handleDeleteMultiplePaymentType = () => {
+  const handleDeleteMultiplePaymentType = useCallback(() => {
     dispatch(
       deleteMultiplePaymentTypeAsync({
         paymentTypeIds: selectedRow
       })
     )
-  }
+  }, [selectedRow])
 
-  const handleDeletePaymentType = () => {
+  const handleDeletePaymentType = useCallback(() => {
     dispatch(deletePaymentTypeAsync(openConfirmationDeletePaymentType.id))
-  }
+  }, [])
 
-  const handleCloseCreateEdit = () => {
+  const handleCloseCreateEdit = useCallback(() => {
     setOpenCreateEdit({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
   const handleSort = (sort: GridSortModel) => {
     const sortOption = sort[0]
@@ -246,14 +243,14 @@ export const PaymentTypeListPage: NextPage<TProps> = () => {
     }
   }
 
-  const handleAction = (action: string) => {
+  const handleAction = useCallback((action: string) => {
     switch (action) {
       case 'delete': {
         setOpenConfirmationDeleteMultiplePaymentType(true)
         break
       }
     }
-  }
+  }, [])
 
   // fetch api
 
