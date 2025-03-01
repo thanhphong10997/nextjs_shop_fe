@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react/dist/iconify.js'
 import { Avatar, Box, Card, CardContent, SxProps, Theme, Typography, useTheme } from '@mui/material'
-import React from 'react'
+import React, { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
@@ -67,4 +67,4 @@ const ProductCountCard = (props: ProductCountCard) => {
   )
 }
 
-export default ProductCountCard
+export default memo(ProductCountCard)

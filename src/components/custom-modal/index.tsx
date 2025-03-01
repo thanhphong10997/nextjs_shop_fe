@@ -1,5 +1,6 @@
 // Mui
 import { Box, Modal, ModalProps, styled, Typography } from '@mui/material'
+import { memo } from 'react'
 
 type TCustomModal = ModalProps & {}
 
@@ -11,6 +12,7 @@ const StyledModal = styled(Modal)<ModalProps>(({ theme }) => {
 
 const CustomModal = (props: TCustomModal) => {
   const { onClose, open, children } = props
+  console.log('re-render')
 
   return (
     <StyledModal

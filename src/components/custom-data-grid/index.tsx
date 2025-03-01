@@ -1,4 +1,4 @@
-import React, { Ref } from 'react'
+import React, { memo, Ref } from 'react'
 import Box from '@mui/material/Box'
 import { DataGrid, DataGridProps, GridColDef, GridValueGetterParams } from '@mui/x-data-grid'
 import { styled, useTheme } from '@mui/material'
@@ -33,4 +33,4 @@ const CustomDataGrid = React.forwardRef((props: DataGridProps, ref: Ref<any>) =>
   )
 })
 
-export default CustomDataGrid
+export default memo(CustomDataGrid)

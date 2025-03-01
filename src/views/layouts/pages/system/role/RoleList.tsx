@@ -6,7 +6,7 @@ import { Box, Button, Grid, useTheme } from '@mui/material'
 import { GridColDef, GridRowClassNameParams, GridSortModel, GridValueGetterParams } from '@mui/x-data-grid'
 
 // Import React
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
@@ -170,23 +170,23 @@ export const RoleListPage: NextPage<TProps> = () => {
   // Handler
   const handleOnChangePagination = () => {}
 
-  const handleCloseConfirmDeleteRole = () => {
+  const handleCloseConfirmDeleteRole = useCallback(() => {
     setOpenConfirmationDeleteRole({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
-  const handleDeleteRole = () => {
+  const handleDeleteRole = useCallback(() => {
     dispatch(deleteRoleAsync(openConfirmationDeleteRole.id))
-  }
+  }, [])
 
-  const handleCloseCreateEdit = () => {
+  const handleCloseCreateEdit = useCallback(() => {
     setOpenCreateEdit({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
   const handleSort = (sort: GridSortModel) => {
     const sortOption = sort[0]

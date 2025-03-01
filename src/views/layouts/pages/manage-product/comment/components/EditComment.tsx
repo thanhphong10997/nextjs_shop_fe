@@ -2,7 +2,7 @@
 import { Box, Button, Grid, IconButton, Typography, useTheme } from '@mui/material'
 
 // Import React
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 
 // Translate
 import { useTranslation } from 'react-i18next'
@@ -185,4 +185,4 @@ const EditComment = (props: TEditComment) => {
   )
 }
 
-export default EditComment
+export default memo(EditComment)

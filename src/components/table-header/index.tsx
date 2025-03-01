@@ -2,6 +2,7 @@
 import { Icon } from '@iconify/react/dist/iconify.js'
 import { Box, Button, IconButton, Typography } from '@mui/material'
 import { styled, useTheme } from '@mui/material/styles'
+import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 type TProps = {
@@ -79,4 +80,4 @@ const TableHeader = (props: TProps) => {
   )
 }
 
-export default TableHeader
+export default memo(TableHeader)

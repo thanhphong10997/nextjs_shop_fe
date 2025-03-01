@@ -15,7 +15,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 
 // Import React
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 
 // Translate
 import { useTranslation } from 'react-i18next'
@@ -752,4 +752,4 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
   )
 }
 
-export default CreateEditProduct
+export default memo(CreateEditProduct)

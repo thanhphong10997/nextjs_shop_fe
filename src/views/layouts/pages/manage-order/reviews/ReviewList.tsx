@@ -6,7 +6,7 @@ import { Box, ChipProps, Grid, Tooltip, Typography, useTheme } from '@mui/materi
 import { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
@@ -226,44 +226,44 @@ export const ReviewListPage: NextPage<TProps> = () => {
     setPageSize(pageSize)
   }
 
-  const handleAction = (action: string) => {
+  const handleAction = useCallback((action: string) => {
     switch (action) {
       case 'delete': {
         setOpenConfirmationDeleteMultipleReview(true)
         break
       }
     }
-  }
+  }, [])
 
-  const handleCloseConfirmDeleteReview = () => {
+  const handleCloseConfirmDeleteReview = useCallback(() => {
     setOpenConfirmationDeleteReview({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
-  const handleDeleteReview = () => {
+  const handleDeleteReview = useCallback(() => {
     dispatch(deleteReviewAsync(openConfirmationDeleteReview.id))
-  }
+  }, [])
 
-  const handleCloseConfirmDeleteMultipleReview = () => {
+  const handleCloseConfirmDeleteMultipleReview = useCallback(() => {
     setOpenConfirmationDeleteMultipleReview(false)
-  }
+  }, [])
 
-  const handleDeleteMultipleReview = () => {
+  const handleDeleteMultipleReview = useCallback(() => {
     dispatch(
       deleteMultipleReviewAsync({
         reviewIds: selectedRow
       })
     )
-  }
+  }, [selectedRow])
 
-  const handleCloseEdit = () => {
+  const handleCloseEdit = useCallback(() => {
     setOpenEdit({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
   const handleSort = (sort: GridSortModel) => {
     const sortOption = sort[0]
