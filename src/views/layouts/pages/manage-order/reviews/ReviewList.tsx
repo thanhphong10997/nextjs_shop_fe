@@ -6,7 +6,7 @@ import { Box, ChipProps, Grid, Tooltip, Typography, useTheme } from '@mui/materi
 import { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
@@ -75,6 +75,9 @@ export const ReviewListPage: NextPage<TProps> = () => {
   const [loading, setLoading] = useState(false)
   const [filterBy, setFilterBy] = useState<Record<string, string | string[]>>({})
   const [starSelected, setStarSelected] = useState<string[]>([])
+
+  // ref
+  const isFirstRender = useRef(false)
 
   // hooks
   const { VIEW, UPDATE, DELETE } = usePermission('SYSTEM.MANAGE_ORDER.ORDER', ['VIEW', 'UPDATE', 'DELETE'])
@@ -277,11 +280,13 @@ export const ReviewListPage: NextPage<TProps> = () => {
   // side effects
 
   useEffect(() => {
-    setFilterBy({ minStar: starSelected })
+    if (isFirstRender.current) setFilterBy({ minStar: starSelected })
+
+    isFirstRender.current = true
   }, [starSelected])
 
   useEffect(() => {
-    handleGetListReview()
+    if (isFirstRender.current) handleGetListReview()
   }, [sortBy, searchBy, i18n.language, page, pageSize, filterBy])
 
   useEffect(() => {

@@ -258,9 +258,11 @@ const CreateEditUser = (props: TCreateEditUser) => {
   }, [open, userId])
 
   useEffect(() => {
-    fetchAllRoles()
-    fetchAllCities()
-  }, [])
+    if (open) {
+      fetchAllRoles()
+      fetchAllCities()
+    }
+  }, [open])
 
   return (
     <>

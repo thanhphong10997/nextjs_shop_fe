@@ -6,7 +6,7 @@ import { Box, Chip, ChipProps, Grid, styled, Typography, useTheme } from '@mui/m
 import { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
@@ -108,6 +108,10 @@ export const ProductListPage: NextPage<TProps> = () => {
     total: number
   }>({} as any)
 
+  // ref
+  const isFirstRender = useRef(false)
+
+  // const
   const CONSTANT_STATUS_PRODUCT = OBJECT_STATUS_PRODUCT()
 
   const productStatusDataList = [
@@ -389,17 +393,18 @@ export const ProductListPage: NextPage<TProps> = () => {
   // side effects
 
   useEffect(() => {
-    handleGetListProducts()
-  }, [sortBy, searchBy, page, pageSize, filterBy])
+    if (isFirstRender.current) setFilterBy({ productType: typeSelected, status: statusSelected })
+  }, [typeSelected, statusSelected])
 
   useEffect(() => {
     fetchAllTypes()
     fetchCountProductStatus()
+    isFirstRender.current = true
   }, [])
 
   useEffect(() => {
-    setFilterBy({ productType: typeSelected, status: statusSelected })
-  }, [typeSelected, statusSelected])
+    if (isFirstRender.current) handleGetListProducts()
+  }, [sortBy, searchBy, page, pageSize, filterBy])
 
   useEffect(() => {
     if (isSuccessCreateEdit) {
@@ -469,7 +474,12 @@ export const ProductListPage: NextPage<TProps> = () => {
         handleCancel={handleCloseConfirmDeleteMultipleProduct}
         handleConfirm={handleDeleteMultipleProduct}
       />
-      <CreateEditProduct open={openCreateEdit.open} onClose={handleCloseCreateEdit} productId={openCreateEdit.id} />
+      <CreateEditProduct
+        open={openCreateEdit.open}
+        onClose={handleCloseCreateEdit}
+        productId={openCreateEdit.id}
+        typesOption={typesOption}
+      />
       {/* count product status */}
       <Box
         sx={{

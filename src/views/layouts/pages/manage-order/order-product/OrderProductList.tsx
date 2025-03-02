@@ -6,7 +6,7 @@ import { Avatar, AvatarGroup, Box, Chip, ChipProps, Grid, styled, Switch, Typogr
 import { GridColDef, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
@@ -148,6 +148,9 @@ export const OrderProductListPage: NextPage<TProps> = () => {
     data: Record<number, number>
     total: number
   }>({} as any)
+
+  // ref
+  const isFirstRender = useRef(false)
 
   // hooks
   const { VIEW, UPDATE, DELETE } = usePermission('SYSTEM.MANAGE_ORDER.ORDER', ['VIEW', 'UPDATE', 'DELETE'])
@@ -431,16 +434,21 @@ export const OrderProductListPage: NextPage<TProps> = () => {
   // side effects
 
   useEffect(() => {
-    fetchAllCities()
-    fetchAllStatusCountOrder()
-  }, [])
-
-  useEffect(() => {
-    setFilterBy({ status: statusSelected, cityId: citySelected })
+    if (isFirstRender.current) {
+      setFilterBy({ status: statusSelected, cityId: citySelected })
+    }
   }, [statusSelected, citySelected])
 
   useEffect(() => {
-    handleGetListOrderProduct()
+    fetchAllCities()
+    fetchAllStatusCountOrder()
+    isFirstRender.current = true
+  }, [])
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      handleGetListOrderProduct()
+    }
   }, [sortBy, searchBy, i18n.language, page, pageSize, filterBy])
 
   useEffect(() => {
