@@ -6,7 +6,7 @@ import { Box, Chip, ChipProps, Grid, styled, Typography, useTheme } from '@mui/m
 import { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
@@ -113,6 +113,9 @@ export const UserListPage: NextPage<TProps> = () => {
     data: Record<number, number>
     totalUser: number
   }>({} as any)
+
+  // Ref
+  const isFirstRender = useRef(false)
 
   // const
   const CONSTANT_STATUS_USER = OBJECT_STATUS_USER()
@@ -449,17 +452,22 @@ export const UserListPage: NextPage<TProps> = () => {
   // side effects
 
   useEffect(() => {
-    fetchAllRoles()
-    fetchAllCities()
-    fetchCountUserType()
-  }, [])
-
-  useEffect(() => {
-    setFilterBy({ roleId: roleSelected, status: statusSelected, cityId: citySelected, userType: typeSelected })
+    if (isFirstRender.current) {
+      setFilterBy({ roleId: roleSelected, status: statusSelected, cityId: citySelected, userType: typeSelected })
+    }
   }, [roleSelected, statusSelected, citySelected, typeSelected])
 
   useEffect(() => {
-    handleGetListUser()
+    fetchAllRoles()
+    fetchAllCities()
+    fetchCountUserType()
+    isFirstRender.current = true
+  }, [])
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      handleGetListUser()
+    }
   }, [sortBy, searchBy, i18n.language, page, pageSize, filterBy])
 
   useEffect(() => {

@@ -55,6 +55,7 @@ type TCreateEditProduct = {
   open: boolean
   onClose: () => void
   productId?: string
+  typesOption: { label: string; value: string }[]
 }
 
 type TDefaultValues = {
@@ -80,7 +81,7 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
   const theme = useTheme()
 
   // props
-  const { open, onClose, productId } = props
+  const { open, onClose, productId, typesOption } = props
 
   // redux
   const dispatch: AppDispatch = useDispatch()
@@ -88,7 +89,6 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
   // react
   const [loading, setLoading] = useState(false)
   const [productImage, setProductImage] = useState('')
-  const [typesOption, setOptionTypes] = useState<{ label: string; value: string }[]>([])
   const [citiesOption, setCitiesOption] = useState<{ label: string; value: string }[]>([])
 
   // react hook form
@@ -249,27 +249,6 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
 
   // fetch api
 
-  const fetchAllProductTypes = async () => {
-    await getAllProductTypes({ params: { limit: -1, page: -1 } })
-      .then(res => {
-        const data = res?.data?.productTypes
-        if (data) {
-          setOptionTypes(
-            data?.map((item: { name: string; _id: string }) => {
-              return {
-                label: item?.name,
-                value: item?._id
-              }
-            })
-          )
-        }
-        setLoading(false)
-      })
-      .catch(() => {
-        setLoading(false)
-      })
-  }
-
   const fetchDetailsProduct = async (id: string) => {
     setLoading(true)
     await getDetailsProduct(id)
@@ -331,7 +310,6 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
   }, [open, productId])
 
   useEffect(() => {
-    fetchAllProductTypes()
     fetchAllCities()
   }, [])
 

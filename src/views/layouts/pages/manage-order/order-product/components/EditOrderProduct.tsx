@@ -131,27 +131,6 @@ const EditOrderProduct = (props: TEditProduct) => {
 
   // fetch api
 
-  const fetchAllProductTypes = async () => {
-    await getAllProductTypes({ params: { limit: -1, page: -1 } })
-      .then(res => {
-        const data = res?.data?.productTypes
-        if (data) {
-          setOptionTypes(
-            data?.map((item: { name: string; _id: string }) => {
-              return {
-                label: item?.name,
-                value: item?._id
-              }
-            })
-          )
-        }
-        setLoading(false)
-      })
-      .catch(() => {
-        setLoading(false)
-      })
-  }
-
   const fetchDetailsOrderProduct = async (id: string) => {
     setLoading(true)
     await getDetailsOrderProduct(id)
@@ -206,9 +185,8 @@ const EditOrderProduct = (props: TEditProduct) => {
   }, [open, orderId])
 
   useEffect(() => {
-    fetchAllProductTypes()
-    fetchAllCities()
-  }, [])
+    if (open) fetchAllCities()
+  }, [open])
 
   return (
     <>
