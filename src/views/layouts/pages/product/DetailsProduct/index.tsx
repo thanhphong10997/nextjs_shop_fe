@@ -598,7 +598,7 @@ export const DetailsProductPage: NextPage<TProps> = ({ productDataServer, relate
                   <Box
                     sx={{
                       backgroundColor: hexToRGBA(theme.palette.error.main, 0.42),
-                      width: '60px',
+                      width: '74px',
                       height: '20px',
                       display: 'flex',
                       alignItems: 'center',

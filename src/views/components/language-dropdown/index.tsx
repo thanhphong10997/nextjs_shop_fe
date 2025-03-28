@@ -26,6 +26,15 @@ export default function LanguageDropdown() {
   })
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
 
+  const mapLanguageOptions: Record<string, { icon: string }> = {
+    vi: {
+      icon: 'circle-flags:lang-vi'
+    },
+    en: {
+      icon: 'circle-flags:lang-en'
+    }
+  }
+
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -43,8 +52,14 @@ export default function LanguageDropdown() {
 
   return (
     <div>
-      <Button aria-describedby='language-dropdown' variant='contained' onClick={handleClick}>
-        <Icon icon='ic:baseline-translate' />
+      <Button
+        aria-describedby='language-dropdown'
+        variant='text'
+        onClick={handleClick}
+        sx={{ minWidth: '32px', padding: '4px 0px' }}
+      >
+        {/* <Icon icon='ic:baseline-translate' /> */}
+        <Icon icon={mapLanguageOptions?.[i18n.language]?.icon} fontSize={26} style={{ width: '100%' }} />
       </Button>
       <Menu
         anchorEl={anchorEl}
@@ -90,7 +105,10 @@ export default function LanguageDropdown() {
               key={lang.value}
               onClick={() => handleChangeLanguage(lang.value)}
             >
-              {lang.lang}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Icon icon={lang?.icon} fontSize={22} />
+                <span>{lang?.lang}</span>
+              </Box>
             </MenuItem>
           )
         })}

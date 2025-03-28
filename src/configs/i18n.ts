@@ -32,12 +32,15 @@ i18n
 
 export default i18n
 
-export const LANGUAGE_OPTIONS = [{
-  lang: 'English',
-  value: 'en'
-},
-{
-  lang: 'Tiếng Việt',
-  value: 'vi'
-},
+export const LANGUAGE_OPTIONS = [
+  {
+    lang: 'English',
+    value: 'en',
+    icon: 'circle-flags:lang-en'
+  },
+  {
+    lang: 'Tiếng Việt',
+    value: 'vi',
+    icon: 'circle-flags:lang-vi'
+  }
 ]
