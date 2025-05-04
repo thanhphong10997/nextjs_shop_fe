@@ -354,6 +354,7 @@
   "request_url_not_found": "The requested URL was not found on this sever",
   "something_was_wrong": "something was wrong!",
   "internal_sever_error": "There was an error with the internal server",
-  "you_are_not_authorized": "You are not authorized!"
-  
+  "you_are_not_authorized": "You are not authorized!",
+  "my_cart": "My Cart",
+  "mark_read": "Mark as read"
 }

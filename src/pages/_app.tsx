@@ -140,6 +140,7 @@ export default function App(props: ExtendedAppProps) {
     <Provider store={store}>
       <Head>
         <title>{title}</title>
+        <link rel='icon' href='/favicon.png' sizes='any' />
         <meta name='description' content={description} />
         <meta name='keywords' content={keywords} />
         <meta name='author' content='Phong cute' />

@@ -359,5 +359,7 @@
   "request_url_not_found": "Đường dẫn không hợp lệ",
   "something_was_wrong": "có gì đó sai sai!",
   "internal_sever_error": "Có lỗi xảy ra ở máy chủ",
-  "you_are_not_authorized": "Bạn không có quyền truy cập trang này!"
+  "you_are_not_authorized": "Bạn không có quyền truy cập trang này!",
+  "my_cart": "Giỏ hàng",
+  "mark_read": "Đánh dấu đã đọc"
 }

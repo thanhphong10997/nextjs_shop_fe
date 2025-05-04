@@ -137,7 +137,7 @@ const NotificationItem = (props: TProps) => {
             >
               <MenuItem sx={{ '& svg': { mr: 2 }, border: 'none!important' }} onClick={handleMarkNotification}>
                 <Icon icon='gg:read' fontSize={20} />
-                {t('mark read')}
+                {t('mark_read')}
               </MenuItem>
               <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={handleDeleteNotification}>
                 <Icon icon='mdi:delete-outline' fontSize={20} />
