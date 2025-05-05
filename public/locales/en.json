@@ -337,6 +337,7 @@
   "number_of_orders": "Number of orders",
   "popular_products": "Popular products",
   "create_order": "Order placed successfully",
+  "notifications": "Notifications",
   "marked_notifications_success": "Notifications marked as read",
   "marked_notifications_error": "Failed to mark notifications",
   "delete_notifications_success": "Notifications deleted successfully",

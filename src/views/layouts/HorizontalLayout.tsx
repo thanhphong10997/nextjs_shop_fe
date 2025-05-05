@@ -22,6 +22,7 @@ import { ROUTE_CONFIG } from 'src/configs/route'
 import Link from 'next/link'
 import CartProduct from '../components/cart-product'
 import NotificationDropDown from '../components/notification-dropdown'
+import { useTranslation } from 'react-i18next'
 
 // Iconify
 // import { Icon } from '@iconify/react'
@@ -61,6 +62,9 @@ const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer, hideMenu }) =>
   const router = useRouter()
   const theme = useTheme()
 
+  // translate
+  const { t } = useTranslation()
+
   // handle
   const handleNavigateLogIn = () => {
     if (router.asPath !== '/') {
@@ -96,7 +100,7 @@ const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer, hideMenu }) =>
         )}
         <Typography component='h1' variant='h6' color='primary' noWrap sx={{ flexGrow: 1 }}>
           <Link href={ROUTE_CONFIG.HOME} style={{ color: 'inherit' }}>
-            HOME
+            {t('home')}
           </Link>
         </Typography>
         <LanguageDropdown />

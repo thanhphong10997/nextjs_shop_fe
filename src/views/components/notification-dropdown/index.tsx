@@ -202,7 +202,7 @@ const NotificationDropDown = () => {
       const unsubscribe = onMessage(messaging, payload => {
         // Handle the received push notification while the app is in the foreground
         // You can display a notification or update the UI based on the payload
-        console.log('Foreground push notification received:', payload)
+        // console.log('Foreground push notification received:', payload)
         handleGetListNotification()
       })
 
@@ -249,7 +249,7 @@ const NotificationDropDown = () => {
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             <Typography variant='h5' sx={{ cursor: 'text' }}>
-              Notifications
+              {t('notifications')}
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
               <Chip size='small' color='primary' label={`${notifications?.totalNew} New`} />

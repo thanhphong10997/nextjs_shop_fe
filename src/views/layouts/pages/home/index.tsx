@@ -5,7 +5,7 @@ import { NextPage } from 'next'
 import { Box, Grid, Skeleton, styled, Tab, Tabs, TabsProps, Typography, useTheme } from '@mui/material'
 
 // Import React
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 // translate
 import { useTranslation } from 'react-i18next'
@@ -129,7 +129,7 @@ export const HomePage: NextPage<TProps> = (props: TProps) => {
   const isServerRendered = useRef<boolean>(false)
 
   // fetch API
-  const handleGetListProducts = async () => {
+  const handleGetListProducts = useCallback(async () => {
     setLoading(true)
     const query = {
       params: { limit: pageSize, page: page, search: searchBy, order: sortBy, ...formatFilter(filterBy) }
@@ -144,7 +144,7 @@ export const HomePage: NextPage<TProps> = (props: TProps) => {
         })
       }
     })
-  }
+  }, [page, pageSize, searchBy, sortBy, filterBy])
 
   // Handle
   const handleOnChangePagination = (page: number, pageSize: number) => {
@@ -261,7 +261,7 @@ export const HomePage: NextPage<TProps> = (props: TProps) => {
 
   useEffect(() => {
     if (isServerRendered.current && firstRender.current) handleGetListProducts()
-  }, [sortBy, searchBy, page, pageSize, filterBy])
+  }, [sortBy, searchBy, page, pageSize, filterBy, handleGetListProducts])
 
   useEffect(() => {
     if (isServerRendered.current && firstRender.current)
@@ -421,7 +421,7 @@ export const HomePage: NextPage<TProps> = (props: TProps) => {
         </Box>
         <CustomPagination
           pageSize={pageSize}
-          page={pageSize}
+          page={page}
           rowLength={productsPublic?.total}
           pageSizeOptions={PAGE_SIZE_OPTION}
           isHideShowed
