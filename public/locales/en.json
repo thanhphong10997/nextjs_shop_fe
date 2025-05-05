@@ -294,6 +294,7 @@
   "order_has_not_been_paid": "Order has not been paid",
   "order_has_not_been_delivery": "Order has not been delivered",
   "send_request": "Send request",
+  "back": "Back",
   "back_login": "Back to login",
   "reset_password": "Reset password",
   "reset_password_success": "Password reset successful",

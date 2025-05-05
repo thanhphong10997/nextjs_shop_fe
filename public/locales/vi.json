@@ -299,6 +299,7 @@
   "order_has_not_been_paid": "Đơn hàng chưa được thanh toán",
   "order_has_not_been_delivery": "Đơn hàng chưa được giao",
   "send_request": "Gửi yêu cầu",
+  "back": "Trở về",
   "back_login": "Quay lại trang đăng nhập",
   "reset_password": "Đặt lại mật khẩu",
   "reset_password_success":"Khôi phục mật khẩu thành công",
