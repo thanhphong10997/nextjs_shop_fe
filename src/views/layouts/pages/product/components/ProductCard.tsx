@@ -60,8 +60,6 @@ const ProductCard = (props: TProductCard) => {
   // props
   const { item } = props
 
-  console.log('item', { item })
-
   // theme
   const theme = useTheme()
   const router = useRouter()

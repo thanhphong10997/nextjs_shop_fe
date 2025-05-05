@@ -2,11 +2,11 @@
 import { NextPage } from 'next'
 
 // Import Mui
-import { Avatar, AvatarGroup, Box, Chip, ChipProps, Grid, styled, Switch, Typography, useTheme } from '@mui/material'
+import { Avatar, AvatarGroup, Box, Chip, ChipProps, Grid, styled, Tooltip, Typography, useTheme } from '@mui/material'
 import { GridColDef, GridSortModel } from '@mui/x-data-grid'
 
 // Import React
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux'
@@ -22,14 +22,14 @@ import {
 import { useTranslation } from 'react-i18next'
 
 // Components
-import GridEdit from 'src/components/grid-edit'
-import GridDelete from 'src/components/grid-delete'
-import CustomPagination from 'src/components/custom-pagination'
+import ConfirmationDialog from 'src/components/confirmation-dialog'
 import CustomDataGrid from 'src/components/custom-data-grid'
+import CustomPagination from 'src/components/custom-pagination'
+import CustomSelect from 'src/components/custom-select'
+import GridDelete from 'src/components/grid-delete'
+import GridEdit from 'src/components/grid-edit'
 import InputSearch from 'src/components/input-search'
 import Spinner from 'src/components/spinner'
-import ConfirmationDialog from 'src/components/confirmation-dialog'
-import CustomSelect from 'src/components/custom-select'
 import EditOrderProduct from './components/EditOrderProduct'
 import OrderStatusCountCard from './components/OrderStatusCountCard'
 
@@ -48,8 +48,8 @@ import { getCountOrderStatus } from 'src/services/report'
 import { formatFilter, formatNumberToLocal } from 'src/utils'
 
 // others
-import { usePermission } from 'src/hooks/usePermission'
 import { PRODUCT_ORDER_STATUS } from 'src/configs/orderProduct'
+import { usePermission } from 'src/hooks/usePermission'
 import { TItemOrderProduct, TParamsUpdateOrderStatus } from 'src/types/order-product'
 import MoreButton from './components/MoreButton'
 
@@ -185,7 +185,7 @@ export const OrderProductListPage: NextPage<TProps> = () => {
         return (
           <AvatarGroup max={1} total={row?.orderItems?.length}>
             {row?.orderItems?.map((item: TItemOrderProduct) => {
-              return <Avatar key={item?.product?._id} alt={item?.product?.slug} src={item?.image} />
+              return <Avatar key={item?._id} alt={item?.product?.slug} src={item?.image} />
             })}
           </AvatarGroup>
         )
@@ -236,43 +236,44 @@ export const OrderProductListPage: NextPage<TProps> = () => {
         return <Typography>{row?.shippingAddress?.city?.name}</Typography>
       }
     },
-    {
-      field: 'isPaid',
-      headerName: t('paid_status'),
-      minWidth: 140,
-      maxWidth: 140,
-      renderCell: params => {
-        const { row } = params
-        console.log('row', { row })
 
-        return (
-          <Switch
-            checked={!!row.isPaid}
-            onChange={e => {
-              handleUpdateOrderStatus({ id: row?._id, isPaid: e.target.checked ? 1 : 0 })
-            }}
-          />
-        )
-      }
-    },
-    {
-      field: 'isDelivered',
-      headerName: t('delivery_status'),
-      minWidth: 140,
-      maxWidth: 140,
-      renderCell: params => {
-        const { row } = params
+    // {
+    //   field: 'isPaid',
+    //   headerName: t('paid_status'),
+    //   minWidth: 140,
+    //   maxWidth: 140,
+    //   renderCell: params => {
+    //     const { row } = params
+    //     console.log('row', { row })
 
-        return (
-          <Switch
-            checked={!!row?.isDelivered}
-            onChange={e => {
-              handleUpdateOrderStatus({ id: row?._id, isDelivered: e.target.checked ? 1 : 0 })
-            }}
-          />
-        )
-      }
-    },
+    //     return (
+    //       <Switch
+    //         checked={!!row.isPaid}
+    //         onChange={e => {
+    //           handleUpdateOrderStatus({ id: row?._id, isPaid: e.target.checked ? 1 : 0 })
+    //         }}
+    //       />
+    //     )
+    //   }
+    // },
+    // {
+    //   field: 'isDelivered',
+    //   headerName: t('delivery_status'),
+    //   minWidth: 140,
+    //   maxWidth: 140,
+    //   renderCell: params => {
+    //     const { row } = params
+
+    //     return (
+    //       <Switch
+    //         checked={!!row?.isDelivered}
+    //         onChange={e => {
+    //           handleUpdateOrderStatus({ id: row?._id, isDelivered: e.target.checked ? 1 : 0 })
+    //         }}
+    //       />
+    //     )
+    //   }
+    // },
     {
       field: 'status',
       headerName: t('Status'),
@@ -280,15 +281,16 @@ export const OrderProductListPage: NextPage<TProps> = () => {
       maxWidth: 180,
       renderCell: params => {
         const { row } = params
-        console.log('row', { row })
 
         return (
           <>
             {
-              <OrderStatusStyled
-                background={(PRODUCT_ORDER_STATUS_STYLE as any)[row?.status]?.background}
-                label={t((PRODUCT_ORDER_STATUS_STYLE as any)[row?.status]?.label)}
-              />
+              <Tooltip title={t((PRODUCT_ORDER_STATUS_STYLE as any)[row?.status]?.label)}>
+                <OrderStatusStyled
+                  background={(PRODUCT_ORDER_STATUS_STYLE as any)[row?.status]?.background}
+                  label={t((PRODUCT_ORDER_STATUS_STYLE as any)[row?.status]?.label)}
+                />
+              </Tooltip>
             }
           </>
         )

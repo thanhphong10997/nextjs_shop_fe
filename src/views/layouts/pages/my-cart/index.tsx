@@ -76,11 +76,9 @@ export const MyCartPage: NextPage<TProps> = () => {
   }, [orderItems])
 
   const memoItemSelectedProduct = useMemo(() => {
-    console.log('selected row', { selectedRows })
     const result: TItemOrderProduct[] = []
 
     selectedRows.forEach((idSelected: string) => {
-      console.log('orderItems', { orderItems })
       const findItem: any = orderItems?.find((item: TItemOrderProduct) => item?.product?._id === idSelected)
       if (findItem) {
         result.push(findItem)
@@ -91,7 +89,6 @@ export const MyCartPage: NextPage<TProps> = () => {
   }, [selectedRows, orderItems])
 
   const memoTotalSelectedProduct = useMemo(() => {
-    console.log('memoItemSelectedProduct', memoItemSelectedProduct)
     const total = memoItemSelectedProduct?.reduce((result, current) => {
       const currentPrice = current?.discount > 0 ? (current.price * (100 - current?.discount)) / 100 : current?.price
 

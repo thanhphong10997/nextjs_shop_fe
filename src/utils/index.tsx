@@ -1,4 +1,4 @@
-import { EditorState, ContentState } from 'draft-js'
+import { ContentState, EditorState } from 'draft-js'
 import { TItemOrderProduct } from 'src/types/order-product'
 
 // fix window is not defined with html-to-draftjs
@@ -143,7 +143,8 @@ export const convertUpdateProductToCart = (orderItems: TItemOrderProduct[], addI
     let result = []
     const cloneOrderItems = cloneDeep(orderItems)
     const findItems = cloneOrderItems.find((item: TItemOrderProduct) => item?.product?._id === addItem?.product?._id)
-    console.log('findItems', { findItems })
+
+    // console.log('findItems', { findItems })
 
     // Item is already in cart, so just increase the quantity
     if (findItems) {

@@ -15,19 +15,19 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 
 // Import React
-import React, { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 
 // Translate
 import { useTranslation } from 'react-i18next'
 
 // Import icons
 import { Icon } from '@iconify/react/dist/iconify.js'
-import CustomModal from 'src/components/custom-modal'
 import { Controller, useForm } from 'react-hook-form'
+import CustomModal from 'src/components/custom-modal'
 
 // hook form
-import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
 
 // redux
 import { useDispatch } from 'react-redux'
@@ -35,17 +35,16 @@ import { AppDispatch } from 'src/stores'
 import { createProductAsync, updateProductAsync } from 'src/stores/product/actions'
 
 // components
-import Spinner from 'src/components/spinner'
-import WrapperFileUpload from 'src/components/wrapper-file-upload'
-import CustomSelect from 'src/components/custom-select'
 import CustomDatePicker from 'src/components/custom-date-picker'
 import CustomEditor from 'src/components/custom-editor'
+import CustomSelect from 'src/components/custom-select'
+import Spinner from 'src/components/spinner'
+import WrapperFileUpload from 'src/components/wrapper-file-upload'
 
 // others
-import { convertFileToBase64, convertHTMLToDraft, stringToSlug } from 'src/utils'
-import { getAllProductTypes } from 'src/services/product-type'
-import { getDetailsProduct } from 'src/services/product'
 import { getAllCities } from 'src/services/city'
+import { getDetailsProduct } from 'src/services/product'
+import { convertFileToBase64, convertHTMLToDraft, stringToSlug } from 'src/utils'
 
 // draftJs
 import { EditorState, convertToRaw } from 'draft-js'
@@ -195,7 +194,6 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
   // handle
   const onSubmit = (data: any) => {
     if (!Object.keys(errors)?.length) {
-      console.log('data', { data })
       if (productId) {
         // update
         dispatch(

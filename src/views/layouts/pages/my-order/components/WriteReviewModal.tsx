@@ -80,8 +80,6 @@ const WriteReviewModal = (props: TEditProduct) => {
   // handle
   const onSubmit = (data: any) => {
     if (!Object.keys(errors)?.length) {
-      console.log('data', { data })
-
       // update
       if (productId && userId) {
         dispatch(

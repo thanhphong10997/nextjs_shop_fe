@@ -6,6 +6,7 @@ export type TParamsGetOrderProducts = {
 }
 
 export type TItemOrderProduct = {
+  _id?: string
   name: string
   amount: number
   image: string

@@ -1,48 +1,34 @@
 // Import Mui
-import {
-  Avatar,
-  Box,
-  Button,
-  FormHelperText,
-  Grid,
-  IconButton,
-  InputLabel,
-  TextField,
-  Typography,
-  useTheme
-} from '@mui/material'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Switch from '@mui/material/Switch'
+import { Box, Button, FormHelperText, Grid, IconButton, TextField, Typography, useTheme } from '@mui/material'
 
 // Import React
-import React, { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 
 // Translate
 import { useTranslation } from 'react-i18next'
 
 // Import icons
 import { Icon } from '@iconify/react/dist/iconify.js'
-import CustomModal from 'src/components/custom-modal'
 import { Controller, useForm } from 'react-hook-form'
+import CustomModal from 'src/components/custom-modal'
 
 // hook form
-import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
 
 // redux
 import { useDispatch } from 'react-redux'
-import { AppDispatch } from 'src/stores'
 import { getDetailsOrderProduct } from 'src/services/order-product'
+import { AppDispatch } from 'src/stores'
 import { updateOrderProductAsync } from 'src/stores/order-product/actions'
 
 // components
-import Spinner from 'src/components/spinner'
 import CustomSelect from 'src/components/custom-select'
+import Spinner from 'src/components/spinner'
 
 // others
-import { stringToSlug } from 'src/utils'
-import { getAllProductTypes } from 'src/services/product-type'
 import { getAllCities } from 'src/services/city'
+import { stringToSlug } from 'src/utils'
 
 type TEditProduct = {
   open: boolean
@@ -73,7 +59,6 @@ const EditOrderProduct = (props: TEditProduct) => {
   // react
   const [loading, setLoading] = useState(false)
   const [productImage, setProductImage] = useState('')
-  const [typesOption, setOptionTypes] = useState<{ label: string; value: string }[]>([])
   const [citiesOption, setCitiesOption] = useState<{ label: string; value: string }[]>([])
 
   // react hook form
@@ -109,7 +94,6 @@ const EditOrderProduct = (props: TEditProduct) => {
   // handle
   const onSubmit = (data: any) => {
     if (!Object.keys(errors)?.length) {
-      console.log('data', { data })
       if (orderId) {
         // update
         dispatch(

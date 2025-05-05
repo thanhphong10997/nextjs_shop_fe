@@ -378,7 +378,6 @@ export const UserListPage: NextPage<TProps> = () => {
     switch (action) {
       case 'delete': {
         setOpenConfirmationDeleteMultipleUser(true)
-        console.log('selectedRow', { selectedRow })
         break
       }
     }

@@ -29,7 +29,6 @@ const PaymentVNPay = () => {
     await getVNPayIpnPaymentVNPay({
       params: { ...param }
     }).then(res => {
-      console.log('res', { res })
       const data = res?.data
       if (data) {
         setPaymentData({

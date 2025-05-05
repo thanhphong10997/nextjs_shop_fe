@@ -126,7 +126,6 @@ export const OrderCard: NextPage<TProps> = props => {
       language: i18n.language === 'vi' ? 'vn' : i18n.language
     })
       .then(response => {
-        console.log('response', { response })
         if (response?.data) {
           window.open(response?.data, '_blank')
         }

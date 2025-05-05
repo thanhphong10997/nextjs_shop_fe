@@ -7,7 +7,6 @@ import {
   FormLabel,
   Grid,
   IconButton,
-  InputLabel,
   Radio,
   RadioGroup,
   TextField,
@@ -17,7 +16,7 @@ import {
 import FormControlLabel from '@mui/material/FormControlLabel'
 
 // Import React
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // Translate
 import { useTranslation } from 'react-i18next'
@@ -26,28 +25,28 @@ import { useTranslation } from 'react-i18next'
 import { Icon } from '@iconify/react/dist/iconify.js'
 
 // hook form
-import * as yup from 'yup'
-import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { Controller, useForm } from 'react-hook-form'
+import * as yup from 'yup'
 
 // redux
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
-import { updateAuthMeAsync } from 'src/stores/auth/actions'
 import { resetInitialState } from 'src/stores/auth'
+import { updateAuthMeAsync } from 'src/stores/auth/actions'
 
 // components
-import Spinner from 'src/components/spinner'
 import CustomModal from 'src/components/custom-modal'
 import CustomSelect from 'src/components/custom-select'
 import NoData from 'src/components/no-data'
+import Spinner from 'src/components/spinner'
 
 // others
-import { cloneDeep, convertFullName, toFullName } from 'src/utils'
-import { getAllCities } from 'src/services/city'
-import { useAuth } from 'src/hooks/useAuth'
-import { TUserAddresses } from 'src/contexts/types'
 import toast from 'react-hot-toast'
+import { TUserAddresses } from 'src/contexts/types'
+import { useAuth } from 'src/hooks/useAuth'
+import { getAllCities } from 'src/services/city'
+import { cloneDeep, convertFullName, toFullName } from 'src/utils'
 
 type TModalAddAddress = {
   open: boolean
@@ -123,7 +122,6 @@ const ModalAddAddress = (props: TModalAddAddress) => {
   // handle
   const onSubmit = (data: any) => {
     if (!Object.keys(errors)?.length) {
-      console.log('data', data)
       if (activeTab === 2) {
         // const findCity = citiesOption?.find(city => city.value === data?.city)
 

@@ -138,7 +138,6 @@ export const MyProfilePage: NextPage<TProps> = () => {
   // fetch api
   const fetchGetAuthMe = async () => {
     setLoading(true)
-    console.log('loading', loading)
     await getAuthMe()
       .then(async res => {
         const data = res?.data
@@ -155,7 +154,6 @@ export const MyProfilePage: NextPage<TProps> = () => {
           })
         }
         setLoading(false)
-        console.log('loading', loading)
       })
       .catch(() => {
         setLoading(false)

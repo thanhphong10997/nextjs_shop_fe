@@ -3,27 +3,27 @@ import { NextPage } from 'next'
 
 // Import Mui
 import {
+  Avatar,
   Box,
   Button,
-  useTheme,
-  Avatar,
-  Typography,
   Divider,
   FormControl,
-  FormLabel,
-  RadioGroup,
   FormControlLabel,
-  Radio
+  FormLabel,
+  Radio,
+  RadioGroup,
+  Typography,
+  useTheme
 } from '@mui/material'
 
 // Import React
-import React, { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 
 // i18n(translate)
 import { useTranslation } from 'react-i18next'
 
 // utils
-import { convertUpdateProductToCart, formatNumberToLocal, toFullName } from 'src/utils'
+import { formatNumberToLocal, toFullName } from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 // hooks
@@ -32,30 +32,29 @@ import { useAuth } from 'src/hooks/useAuth'
 //  redux
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
-import { TItemOrderProduct } from 'src/types/order-product'
 import { createOrderProductAsync } from 'src/stores/order-product/actions'
+import { TItemOrderProduct } from 'src/types/order-product'
 
 // components
-import NoData from 'src/components/no-data'
 import { useRouter } from 'next/router'
+import NoData from 'src/components/no-data'
 
 // services
-import { getAllPaymentTypes } from 'src/services/payment-type'
-import { getAllDeliveryTypes } from 'src/services/delivery-type'
-import { resetInitialState, updateProductToCart } from 'src/stores/order-product'
-import toast from 'react-hot-toast'
 import { Icon } from '@iconify/react/dist/iconify.js'
-import ModalAddAddress from './components/ModalAddAddress'
-import { getAllCities } from 'src/services/city'
 import Spinner from 'src/components/spinner'
+import { getAllCities } from 'src/services/city'
+import { getAllDeliveryTypes } from 'src/services/delivery-type'
+import { getAllPaymentTypes } from 'src/services/payment-type'
+import { resetInitialState, updateProductToCart } from 'src/stores/order-product'
+import ModalAddAddress from './components/ModalAddAddress'
 import ModalWarning from './components/ModalWarning'
 
 // alert
-import Swal from 'sweetalert2'
-import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
-import { ROUTE_CONFIG } from 'src/configs/route'
 import { PAYMENT_TYPES } from 'src/configs/payment'
+import { ROUTE_CONFIG } from 'src/configs/route'
+import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 import { createURLPaymentVNPay } from 'src/services/payment'
+import Swal from 'sweetalert2'
 
 type TProps = {}
 
@@ -295,7 +294,7 @@ export const CheckoutProductPage: NextPage<TProps> = () => {
       language: i18n.language === 'vi' ? 'vn' : i18n.language
     })
       .then(response => {
-        console.log('response', response.data)
+        // console.log('response', response.data)
         if (response?.data) {
           window.open(response?.data, '_blank')
         }
