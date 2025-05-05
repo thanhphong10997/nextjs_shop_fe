@@ -77,14 +77,14 @@ const NotificationItem = (props: TProps) => {
   }
 
   const handleNavigateDetails = (type: string) => {
-    switch (type) {
-      case CONTEXT_NOTIFICATION.ORDER: {
-        dispatch(markReadNotificationAsync(notification?._id))
-        handleDropdownClose()
-        router.push(`${ROUTE_CONFIG.MY_ORDER}/${notification?.referenceId}`)
-        break
-      }
-    }
+    // switch (type) {
+    //   case CONTEXT_NOTIFICATION.ORDER: {
+    //   }
+    // }
+    // break
+    dispatch(markReadNotificationAsync(notification?._id))
+    handleDropdownClose()
+    router.push(`${ROUTE_CONFIG.MY_ORDER}/${notification?.referenceId}`)
   }
 
   return (
