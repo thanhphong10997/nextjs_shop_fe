@@ -260,7 +260,8 @@ export const HomePage: NextPage<TProps> = (props: TProps) => {
   }, [serverParams, totalCount, products, productTypesServer])
 
   useEffect(() => {
-    if (isServerRendered.current && firstRender.current) handleGetListProducts()
+    // if (isServerRendered.current && firstRender.current) handleGetListProducts()
+    handleGetListProducts()
   }, [sortBy, searchBy, page, pageSize, filterBy, handleGetListProducts])
 
   useEffect(() => {

@@ -184,7 +184,8 @@ export const RoleListPage: NextPage<TProps> = () => {
     mutationKey: [queryKeys.delete_role],
     mutationFn: fetchDeleteRole,
     onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: [queryKeys.role_list, -1, -1, sortBy, searchBy] })
+      // queryClient.refetchQueries({ queryKey: [queryKeys.role_list, -1, -1, sortBy, searchBy] })
+      queryClient.invalidateQueries({ queryKey: [queryKeys.role_list, -1, -1, sortBy, searchBy] })
       handleCloseConfirmDeleteRole()
       toast.success(t('delete_role_success'))
     },

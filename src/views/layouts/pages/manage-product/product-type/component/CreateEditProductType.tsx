@@ -22,18 +22,25 @@ import { AppDispatch } from 'src/stores'
 import { createProductTypeAsync, updateProductTypeAsync } from 'src/stores/product-type/actions'
 
 // services
-import { getDetailsProductType } from 'src/services/product-type'
+import { createProductType, getDetailsProductType, updateProductType } from 'src/services/product-type'
 
 // components
 import Spinner from 'src/components/spinner'
 
 // Utils
 import { stringToSlug } from 'src/utils'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from '@/configs/queryKey'
+import toast from 'react-hot-toast'
 
 type TCreateEditProductType = {
   open: boolean
   onClose: () => void
   productTypeId?: string
+  page?: number
+  pageSize?: number
+  sortBy?: string
+  searchBy?: string
 }
 
 type TDefaultValues = {
@@ -48,8 +55,11 @@ const CreateEditProductType = (props: TCreateEditProductType) => {
   // theme
   const theme = useTheme()
 
+  // react query
+  const queryClient = useQueryClient()
+
   // props
-  const { open, onClose, productTypeId } = props
+  const { open, onClose, productTypeId, page, pageSize, sortBy, searchBy } = props
 
   // redux
   const dispatch: AppDispatch = useDispatch()
@@ -86,20 +96,29 @@ const CreateEditProductType = (props: TCreateEditProductType) => {
     if (!Object.keys(errors)?.length) {
       if (productTypeId) {
         // update
-        dispatch(
-          updateProductTypeAsync({
-            id: productTypeId,
-            name: data?.name,
-            slug: data?.slug
-          })
-        )
+        // dispatch(
+        //   updateProductTypeAsync({
+        //     id: productTypeId,
+        //     name: data?.name,
+        //     slug: data?.slug
+        //   })
+        // )
+        mutateUpdate({
+          id: productTypeId,
+          name: data?.name,
+          slug: data?.slug
+        })
       } else {
-        dispatch(
-          createProductTypeAsync({
-            name: data?.name,
-            slug: data?.slug
-          })
-        )
+        // dispatch(
+        //   createProductTypeAsync({
+        //     name: data?.name,
+        //     slug: data?.slug
+        //   })
+        // )
+        mutateCreate({
+          name: data?.name,
+          slug: data?.slug
+        })
       }
     }
   }
@@ -124,6 +143,33 @@ const CreateEditProductType = (props: TCreateEditProductType) => {
       })
   }
 
+  // react query
+  const { mutate: mutateCreate, isPending: isCreating } = useMutation({
+    mutationKey: [queryKeys.create_product_type],
+    mutationFn: createProductType,
+    onSuccess: () => {
+      toast.success(t('create_product_type_success'))
+      onClose()
+      queryClient.invalidateQueries({ queryKey: [queryKeys.get_all_product_types, pageSize, page, searchBy, sortBy] })
+    },
+    onError: err => {
+      toast.error(t('create_product_type_error'))
+    }
+  })
+
+  const { mutate: mutateUpdate, isPending: isUpdating } = useMutation({
+    mutationKey: [queryKeys.update_product_type],
+    mutationFn: updateProductType,
+    onSuccess: () => {
+      toast.success(t('update_product_type_success'))
+      onClose()
+      queryClient.refetchQueries({ queryKey: [queryKeys.get_all_product_types, pageSize, page, searchBy, sortBy] })
+    },
+    onError: err => {
+      toast.error(t('update_product_type_error'))
+    }
+  })
+
   useEffect(() => {
     if (!open) {
       reset({
@@ -136,7 +182,7 @@ const CreateEditProductType = (props: TCreateEditProductType) => {
 
   return (
     <>
-      {loading && <Spinner />}
+      {(loading || isCreating || isUpdating) && <Spinner />}
       <CustomModal open={open} onClose={onClose}>
         <Box
           sx={{ backgroundColor: theme.palette.customColors.bodyBg, padding: '20px', borderRadius: '15px' }}
