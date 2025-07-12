@@ -52,6 +52,9 @@ import { usePermission } from 'src/hooks/usePermission'
 
 // utils
 import { formatDate } from 'src/utils/date'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from '@/configs/queryKey'
+import { deleteMultipleProductType, deleteProductType, getAllProductTypes } from '@/services/product-type'
 
 type TProps = {}
 
@@ -63,6 +66,9 @@ export const ProductTypeListPage: NextPage<TProps> = () => {
 
   // translate
   const { t, i18n } = useTranslation()
+
+  // react query
+  const queryClient = useQueryClient()
 
   // state
   const [page, setPage] = useState(1)
@@ -188,7 +194,7 @@ export const ProductTypeListPage: NextPage<TProps> = () => {
       <CustomPagination
         pageSize={pageSize}
         page={page}
-        rowLength={productTypes.total}
+        rowLength={allProductTypes?.totalCount}
         pageSizeOptions={PAGE_SIZE_OPTION}
         onChangePagination={handleOnChangePagination}
       />
@@ -202,6 +208,15 @@ export const ProductTypeListPage: NextPage<TProps> = () => {
     const query = { params: { limit: pageSize, page: page, search: searchBy, order: sortBy } }
     dispatch(getAllProductTypesAsync(query))
   }
+
+  // react query
+  const { data: allProductTypes, isLoading: isGettingData } = useQuery({
+    queryKey: [queryKeys.get_all_product_types, pageSize, page, searchBy, sortBy],
+    queryFn: () => getAllProductTypes({ params: { limit: pageSize, page: page, search: searchBy, order: sortBy } }),
+    select: data => data?.data,
+    staleTime: 5000,
+    gcTime: 6000
+  })
 
   // Handle
   const handleOnChangePagination = (page: number, pageSize: number) => {
@@ -221,16 +236,20 @@ export const ProductTypeListPage: NextPage<TProps> = () => {
   }, [])
 
   const handleDeleteMultipleProductType = useCallback(() => {
-    dispatch(
-      deleteMultipleProductTypeAsync({
-        productTypeIds: selectedRow
-      })
-    )
+    // dispatch(
+    //   deleteMultipleProductTypeAsync({
+    //     productTypeIds: selectedRow
+    //   })
+    // )
+    mutateDeleteMany({
+      productTypeIds: selectedRow
+    })
   }, [selectedRow])
 
   const handleDeleteProductType = useCallback(() => {
-    dispatch(deleteProductTypeAsync(openConfirmationDeleteProductType.id))
-  }, [])
+    // dispatch(deleteProductTypeAsync(openConfirmationDeleteProductType.id))
+    mutateDelete(openConfirmationDeleteProductType.id)
+  }, [openConfirmationDeleteProductType.id])
 
   const handleCloseCreateEdit = useCallback(() => {
     setOpenCreateEdit({
@@ -259,64 +278,90 @@ export const ProductTypeListPage: NextPage<TProps> = () => {
 
   // fetch api
 
+  const { mutate: mutateDelete, isPending: isDeleting } = useMutation({
+    mutationKey: [queryKeys.delete_product_type],
+    mutationFn: deleteProductType,
+    onSuccess: () => {
+      toast.success(t('delete_product_type_success'))
+      handleCloseConfirmDeleteProductType()
+      queryClient.invalidateQueries({ queryKey: [queryKeys.get_all_product_types, pageSize, page, searchBy, sortBy] })
+    },
+    onError: err => {
+      toast.error(t('delete_product_type_error'))
+    }
+  })
+
+  const { mutate: mutateDeleteMany, isPending: isDeletingMany } = useMutation({
+    mutationKey: [queryKeys.delete_many_product_type],
+    mutationFn: deleteMultipleProductType,
+    onSuccess: () => {
+      toast.success(t('delete_multiple_product_type_success'))
+      handleCloseConfirmDeleteMultipleProductType()
+      queryClient.invalidateQueries({ queryKey: [queryKeys.get_all_product_types, pageSize, page, searchBy, sortBy] })
+    },
+    onError: err => {
+      toast.error(t('delete_multiple_product_type_error'))
+    }
+  })
+
   // side effects
 
   useEffect(() => {
     handleGetListProductTypes()
   }, [sortBy, searchBy, page, pageSize])
 
-  useEffect(() => {
-    if (isSuccessCreateEdit) {
-      if (openCreateEdit.id) {
-        toast.success(t('update_product_type_success'))
-      } else {
-        toast.success(t('create_product_type_success'))
-      }
-      handleGetListProductTypes()
-      handleCloseCreateEdit()
-      dispatch(resetInitialState())
-    } else if (isErrorCreateEdit && messageCreateEdit && typeError) {
-      const errorConfig = OBJECT_TYPE_ERROR_PRODUCT_TYPE[typeError]
-      if (errorConfig) {
-        toast.error(t(errorConfig))
-      } else {
-        if (openCreateEdit.id) {
-          toast.error(t('update_product_type_error'))
-        } else {
-          toast.error(t('create_product_type_error'))
-        }
-      }
-      dispatch(resetInitialState())
-    }
-  }, [isSuccessCreateEdit, isErrorCreateEdit, messageCreateEdit, typeError])
+  // useEffect(() => {
+  //   if (isSuccessCreateEdit) {
+  //     if (openCreateEdit.id) {
+  //       toast.success(t('update_product_type_success'))
+  //     } else {
+  //       toast.success(t('create_product_type_success'))
+  //     }
+  //     handleGetListProductTypes()
+  //     handleCloseCreateEdit()
+  //     dispatch(resetInitialState())
+  //   } else if (isErrorCreateEdit && messageCreateEdit && typeError) {
+  //     const errorConfig = OBJECT_TYPE_ERROR_PRODUCT_TYPE[typeError]
+  //     if (errorConfig) {
+  //       toast.error(t(errorConfig))
+  //     } else {
+  //       if (openCreateEdit.id) {
+  //         toast.error(t('update_product_type_error'))
+  //       } else {
+  //         toast.error(t('create_product_type_error'))
+  //       }
+  //     }
+  //     dispatch(resetInitialState())
+  //   }
+  // }, [isSuccessCreateEdit, isErrorCreateEdit, messageCreateEdit, typeError])
 
-  useEffect(() => {
-    if (isSuccessDelete) {
-      toast.success(t('delete_product_type_success'))
-      handleGetListProductTypes()
-      dispatch(resetInitialState())
-      handleCloseConfirmDeleteProductType()
-    } else if (isErrorDelete && messageDelete) {
-      toast.error(t('delete_product_type_error'))
-      dispatch(resetInitialState())
-    }
-  }, [isSuccessDelete, isErrorDelete, messageDelete])
+  // useEffect(() => {
+  //   if (isSuccessDelete) {
+  //     toast.success(t('delete_product_type_success'))
+  //     handleCloseConfirmDeleteProductType()
+  //     handleGetListProductTypes()
+  //     dispatch(resetInitialState())
+  //   } else if (isErrorDelete && messageDelete) {
+  //     toast.error(t('delete_product_type_error'))
+  //     dispatch(resetInitialState())
+  //   }
+  // }, [isSuccessDelete, isErrorDelete, messageDelete])
 
-  useEffect(() => {
-    if (isSuccessMultipleDelete) {
-      toast.success(t('delete_multiple_product_type_success'))
-      handleGetListProductTypes()
-      dispatch(resetInitialState())
-      handleCloseConfirmDeleteMultipleProductType()
-    } else if (isErrorMultipleDelete && messageMultipleDelete) {
-      toast.error(t('delete_multiple_product_type_error'))
-      dispatch(resetInitialState())
-    }
-  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageMultipleDelete])
+  // useEffect(() => {
+  //   if (isSuccessMultipleDelete) {
+  //     toast.success(t('delete_multiple_product_type_success'))
+  //     handleGetListProductTypes()
+  //     dispatch(resetInitialState())
+  //     handleCloseConfirmDeleteMultipleProductType()
+  //   } else if (isErrorMultipleDelete && messageMultipleDelete) {
+  //     toast.error(t('delete_multiple_product_type_error'))
+  //     dispatch(resetInitialState())
+  //   }
+  // }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageMultipleDelete])
 
   return (
     <>
-      {loading && <Spinner />}
+      {(loading || isGettingData || isDeleting || isDeletingMany) && <Spinner />}
       <ConfirmationDialog
         title={t('title_delete_product_type')}
         description={t('confirm_delete_product_type')}
@@ -337,6 +382,10 @@ export const ProductTypeListPage: NextPage<TProps> = () => {
         open={openCreateEdit.open}
         onClose={handleCloseCreateEdit}
         productTypeId={openCreateEdit.id}
+        page={page}
+        pageSize={pageSize}
+        sortBy={sortBy}
+        searchBy={searchBy}
       />
       <Box
         sx={{
@@ -387,7 +436,7 @@ export const ProductTypeListPage: NextPage<TProps> = () => {
                 // }
               }
             }
-            rows={productTypes.data}
+            rows={allProductTypes?.productTypes || []}
             columns={columns}
             checkboxSelection
             autoHeight

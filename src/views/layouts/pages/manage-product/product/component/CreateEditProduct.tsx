@@ -43,18 +43,26 @@ import WrapperFileUpload from 'src/components/wrapper-file-upload'
 
 // others
 import { getAllCities } from 'src/services/city'
-import { getDetailsProduct } from 'src/services/product'
+import { createProduct, getDetailsProduct, updateProduct } from 'src/services/product'
 import { convertFileToBase64, convertHTMLToDraft, stringToSlug } from 'src/utils'
 
 // draftJs
 import { EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from '@/configs/queryKey'
+import { TParamsCreateProduct } from '@/types/product'
+import toast from 'react-hot-toast'
 
 type TCreateEditProduct = {
   open: boolean
   onClose: () => void
   productId?: string
   typesOption: { label: string; value: string }[]
+  page?: number
+  pageSize?: number
+  sortBy?: string
+  searchBy?: string
 }
 
 type TDefaultValues = {
@@ -80,7 +88,10 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
   const theme = useTheme()
 
   // props
-  const { open, onClose, productId, typesOption } = props
+  const { open, onClose, productId, typesOption, pageSize, page, searchBy, sortBy } = props
+
+  // React query
+  const queryClient = useQueryClient()
 
   // redux
   const dispatch: AppDispatch = useDispatch()
@@ -196,40 +207,69 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
     if (!Object.keys(errors)?.length) {
       if (productId) {
         // update
-        dispatch(
-          updateProductAsync({
-            id: productId,
-            name: data?.name,
-            slug: data?.slug,
-            location: data?.location,
-            price: Number(data?.price),
-            discount: Number(data?.discount) || 0,
-            countInStock: Number(data?.countInStock),
-            type: data?.type,
-            discountStartDate: data?.discountStartDate,
-            discountEndDate: data?.discountEndDate,
-            description: data?.description ? draftToHtml(convertToRaw(data.description.getCurrentContent())) : '',
-            image: productImage,
-            status: data?.status ? 1 : 0
-          })
-        )
+        // dispatch(
+        //   updateProductAsync({
+        //     id: productId,
+        //     name: data?.name,
+        //     slug: data?.slug,
+        //     location: data?.location,
+        //     price: Number(data?.price),
+        //     discount: Number(data?.discount) || 0,
+        //     countInStock: Number(data?.countInStock),
+        //     type: data?.type,
+        //     discountStartDate: data?.discountStartDate,
+        //     discountEndDate: data?.discountEndDate,
+        //     description: data?.description ? draftToHtml(convertToRaw(data.description.getCurrentContent())) : '',
+        //     image: productImage,
+        //     status: data?.status ? 1 : 0
+        //   })
+        // )
+        mutateUpdateProduct({
+          id: productId,
+          name: data?.name,
+          slug: data?.slug,
+          location: data?.location,
+          price: Number(data?.price),
+          discount: Number(data?.discount) || 0,
+          countInStock: Number(data?.countInStock),
+          type: data?.type,
+          discountStartDate: data?.discountStartDate,
+          discountEndDate: data?.discountEndDate,
+          description: data?.description ? draftToHtml(convertToRaw(data.description.getCurrentContent())) : '',
+          image: productImage,
+          status: data?.status ? 1 : 0
+        })
       } else {
-        dispatch(
-          createProductAsync({
-            name: data?.name,
-            slug: data?.slug,
-            price: Number(data?.price),
-            discount: Number(data?.discount),
-            countInStock: Number(data?.countInStock),
-            type: data?.type,
-            location: data?.location,
-            discountStartDate: data?.discountStartDate || null,
-            discountEndDate: data?.discountEndDate || null,
-            description: data?.description ? draftToHtml(convertToRaw(data.description.getCurrentContent())) : '',
-            image: productImage,
-            status: data?.status ? 1 : 0
-          })
-        )
+        // dispatch(
+        //   createProductAsync({
+        //     name: data?.name,
+        //     slug: data?.slug,
+        //     price: Number(data?.price),
+        //     discount: Number(data?.discount),
+        //     countInStock: Number(data?.countInStock),
+        //     type: data?.type,
+        //     location: data?.location,
+        //     discountStartDate: data?.discountStartDate || null,
+        //     discountEndDate: data?.discountEndDate || null,
+        //     description: data?.description ? draftToHtml(convertToRaw(data.description.getCurrentContent())) : '',
+        //     image: productImage,
+        //     status: data?.status ? 1 : 0
+        //   })
+        // )
+        mutateCreateProduct({
+          name: data?.name,
+          slug: data?.slug,
+          price: Number(data?.price),
+          discount: Number(data?.discount),
+          countInStock: Number(data?.countInStock),
+          type: data?.type,
+          location: data?.location,
+          discountStartDate: data?.discountStartDate || null,
+          discountEndDate: data?.discountEndDate || null,
+          description: data?.description ? draftToHtml(convertToRaw(data.description.getCurrentContent())) : '',
+          image: productImage,
+          status: data?.status ? 1 : 0
+        })
       }
     }
   }
@@ -275,6 +315,34 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
       })
   }
 
+  // React query
+  const { mutate: mutateCreateProduct, isPending: isCreating } = useMutation({
+    mutationKey: [queryKeys.create_product],
+    mutationFn: createProduct,
+    onSuccess: () => {
+      toast.success(t('create_product_success'))
+      queryClient.invalidateQueries({ queryKey: [queryKeys.get_all_products, pageSize, page, searchBy, sortBy] })
+      onClose()
+    },
+    onError: err => {
+      toast.error(t('create_product_error'))
+    }
+  })
+
+  const { mutate: mutateUpdateProduct, isPending: isUpdating } = useMutation({
+    mutationKey: [queryKeys.update_product],
+    mutationFn: updateProduct,
+    onSuccess: () => {
+      toast.success(t('update_product_success'))
+      onClose()
+
+      // queryClient.invalidateQueries({ queryKey: [queryKeys.get_all_products, pageSize, page, searchBy, sortBy] })
+    },
+    onError: err => {
+      toast.error(t('update_product_error'))
+    }
+  })
+
   const fetchAllCities = async () => {
     await getAllCities({ params: { limit: -1, page: -1 } })
       .then(res => {
@@ -313,7 +381,7 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
 
   return (
     <>
-      {loading && <Spinner />}
+      {(loading || isCreating || isUpdating) && <Spinner />}
       <CustomModal open={open} onClose={onClose}>
         <Box
           sx={{ backgroundColor: theme.palette.customColors.bodyBg, padding: '20px', borderRadius: '15px' }}

@@ -52,6 +52,10 @@ import { getAllProductTypes } from 'src/services/product-type'
 import { formatDate } from 'src/utils/date'
 import { getCountProductStatus } from 'src/services/report'
 import ProductCountCard from './component/ProductCountCard'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from '@/configs/queryKey'
+import { deleteMultipleProduct, deleteProduct, getAllProducts } from '@/services/product'
+import { all } from 'axios'
 
 type TProps = {}
 
@@ -81,6 +85,9 @@ export const ProductListPage: NextPage<TProps> = () => {
 
   // translate
   const { t, i18n } = useTranslation()
+
+  // query
+  const queryClient = useQueryClient()
 
   // state
   const [page, setPage] = useState(1)
@@ -280,7 +287,7 @@ export const ProductListPage: NextPage<TProps> = () => {
       <CustomPagination
         pageSize={pageSize}
         page={page}
-        rowLength={products.total}
+        rowLength={allProducts?.totalCount}
         pageSizeOptions={PAGE_SIZE_OPTION}
         onChangePagination={handleOnChangePagination}
       />
@@ -290,12 +297,50 @@ export const ProductListPage: NextPage<TProps> = () => {
   // ****** Custom pagination
 
   // fetch API
-  const handleGetListProducts = () => {
-    const query = {
-      params: { limit: pageSize, page: page, search: searchBy, order: sortBy, ...formatFilter(filterBy) }
+  // get all products using Redux
+  // const handleGetListProducts = () => {
+  //   const query = {
+  //     params: { limit: pageSize, page: page, search: searchBy, order: sortBy, ...formatFilter(filterBy) }
+  //   }
+  //   dispatch(getAllProductsAsync(query))
+  // }
+
+  // get all products using React Query
+  const { data: allProducts, isLoading: isGettingAllProducts } = useQuery({
+    queryKey: [queryKeys.get_all_products, pageSize, page, searchBy, sortBy, filterBy],
+    queryFn: () =>
+      getAllProducts({
+        params: { limit: pageSize, page: page, search: searchBy, order: sortBy, ...formatFilter(filterBy) }
+      }),
+    select: (data): any => data?.data,
+    staleTime: 5000
+  })
+
+  const { mutate: mutateDeleteProduct, isPending: isDeletingProduct } = useMutation({
+    mutationKey: [queryKeys.delete_product],
+    mutationFn: deleteProduct,
+    onSuccess: () => {
+      toast.success(t('delete_product_success'))
+      handleCloseConfirmDeleteProduct()
+      queryClient.invalidateQueries({ queryKey: [queryKeys.get_all_products, pageSize, page, searchBy, sortBy] })
+    },
+    onError: err => {
+      toast.error(t('delete_product_error'))
     }
-    dispatch(getAllProductsAsync(query))
-  }
+  })
+
+  const { mutate: mutateDeleteManyProduct, isPending: isDeletingManyProduct } = useMutation({
+    mutationKey: [queryKeys.delete_many_product],
+    mutationFn: deleteMultipleProduct,
+    onSuccess: () => {
+      toast.success(t('delete_multiple_product_success'))
+      handleCloseConfirmDeleteMultipleProduct()
+      queryClient.invalidateQueries({ queryKey: [queryKeys.get_all_products, pageSize, page, searchBy, sortBy] })
+    },
+    onError: err => {
+      toast.error(t('delete_multiple_product_error'))
+    }
+  })
 
   // Handle
   const handleOnChangePagination = (page: number, pageSize: number) => {
@@ -315,16 +360,20 @@ export const ProductListPage: NextPage<TProps> = () => {
   }, [])
 
   const handleDeleteMultipleProduct = useCallback(() => {
-    dispatch(
-      deleteMultipleProductAsync({
-        productIds: selectedRow
-      })
-    )
+    // dispatch(
+    //   deleteMultipleProductAsync({
+    //     productIds: selectedRow
+    //   })
+    // )
+    mutateDeleteManyProduct({
+      productIds: selectedRow
+    })
   }, [selectedRow])
 
   const handleDeleteProduct = useCallback(() => {
-    dispatch(deleteProductAsync(openConfirmationDeleteProduct.id))
-  }, [])
+    // dispatch(deleteProductAsync(openConfirmationDeleteProduct.id))
+    mutateDeleteProduct(openConfirmationDeleteProduct.id)
+  }, [openConfirmationDeleteProduct.id])
 
   const handleCloseCreateEdit = useCallback(() => {
     setOpenCreateEdit({
@@ -402,62 +451,62 @@ export const ProductListPage: NextPage<TProps> = () => {
     isFirstRender.current = true
   }, [])
 
-  useEffect(() => {
-    if (isFirstRender.current) handleGetListProducts()
-  }, [sortBy, searchBy, page, pageSize, filterBy])
+  // useEffect(() => {
+  //   if (isFirstRender.current) handleGetListProducts()
+  // }, [sortBy, searchBy, page, pageSize, filterBy])
 
-  useEffect(() => {
-    if (isSuccessCreateEdit) {
-      if (openCreateEdit.id) {
-        toast.success(t('update_product_success'))
-      } else {
-        toast.success(t('create_product_success'))
-      }
-      handleGetListProducts()
-      handleCloseCreateEdit()
-      dispatch(resetInitialState())
-    } else if (isErrorCreateEdit && messageCreateEdit && typeError) {
-      const errorConfig = OBJECT_TYPE_ERROR_PRODUCT[typeError]
-      if (errorConfig) {
-        toast.error(t(errorConfig))
-      } else {
-        if (openCreateEdit.id) {
-          toast.error(t('update_product_error'))
-        } else {
-          toast.error(t('create_product_error'))
-        }
-      }
-      dispatch(resetInitialState())
-    }
-  }, [isSuccessCreateEdit, isErrorCreateEdit, messageCreateEdit, typeError])
+  // useEffect(() => {
+  //   if (isSuccessCreateEdit) {
+  //     if (openCreateEdit.id) {
+  //       toast.success(t('update_product_success'))
+  //     } else {
+  //       toast.success(t('create_product_success'))
+  //     }
+  //     handleGetListProducts()
+  //     handleCloseCreateEdit()
+  //     dispatch(resetInitialState())
+  //   } else if (isErrorCreateEdit && messageCreateEdit && typeError) {
+  //     const errorConfig = OBJECT_TYPE_ERROR_PRODUCT[typeError]
+  //     if (errorConfig) {
+  //       toast.error(t(errorConfig))
+  //     } else {
+  //       if (openCreateEdit.id) {
+  //         toast.error(t('update_product_error'))
+  //       } else {
+  //         toast.error(t('create_product_error'))
+  //       }
+  //     }
+  //     dispatch(resetInitialState())
+  //   }
+  // }, [isSuccessCreateEdit, isErrorCreateEdit, messageCreateEdit, typeError])
 
-  useEffect(() => {
-    if (isSuccessDelete) {
-      toast.success(t('delete_product_success'))
-      handleGetListProducts()
-      dispatch(resetInitialState())
-      handleCloseConfirmDeleteProduct()
-    } else if (isErrorDelete && messageDelete) {
-      toast.error(t('delete_product_error'))
-      dispatch(resetInitialState())
-    }
-  }, [isSuccessDelete, isErrorDelete, messageDelete])
+  // useEffect(() => {
+  //   if (isSuccessDelete) {
+  //     toast.success(t('delete_product_success'))
+  //     handleGetListProducts()
+  //     dispatch(resetInitialState())
+  //     handleCloseConfirmDeleteProduct()
+  //   } else if (isErrorDelete && messageDelete) {
+  //     toast.error(t('delete_product_error'))
+  //     dispatch(resetInitialState())
+  //   }
+  // }, [isSuccessDelete, isErrorDelete, messageDelete])
 
-  useEffect(() => {
-    if (isSuccessMultipleDelete) {
-      toast.success(t('delete_multiple_product_success'))
-      handleGetListProducts()
-      dispatch(resetInitialState())
-      handleCloseConfirmDeleteMultipleProduct()
-    } else if (isErrorMultipleDelete && messageMultipleDelete) {
-      toast.error(t('delete_multiple_product_error'))
-      dispatch(resetInitialState())
-    }
-  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageMultipleDelete])
+  // useEffect(() => {
+  //   if (isSuccessMultipleDelete) {
+  //     toast.success(t('delete_multiple_product_success'))
+  //     handleGetListProducts()
+  //     dispatch(resetInitialState())
+  //     handleCloseConfirmDeleteMultipleProduct()
+  //   } else if (isErrorMultipleDelete && messageMultipleDelete) {
+  //     toast.error(t('delete_multiple_product_error'))
+  //     dispatch(resetInitialState())
+  //   }
+  // }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageMultipleDelete])
 
   return (
     <>
-      {loading && <Spinner />}
+      {(loading || isGettingAllProducts || isDeletingProduct || isDeletingManyProduct) && <Spinner />}
       <ConfirmationDialog
         title={t('title_delete_product')}
         description={t('confirm_delete_product')}
@@ -479,6 +528,10 @@ export const ProductListPage: NextPage<TProps> = () => {
         onClose={handleCloseCreateEdit}
         productId={openCreateEdit.id}
         typesOption={typesOption}
+        page={page}
+        pageSize={pageSize}
+        sortBy={sortBy}
+        searchBy={searchBy}
       />
       {/* count product status */}
       <Box
@@ -572,7 +625,7 @@ export const ProductListPage: NextPage<TProps> = () => {
                 // }
               }
             }
-            rows={products.data}
+            rows={allProducts?.products || []}
             columns={columns}
             checkboxSelection
             autoHeight

@@ -1,7 +1,10 @@
 // Mui
-import { Box, Modal, ModalProps, styled, Typography } from '@mui/material'
+import { Box, Modal, ModalProps, styled } from '@mui/material'
+import { forwardRef, useEffect, useRef } from 'react'
 
-type TCustomModal = ModalProps & {}
+type TCustomModal = ModalProps & {
+  onClose: (event: Event, otherArg?: any) => void
+}
 
 const StyledModal = styled(Modal)<ModalProps>(({ theme }) => {
   return {
@@ -11,6 +14,30 @@ const StyledModal = styled(Modal)<ModalProps>(({ theme }) => {
 
 const CustomModal = (props: TCustomModal) => {
   const { onClose, open, children } = props
+
+  const ref = useRef<HTMLInputElement>()
+
+  // handle click outside modal (close if click on the select element => not fixed yet)
+  // useEffect(() => {
+  //   const handleClickOutside = (event: Event) => {
+  //     // console.log(ref.current)
+  //     console.log('event', event)
+  //     if (
+  //       ref.current &&
+  //       !ref.current.contains(event.target as HTMLInputElement) &&
+  //       event?.target?.toString() !== '[object HTMLBodyElement]'
+  //     ) {
+  //       console.log('click outside')
+  //       if (onClose !== undefined) {
+  //         onClose(event)
+  //       }
+  //     }
+  //   }
+
+  //   document.addEventListener('click', handleClickOutside, true)
+
+  //   return () => document.removeEventListener('click', handleClickOutside, true)
+  // }, [onClose])
 
   return (
     <StyledModal
@@ -42,6 +69,7 @@ const CustomModal = (props: TCustomModal) => {
               sx={{
                 margin: '40px 0'
               }}
+              ref={ref}
             >
               {children}
             </Box>
